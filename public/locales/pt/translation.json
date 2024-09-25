@@ -204,6 +204,10 @@
   "edit": "Editar",
   "assignedWorkspaces": "Espaços de Trabalho Atribuídos",
   "itemUpdatedSuccessfully": "{{itemType}} atualizado com sucesso",
-  "errorUpdatingItem": "Erro ao atualizar {{itemType}}. {{error}}"
- 
+  "errorUpdatingItem": "Erro ao atualizar {{itemType}}. {{error}}",
+  "url": "URL",
+  "toolUrlPlaceholder": "URL da ferramenta...",
+  "webBrowsing": "Navegação Web",
+  "imageGeneration": "Geração de Imagem",
+  "codeInterpreter": "Interpretador de Código"
 }

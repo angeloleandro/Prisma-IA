@@ -205,5 +205,10 @@
   "edit": "Edit",
   "assignedWorkspaces": "Assigned Workspaces",
   "itemUpdatedSuccessfully": "{{itemType}} updated successfully",
-  "errorUpdatingItem": "Error updating {{itemType}}. {{error}}"
+  "errorUpdatingItem": "Error updating {{itemType}}. {{error}}",
+  "url": "URL",
+  "toolUrlPlaceholder": "Tool url...",
+  "webBrowsing": "Web Browsing",
+  "imageGeneration": "Image Generation",
+  "codeInterpreter": "Code Interpreter"
 }
