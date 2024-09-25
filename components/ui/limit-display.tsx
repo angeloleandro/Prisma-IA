@@ -1,4 +1,5 @@
 import { FC } from "react"
+import { useTranslation } from "react-i18next"
 
 interface LimitDisplayProps {
   used: number
@@ -6,9 +7,9 @@ interface LimitDisplayProps {
 }
 
 export const LimitDisplay: FC<LimitDisplayProps> = ({ used, limit }) => {
+  const { t } = useTranslation()
+
   return (
-    <div className="text-xs italic">
-      {used}/{limit}
-    </div>
+    <div className="text-xs italic">{t("limitDisplay", { used, limit })}</div>
   )
 }

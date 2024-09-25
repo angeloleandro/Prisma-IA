@@ -1,5 +1,8 @@
 "use client"
 
+import React, { ReactNode, useContext, useEffect, useState } from "react"
+import { useTranslation } from "react-i18next"
+import { useParams, useRouter, useSearchParams } from "next/navigation"
 import { Dashboard } from "@/components/ui/dashboard"
 import { ChatbotUIContext } from "@/context/context"
 import { getAssistantWorkspacesByWorkspaceId } from "@/db/assistants"
@@ -16,8 +19,6 @@ import { getWorkspaceById } from "@/db/workspaces"
 import { convertBlobToBase64 } from "@/lib/blob-to-b64"
 import { supabase } from "@/lib/supabase/browser-client"
 import { LLMID } from "@/types"
-import { useParams, useRouter, useSearchParams } from "next/navigation"
-import { ReactNode, useContext, useEffect, useState } from "react"
 import Loading from "../loading"
 
 interface WorkspaceLayoutProps {
@@ -25,11 +26,12 @@ interface WorkspaceLayoutProps {
 }
 
 export default function WorkspaceLayout({ children }: WorkspaceLayoutProps) {
+  const { t } = useTranslation()
   const router = useRouter()
 
   const params = useParams()
   const searchParams = useSearchParams()
-  const workspaceId = params.workspaceid as string
+  const workspaceId = params?.workspaceid as string
 
   const {
     setChatSettings,
@@ -157,12 +159,12 @@ export default function WorkspaceLayout({ children }: WorkspaceLayoutProps) {
     setModels(modelData.models)
 
     setChatSettings({
-      model: (searchParams.get("model") ||
+      model: (searchParams?.get("model") ||
         workspace?.default_model ||
-        "gpt-4-1106-preview") as LLMID,
+        "gpt-4o") as LLMID,
       prompt:
         workspace?.default_prompt ||
-        "You are a friendly, helpful AI assistant.",
+        t("You are a friendly, helpful AI assistant."),
       temperature: workspace?.default_temperature || 0.5,
       contextLength: workspace?.default_context_length || 4096,
       includeProfileContext: workspace?.include_profile_context || true,

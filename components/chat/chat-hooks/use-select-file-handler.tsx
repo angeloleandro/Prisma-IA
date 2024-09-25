@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { ChatbotUIContext } from "@/context/context"
 import { createDocXFile, createFile } from "@/db/files"
 import { LLM_LIST } from "@/lib/models/llm/llm-list"
@@ -15,6 +16,8 @@ export const ACCEPTED_FILE_TYPES = [
 ].join(",")
 
 export const useSelectFileHandler = () => {
+  const { t } = useTranslation()
+
   const {
     selectedWorkspace,
     profile,
@@ -62,10 +65,10 @@ export const useSelectFileHandler = () => {
         if (simplifiedFileType.includes("vnd.adobe.pdf")) {
           simplifiedFileType = "pdf"
         } else if (
-          simplifiedFileType.includes(
-            "vnd.openxmlformats-officedocument.wordprocessingml.document" ||
-              "docx"
-          )
+          file.type.includes(
+            "vnd.openxmlformats-officedocument.wordprocessingml.document"
+          ) ||
+          file.type.includes("docx")
         ) {
           simplifiedFileType = "docx"
         }
@@ -185,9 +188,14 @@ export const useSelectFileHandler = () => {
             )
           }
         } catch (error: any) {
-          toast.error("Failed to upload. " + error?.message, {
-            duration: 10000
-          })
+          toast.error(
+            t("Failed to upload. {{errorMessage}}", {
+              errorMessage: error?.message
+            }),
+            {
+              duration: 10000
+            }
+          )
           setNewMessageImages(prev =>
             prev.filter(img => img.messageId !== "temp")
           )

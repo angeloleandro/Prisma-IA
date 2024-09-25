@@ -10,6 +10,7 @@ import { ChatbotUIContext } from "@/context/context"
 import { CollectionFile } from "@/types"
 import { IconChevronDown, IconCircleCheckFilled } from "@tabler/icons-react"
 import { FC, useContext, useEffect, useRef, useState } from "react"
+import { useTranslation } from "react-i18next"
 
 interface CollectionFileSelectProps {
   selectedCollectionFiles: CollectionFile[]
@@ -20,6 +21,7 @@ export const CollectionFileSelect: FC<CollectionFileSelectProps> = ({
   selectedCollectionFiles,
   onCollectionFileSelect
 }) => {
+  const { t } = useTranslation()
   const { files } = useContext(ChatbotUIContext)
 
   const inputRef = useRef<HTMLInputElement>(null)
@@ -61,7 +63,7 @@ export const CollectionFileSelect: FC<CollectionFileSelectProps> = ({
         >
           <div className="flex items-center">
             <div className="ml-2 flex items-center">
-              {selectedCollectionFiles.length} files selected
+              {t("filesSelected", { count: selectedCollectionFiles.length })}
             </div>
           </div>
 
@@ -76,7 +78,7 @@ export const CollectionFileSelect: FC<CollectionFileSelectProps> = ({
       >
         <Input
           ref={inputRef}
-          placeholder="Search files..."
+          placeholder={t("searchFiles")}
           value={search}
           onChange={e => setSearch(e.target.value)}
           onKeyDown={e => e.stopPropagation()}

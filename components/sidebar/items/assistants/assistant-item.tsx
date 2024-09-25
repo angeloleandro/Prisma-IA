@@ -8,7 +8,7 @@ import { Tables } from "@/supabase/types"
 import { IconRobotFace } from "@tabler/icons-react"
 import Image from "next/image"
 import { FC, useContext, useEffect, useState } from "react"
-import profile from "react-syntax-highlighter/dist/esm/languages/hljs/profile"
+import { useTranslation } from "react-i18next"
 import { SidebarItem } from "../all/sidebar-display-item"
 import { AssistantRetrievalSelect } from "./assistant-retrieval-select"
 import { AssistantToolSelect } from "./assistant-tool-select"
@@ -18,6 +18,7 @@ interface AssistantItemProps {
 }
 
 export const AssistantItem: FC<AssistantItemProps> = ({ assistant }) => {
+  const { t } = useTranslation()
   const { selectedWorkspace, assistantImages } = useContext(ChatbotUIContext)
 
   const [name, setName] = useState(assistant.name)
@@ -100,7 +101,6 @@ export const AssistantItem: FC<AssistantItemProps> = ({ assistant }) => {
     })
   }
 
-  if (!profile) return null
   if (!selectedWorkspace) return null
 
   return (
@@ -167,10 +167,10 @@ export const AssistantItem: FC<AssistantItemProps> = ({ assistant }) => {
       }) => (
         <>
           <div className="space-y-1">
-            <Label>Name</Label>
+            <Label>{t("name")}</Label>
 
             <Input
-              placeholder="Assistant name..."
+              placeholder={t("assistantNamePlaceholder")}
               value={name}
               onChange={e => setName(e.target.value)}
               maxLength={ASSISTANT_NAME_MAX}
@@ -178,10 +178,10 @@ export const AssistantItem: FC<AssistantItemProps> = ({ assistant }) => {
           </div>
 
           <div className="space-y-1 pt-2">
-            <Label>Description</Label>
+            <Label>{t("description")}</Label>
 
             <Input
-              placeholder="Assistant description..."
+              placeholder={t("assistantDescriptionPlaceholder")}
               value={description}
               onChange={e => setDescription(e.target.value)}
               maxLength={ASSISTANT_DESCRIPTION_MAX}
@@ -189,7 +189,7 @@ export const AssistantItem: FC<AssistantItemProps> = ({ assistant }) => {
           </div>
 
           <div className="space-y-1">
-            <Label>Image</Label>
+            <Label>{t("image")}</Label>
 
             <ImagePicker
               src={imageLink}
@@ -208,7 +208,7 @@ export const AssistantItem: FC<AssistantItemProps> = ({ assistant }) => {
           />
 
           <div className="space-y-1 pt-2">
-            <Label>Files & Collections</Label>
+            <Label>{t("filesAndCollections")}</Label>
 
             <AssistantRetrievalSelect
               selectedAssistantRetrievalItems={
@@ -270,7 +270,7 @@ export const AssistantItem: FC<AssistantItemProps> = ({ assistant }) => {
           </div>
 
           <div className="space-y-1">
-            <Label>Tools</Label>
+            <Label>{t("tools")}</Label>
 
             <AssistantToolSelect
               selectedAssistantTools={

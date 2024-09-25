@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils"
 import { Tables } from "@/supabase/types"
 import { ContentType, DataItemType, DataListType } from "@/types"
 import { FC, useContext, useEffect, useRef, useState } from "react"
+import { useTranslation } from "react-i18next"
 import { Separator } from "../ui/separator"
 import { AssistantItem } from "./items/assistants/assistant-item"
 import { ChatItem } from "./items/chat/chat-item"
@@ -33,6 +34,7 @@ export const SidebarDataList: FC<SidebarDataListProps> = ({
   data,
   folders
 }) => {
+  const { t } = useTranslation()
   const {
     setChats,
     setPresets,
@@ -226,8 +228,8 @@ export const SidebarDataList: FC<SidebarDataListProps> = ({
       >
         {data.length === 0 && (
           <div className="flex grow flex-col items-center justify-center">
-            <div className=" text-centertext-muted-foreground p-8 text-lg italic">
-              No {contentType}.
+            <div className="text-centertext-muted-foreground p-8 text-lg italic">
+              {t("no", { contentType: t(contentType) })}
             </div>
           </div>
         )}
@@ -278,7 +280,7 @@ export const SidebarDataList: FC<SidebarDataListProps> = ({
                       sortedData.length > 0 && (
                         <div key={dateCategory} className="pb-2">
                           <div className="text-muted-foreground mb-1 text-sm font-bold">
-                            {dateCategory}
+                            {t(dateCategory.toLowerCase())}
                           </div>
 
                           <div

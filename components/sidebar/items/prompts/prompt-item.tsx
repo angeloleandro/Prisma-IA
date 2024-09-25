@@ -5,6 +5,7 @@ import { PROMPT_NAME_MAX } from "@/db/limits"
 import { Tables } from "@/supabase/types"
 import { IconPencil } from "@tabler/icons-react"
 import { FC, useState } from "react"
+import { useTranslation } from "react-i18next"
 import { SidebarItem } from "../all/sidebar-display-item"
 
 interface PromptItemProps {
@@ -12,6 +13,7 @@ interface PromptItemProps {
 }
 
 export const PromptItem: FC<PromptItemProps> = ({ prompt }) => {
+  const { t } = useTranslation()
   const [name, setName] = useState(prompt.name)
   const [content, setContent] = useState(prompt.content)
   const [isTyping, setIsTyping] = useState(false)
@@ -25,10 +27,10 @@ export const PromptItem: FC<PromptItemProps> = ({ prompt }) => {
       renderInputs={() => (
         <>
           <div className="space-y-1">
-            <Label>Name</Label>
+            <Label>{t("name")}</Label>
 
             <Input
-              placeholder="Prompt name..."
+              placeholder={t("promptNamePlaceholder")}
               value={name}
               onChange={e => setName(e.target.value)}
               maxLength={PROMPT_NAME_MAX}
@@ -38,10 +40,10 @@ export const PromptItem: FC<PromptItemProps> = ({ prompt }) => {
           </div>
 
           <div className="space-y-1">
-            <Label>Prompt</Label>
+            <Label>{t("prompt")}</Label>
 
             <TextareaAutosize
-              placeholder="Prompt..."
+              placeholder={t("promptPlaceholder")}
               value={content}
               onValueChange={setContent}
               minRows={6}

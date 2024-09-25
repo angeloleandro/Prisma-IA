@@ -2,6 +2,7 @@ import { ChatbotUIContext } from "@/context/context"
 import { Tables } from "@/supabase/types"
 import { IconChevronDown, IconCircleCheckFilled } from "@tabler/icons-react"
 import { FC, useContext, useEffect, useRef, useState } from "react"
+import { useTranslation } from "react-i18next" // Adicionado
 import { Button } from "../ui/button"
 import {
   DropdownMenu,
@@ -20,6 +21,7 @@ export const AssignWorkspaces: FC<AssignWorkspaces> = ({
   selectedWorkspaces,
   onSelectWorkspace
 }) => {
+  const { t } = useTranslation() // Adicionado
   const { workspaces } = useContext(ChatbotUIContext)
 
   const inputRef = useRef<HTMLInputElement>(null)
@@ -61,7 +63,7 @@ export const AssignWorkspaces: FC<AssignWorkspaces> = ({
         >
           <div className="flex items-center">
             <div className="ml-2 flex items-center">
-              {selectedWorkspaces.length} workspaces selected
+              {t("workspacesSelected", { count: selectedWorkspaces.length })}
             </div>
           </div>
 
@@ -76,7 +78,7 @@ export const AssignWorkspaces: FC<AssignWorkspaces> = ({
       >
         <Input
           ref={inputRef}
-          placeholder="Search workspaces..."
+          placeholder={t("searchWorkspaces")}
           value={search}
           onChange={e => setSearch(e.target.value)}
           onKeyDown={e => e.stopPropagation()}
@@ -134,9 +136,11 @@ const WorkspaceItem: FC<WorkspaceItemProps> = ({
   selected,
   onSelect
 }) => {
+  const { t } = useTranslation() // Adicionado
+
   const handleSelect = () => {
     if (selected && selectedWorkspaces.length === 1) {
-      toast.info("You must select at least one workspace")
+      toast.info(t("selectAtLeastOneWorkspace"))
       return
     }
 

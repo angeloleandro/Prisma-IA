@@ -5,6 +5,7 @@ import { FILE_DESCRIPTION_MAX, FILE_NAME_MAX } from "@/db/limits"
 import { getFileFromStorage } from "@/db/storage/files"
 import { Tables } from "@/supabase/types"
 import { FC, useState } from "react"
+import { useTranslation } from "react-i18next"
 import { SidebarItem } from "../all/sidebar-display-item"
 
 interface FileItemProps {
@@ -12,6 +13,7 @@ interface FileItemProps {
 }
 
 export const FileItem: FC<FileItemProps> = ({ file }) => {
+  const { t } = useTranslation()
   const [name, setName] = useState(file.name)
   const [isTyping, setIsTyping] = useState(false)
   const [description, setDescription] = useState(file.description)
@@ -34,7 +36,7 @@ export const FileItem: FC<FileItemProps> = ({ file }) => {
             className="cursor-pointer underline hover:opacity-50"
             onClick={getLinkAndView}
           >
-            View {file.name}
+            {t("view")} {file.name}
           </div>
 
           <div className="flex flex-col justify-between">
@@ -42,14 +44,16 @@ export const FileItem: FC<FileItemProps> = ({ file }) => {
 
             <div>{formatFileSize(file.size)}</div>
 
-            <div>{file.tokens.toLocaleString()} tokens</div>
+            <div>
+              {file.tokens.toLocaleString()} {t("tokens")}
+            </div>
           </div>
 
           <div className="space-y-1">
-            <Label>Name</Label>
+            <Label>{t("name")}</Label>
 
             <Input
-              placeholder="File name..."
+              placeholder={t("fileNamePlaceholder")}
               value={name}
               onChange={e => setName(e.target.value)}
               maxLength={FILE_NAME_MAX}
@@ -57,10 +61,10 @@ export const FileItem: FC<FileItemProps> = ({ file }) => {
           </div>
 
           <div className="space-y-1">
-            <Label>Description</Label>
+            <Label>{t("description")}</Label>
 
             <Input
-              placeholder="File description..."
+              placeholder={t("fileDescriptionPlaceholder")}
               value={description}
               onChange={e => setDescription(e.target.value)}
               maxLength={FILE_DESCRIPTION_MAX}

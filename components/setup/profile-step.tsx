@@ -11,6 +11,7 @@ import {
   IconLoader2
 } from "@tabler/icons-react"
 import { FC, useCallback, useState } from "react"
+import { useTranslation } from "react-i18next"
 import { LimitDisplay } from "../ui/limit-display"
 import { toast } from "sonner"
 
@@ -31,6 +32,7 @@ export const ProfileStep: FC<ProfileStepProps> = ({
   onUsernameChange,
   onDisplayNameChange
 }) => {
+  const { t } = useTranslation()
   const [loading, setLoading] = useState(false)
 
   const debounce = (func: (...args: any[]) => void, wait: number) => {
@@ -64,9 +66,7 @@ export const ProfileStep: FC<ProfileStepProps> = ({
       const usernameRegex = /^[a-zA-Z0-9_]+$/
       if (!usernameRegex.test(username)) {
         onUsernameAvailableChange(false)
-        toast.error(
-          "Username must be letters, numbers, or underscores only - no other characters or spacing allowed."
-        )
+        toast.error(t("usernameRequirements"))
         return
       }
 
@@ -84,33 +84,24 @@ export const ProfileStep: FC<ProfileStepProps> = ({
 
       setLoading(false)
     }, 500),
-    []
+    [t, onUsernameAvailableChange]
   )
+
+  const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    onUsernameChange(e.target.value)
+    checkUsernameAvailability(e.target.value)
+  }
 
   return (
     <>
       <div className="space-y-1">
-        <div className="flex items-center space-x-2">
-          <Label>Username</Label>
-
-          <div className="text-xs">
-            {usernameAvailable ? (
-              <div className="text-green-500">AVAILABLE</div>
-            ) : (
-              <div className="text-red-500">UNAVAILABLE</div>
-            )}
-          </div>
-        </div>
+        <Label>{t("username")}</Label>
 
         <div className="relative">
           <Input
-            className="pr-10"
-            placeholder="username"
+            placeholder={t("username")}
             value={username}
-            onChange={e => {
-              onUsernameChange(e.target.value)
-              checkUsernameAvailability(e.target.value)
-            }}
+            onChange={handleUsernameChange}
             minLength={PROFILE_USERNAME_MIN}
             maxLength={PROFILE_USERNAME_MAX}
           />
@@ -130,10 +121,10 @@ export const ProfileStep: FC<ProfileStepProps> = ({
       </div>
 
       <div className="space-y-1">
-        <Label>Chat Display Name</Label>
+        <Label>{t("chatDisplayName")}</Label>
 
         <Input
-          placeholder="Your Name"
+          placeholder={t("yourName")}
           value={displayName}
           onChange={e => onDisplayNameChange(e.target.value)}
           maxLength={PROFILE_DISPLAY_NAME_MAX}

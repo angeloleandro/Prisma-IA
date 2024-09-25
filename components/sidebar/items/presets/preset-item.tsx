@@ -6,6 +6,7 @@ import { PRESET_NAME_MAX } from "@/db/limits"
 import { LLM_LIST } from "@/lib/models/llm/llm-list"
 import { Tables } from "@/supabase/types"
 import { FC, useState } from "react"
+import { useTranslation } from "react-i18next"
 import { SidebarItem } from "../all/sidebar-display-item"
 
 interface PresetItemProps {
@@ -13,6 +14,7 @@ interface PresetItemProps {
 }
 
 export const PresetItem: FC<PresetItemProps> = ({ preset }) => {
+  const { t } = useTranslation()
   const [name, setName] = useState(preset.name)
   const [isTyping, setIsTyping] = useState(false)
   const [description, setDescription] = useState(preset.description)
@@ -53,10 +55,10 @@ export const PresetItem: FC<PresetItemProps> = ({ preset }) => {
       renderInputs={() => (
         <>
           <div className="space-y-1">
-            <Label>Name</Label>
+            <Label>{t("name")}</Label>
 
             <Input
-              placeholder="Preset name..."
+              placeholder={t("presetNamePlaceholder")}
               value={name}
               onChange={e => setName(e.target.value)}
               maxLength={PRESET_NAME_MAX}

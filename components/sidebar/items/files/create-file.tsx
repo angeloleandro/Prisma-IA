@@ -6,6 +6,7 @@ import { ChatbotUIContext } from "@/context/context"
 import { FILE_DESCRIPTION_MAX, FILE_NAME_MAX } from "@/db/limits"
 import { TablesInsert } from "@/supabase/types"
 import { FC, useContext, useState } from "react"
+import { useTranslation } from "react-i18next"
 
 interface CreateFileProps {
   isOpen: boolean
@@ -13,6 +14,7 @@ interface CreateFileProps {
 }
 
 export const CreateFile: FC<CreateFileProps> = ({ isOpen, onOpenChange }) => {
+  const { t } = useTranslation()
   const { profile, selectedWorkspace } = useContext(ChatbotUIContext)
 
   const [name, setName] = useState("")
@@ -56,7 +58,7 @@ export const CreateFile: FC<CreateFileProps> = ({ isOpen, onOpenChange }) => {
       renderInputs={() => (
         <>
           <div className="space-y-1">
-            <Label>File</Label>
+            <Label>{t("file")}</Label>
 
             <Input
               type="file"
@@ -66,10 +68,10 @@ export const CreateFile: FC<CreateFileProps> = ({ isOpen, onOpenChange }) => {
           </div>
 
           <div className="space-y-1">
-            <Label>Name</Label>
+            <Label>{t("name")}</Label>
 
             <Input
-              placeholder="File name..."
+              placeholder={t("fileNamePlaceholder")}
               value={name}
               onChange={e => setName(e.target.value)}
               maxLength={FILE_NAME_MAX}
@@ -77,11 +79,11 @@ export const CreateFile: FC<CreateFileProps> = ({ isOpen, onOpenChange }) => {
           </div>
 
           <div className="space-y-1">
-            <Label>Description</Label>
+            <Label>{t("description")}</Label>
 
             <Input
-              placeholder="File description..."
-              value={name}
+              placeholder={t("fileDescriptionPlaceholder")}
+              value={description}
               onChange={e => setDescription(e.target.value)}
               maxLength={FILE_DESCRIPTION_MAX}
             />

@@ -89,21 +89,27 @@ export const fetchOpenRouterModels = async () => {
 
     const { data } = await response.json()
 
-    const openRouterModels = data.map(
-      (model: {
-        id: string
-        name: string
-        context_length: number
-      }): OpenRouterLLM => ({
-        modelId: model.id as LLMID,
-        modelName: model.id,
-        provider: "openrouter",
-        hostedId: model.name,
-        platformLink: "https://openrouter.dev",
-        imageInput: false,
-        maxContext: model.context_length
-      })
-    )
+    const allowedOpenRouterModels = ["openai/o1-mini", "openai/o1-preview"]
+
+    const openRouterModels = data
+      .filter((model: { id: string }) =>
+        allowedOpenRouterModels.includes(model.id)
+      )
+      .map(
+        (model: {
+          id: string
+          name: string
+          context_length: number
+        }): OpenRouterLLM => ({
+          modelId: model.id as LLMID,
+          modelName: model.id,
+          provider: "openrouter",
+          hostedId: model.name,
+          platformLink: "https://openrouter.dev",
+          imageInput: false,
+          maxContext: model.context_length
+        })
+      )
 
     return openRouterModels
   } catch (error) {

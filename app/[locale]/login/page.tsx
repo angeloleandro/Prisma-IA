@@ -11,7 +11,7 @@ import { cookies, headers } from "next/headers"
 import { redirect } from "next/navigation"
 
 export const metadata: Metadata = {
-  title: "Login"
+  title: "Entrar"
 }
 
 export default async function Login({
@@ -170,17 +170,17 @@ export default async function Login({
         <Brand />
 
         <Label className="text-md mt-4" htmlFor="email">
-          Email
+          E-mail
         </Label>
         <Input
           className="mb-3 rounded-md border bg-inherit px-4 py-2"
           name="email"
-          placeholder="you@example.com"
+          placeholder="seu@exemplo.com"
           required
         />
 
         <Label className="text-md" htmlFor="password">
-          Password
+          Senha
         </Label>
         <Input
           className="mb-6 rounded-md border bg-inherit px-4 py-2"
@@ -190,23 +190,23 @@ export default async function Login({
         />
 
         <SubmitButton className="mb-2 rounded-md bg-blue-700 px-4 py-2 text-white">
-          Login
+          Entrar
         </SubmitButton>
 
         <SubmitButton
           formAction={signUp}
           className="border-foreground/20 mb-2 rounded-md border px-4 py-2"
         >
-          Sign Up
+          Inscrever-se
         </SubmitButton>
 
         <div className="text-muted-foreground mt-1 flex justify-center text-sm">
-          <span className="mr-1">Forgot your password?</span>
+          <span className="mr-1">Esqueceu sua senha?</span>
           <button
             formAction={handleResetPassword}
             className="text-primary ml-1 underline hover:opacity-80"
           >
-            Reset
+            Reiniciar
           </button>
         </div>
 

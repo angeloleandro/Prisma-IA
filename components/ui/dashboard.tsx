@@ -10,6 +10,7 @@ import { ContentType } from "@/types"
 import { IconChevronCompactRight } from "@tabler/icons-react"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { FC, useState } from "react"
+import { useTranslation } from "react-i18next"
 import { useSelectFileHandler } from "../chat/chat-hooks/use-select-file-handler"
 import { CommandK } from "../utility/command-k"
 
@@ -20,6 +21,7 @@ interface DashboardProps {
 }
 
 export const Dashboard: FC<DashboardProps> = ({ children }) => {
+  const { t } = useTranslation()
   useHotkey("s", () => setShowSidebar(prevState => !prevState))
 
   const pathname = usePathname()
@@ -76,7 +78,6 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
           "duration-200 dark:border-none " + (showSidebar ? "border-r-2" : "")
         )}
         style={{
-          // Sidebar
           minWidth: showSidebar ? `${SIDEBAR_WIDTH}px` : "0px",
           maxWidth: showSidebar ? `${SIDEBAR_WIDTH}px` : "0px",
           width: showSidebar ? `${SIDEBAR_WIDTH}px` : "0px"
@@ -107,7 +108,7 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
       >
         {isDragging ? (
           <div className="flex h-full items-center justify-center bg-black/50 text-2xl text-white">
-            drop file here
+            {t("dropFileHere")}
           </div>
         ) : (
           children
@@ -118,7 +119,6 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
             "absolute left-[4px] top-[50%] z-10 size-[32px] cursor-pointer"
           )}
           style={{
-            // marginLeft: showSidebar ? `${SIDEBAR_WIDTH}px` : "0px",
             transform: showSidebar ? "rotate(180deg)" : "rotate(0deg)"
           }}
           variant="ghost"

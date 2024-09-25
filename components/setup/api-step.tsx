@@ -1,6 +1,7 @@
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { FC } from "react"
+import { useTranslation } from "react-i18next"
 import { Button } from "../ui/button"
 
 interface APIStepProps {
@@ -15,11 +16,9 @@ interface APIStepProps {
   anthropicAPIKey: string
   googleGeminiAPIKey: string
   mistralAPIKey: string
-  groqAPIKey: string
   perplexityAPIKey: string
-  useAzureOpenai: boolean
   openrouterAPIKey: string
-  onOpenrouterAPIKeyChange: (value: string) => void
+  useAzureOpenai: boolean
   onOpenaiAPIKeyChange: (value: string) => void
   onOpenaiOrgIDChange: (value: string) => void
   onAzureOpenaiAPIKeyChange: (value: string) => void
@@ -31,9 +30,11 @@ interface APIStepProps {
   onAnthropicAPIKeyChange: (value: string) => void
   onGoogleGeminiAPIKeyChange: (value: string) => void
   onMistralAPIKeyChange: (value: string) => void
-  onGroqAPIKeyChange: (value: string) => void
   onPerplexityAPIKeyChange: (value: string) => void
+  onOpenrouterAPIKeyChange: (value: string) => void
   onUseAzureOpenaiChange: (value: boolean) => void
+  groqAPIKey: string
+  onGroqAPIKeyChange: (value: string) => void
 }
 
 export const APIStep: FC<APIStepProps> = ({
@@ -48,7 +49,6 @@ export const APIStep: FC<APIStepProps> = ({
   anthropicAPIKey,
   googleGeminiAPIKey,
   mistralAPIKey,
-  groqAPIKey,
   perplexityAPIKey,
   openrouterAPIKey,
   useAzureOpenai,
@@ -63,17 +63,20 @@ export const APIStep: FC<APIStepProps> = ({
   onAnthropicAPIKeyChange,
   onGoogleGeminiAPIKeyChange,
   onMistralAPIKeyChange,
-  onGroqAPIKeyChange,
   onPerplexityAPIKeyChange,
+  onOpenrouterAPIKeyChange,
   onUseAzureOpenaiChange,
-  onOpenrouterAPIKeyChange
+  groqAPIKey,
+  onGroqAPIKeyChange
 }) => {
+  const { t } = useTranslation()
+
   return (
     <>
       <div className="mt-5 space-y-2">
         <Label className="flex items-center">
           <div>
-            {useAzureOpenai ? "Azure OpenAI API Key" : "OpenAI API Key"}
+            {useAzureOpenai ? t("azureOpenaiApiKey") : t("openaiApiKey")}
           </div>
 
           <Button
@@ -81,14 +84,14 @@ export const APIStep: FC<APIStepProps> = ({
             onClick={() => onUseAzureOpenaiChange(!useAzureOpenai)}
           >
             {useAzureOpenai
-              ? "Switch To Standard OpenAI"
-              : "Switch To Azure OpenAI"}
+              ? t("switchToStandardOpenai")
+              : t("switchToAzureOpenai")}
           </Button>
         </Label>
 
         <Input
           placeholder={
-            useAzureOpenai ? "Azure OpenAI API Key" : "OpenAI API Key"
+            useAzureOpenai ? t("azureOpenaiApiKey") : t("openaiApiKey")
           }
           type="password"
           value={useAzureOpenai ? azureOpenaiAPIKey : openaiAPIKey}
@@ -104,10 +107,10 @@ export const APIStep: FC<APIStepProps> = ({
         {useAzureOpenai ? (
           <>
             <div className="space-y-1">
-              <Label>Azure OpenAI Endpoint</Label>
+              <Label>{t("azureOpenaiEndpoint")}</Label>
 
               <Input
-                placeholder="https://your-endpoint.openai.azure.com"
+                placeholder={t("azureOpenaiEndpointPlaceholder")}
                 type="password"
                 value={azureOpenaiEndpoint}
                 onChange={e => onAzureOpenaiEndpointChange(e.target.value)}
@@ -115,10 +118,10 @@ export const APIStep: FC<APIStepProps> = ({
             </div>
 
             <div className="space-y-1">
-              <Label>Azure OpenAI GPT-3.5 Turbo ID</Label>
+              <Label>{t("azureOpenai35TurboID")}</Label>
 
               <Input
-                placeholder="Azure OpenAI GPT-3.5 Turbo ID"
+                placeholder={t("azureOpenai35TurboIDPlaceholder")}
                 type="password"
                 value={azureOpenai35TurboID}
                 onChange={e => onAzureOpenai35TurboIDChange(e.target.value)}
@@ -126,10 +129,10 @@ export const APIStep: FC<APIStepProps> = ({
             </div>
 
             <div className="space-y-1">
-              <Label>Azure OpenAI GPT-4.5 Turbo ID</Label>
+              <Label>{t("azureOpenai45TurboID")}</Label>
 
               <Input
-                placeholder="Azure OpenAI GPT-4.5 Turbo ID"
+                placeholder={t("azureOpenai45TurboIDPlaceholder")}
                 type="password"
                 value={azureOpenai45TurboID}
                 onChange={e => onAzureOpenai45TurboIDChange(e.target.value)}
@@ -137,10 +140,10 @@ export const APIStep: FC<APIStepProps> = ({
             </div>
 
             <div className="space-y-1">
-              <Label>Azure OpenAI GPT-4.5 Vision ID</Label>
+              <Label>{t("azureOpenai45VisionID")}</Label>
 
               <Input
-                placeholder="Azure OpenAI GPT-4.5 Vision ID"
+                placeholder={t("azureOpenai45VisionIDPlaceholder")}
                 type="password"
                 value={azureOpenai45VisionID}
                 onChange={e => onAzureOpenai45VisionIDChange(e.target.value)}
@@ -148,10 +151,10 @@ export const APIStep: FC<APIStepProps> = ({
             </div>
 
             <div className="space-y-1">
-              <Label>Azure OpenAI Embeddings ID</Label>
+              <Label>{t("azureOpenaiEmbeddingsID")}</Label>
 
               <Input
-                placeholder="Azure OpenAI Embeddings ID"
+                placeholder={t("azureOpenaiEmbeddingsIDPlaceholder")}
                 type="password"
                 value={azureOpenaiEmbeddingsID}
                 onChange={e => onAzureOpenaiEmbeddingsIDChange(e.target.value)}
@@ -161,10 +164,10 @@ export const APIStep: FC<APIStepProps> = ({
         ) : (
           <>
             <div className="space-y-1">
-              <Label>OpenAI Organization ID</Label>
+              <Label>{t("openaiOrgID")}</Label>
 
               <Input
-                placeholder="OpenAI Organization ID (optional)"
+                placeholder={t("openaiOrgIDPlaceholder")}
                 type="password"
                 value={openaiOrgID}
                 onChange={e => onOpenaiOrgIDChange(e.target.value)}
@@ -175,10 +178,10 @@ export const APIStep: FC<APIStepProps> = ({
       </div>
 
       <div className="space-y-1">
-        <Label>Anthropic API Key</Label>
+        <Label>{t("anthropicAPIKey")}</Label>
 
         <Input
-          placeholder="Anthropic API Key"
+          placeholder={t("anthropicAPIKeyPlaceholder")}
           type="password"
           value={anthropicAPIKey}
           onChange={e => onAnthropicAPIKeyChange(e.target.value)}
@@ -186,10 +189,10 @@ export const APIStep: FC<APIStepProps> = ({
       </div>
 
       <div className="space-y-1">
-        <Label>Google Gemini API Key</Label>
+        <Label>{t("googleGeminiAPIKey")}</Label>
 
         <Input
-          placeholder="Google Gemini API Key"
+          placeholder={t("googleGeminiAPIKeyPlaceholder")}
           type="password"
           value={googleGeminiAPIKey}
           onChange={e => onGoogleGeminiAPIKeyChange(e.target.value)}
@@ -197,10 +200,10 @@ export const APIStep: FC<APIStepProps> = ({
       </div>
 
       <div className="space-y-1">
-        <Label>Mistral API Key</Label>
+        <Label>{t("mistralAPIKey")}</Label>
 
         <Input
-          placeholder="Mistral API Key"
+          placeholder={t("mistralAPIKeyPlaceholder")}
           type="password"
           value={mistralAPIKey}
           onChange={e => onMistralAPIKeyChange(e.target.value)}
@@ -208,34 +211,35 @@ export const APIStep: FC<APIStepProps> = ({
       </div>
 
       <div className="space-y-1">
-        <Label>Groq API Key</Label>
+        <Label>{t("perplexityAPIKey")}</Label>
 
         <Input
-          placeholder="Groq API Key"
-          type="password"
-          value={groqAPIKey}
-          onChange={e => onGroqAPIKeyChange(e.target.value)}
-        />
-      </div>
-
-      <div className="space-y-1">
-        <Label>Perplexity API Key</Label>
-
-        <Input
-          placeholder="Perplexity API Key"
+          placeholder={t("perplexityAPIKeyPlaceholder")}
           type="password"
           value={perplexityAPIKey}
           onChange={e => onPerplexityAPIKeyChange(e.target.value)}
         />
       </div>
+
       <div className="space-y-1">
-        <Label>OpenRouter API Key</Label>
+        <Label>{t("openRouterApiKey")}</Label>
 
         <Input
-          placeholder="OpenRouter API Key"
+          placeholder={t("openRouterApiKeyPlaceholder")}
           type="password"
           value={openrouterAPIKey}
           onChange={e => onOpenrouterAPIKeyChange(e.target.value)}
+        />
+      </div>
+
+      <div className="space-y-1">
+        <Label>{t("groqAPIKey")}</Label>
+
+        <Input
+          placeholder={t("groqAPIKeyPlaceholder")}
+          type="password"
+          value={groqAPIKey}
+          onChange={e => onGroqAPIKeyChange(e.target.value)}
         />
       </div>
     </>

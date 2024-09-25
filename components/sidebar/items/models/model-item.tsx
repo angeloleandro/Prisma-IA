@@ -4,6 +4,7 @@ import { MODEL_NAME_MAX } from "@/db/limits"
 import { Tables, TablesUpdate } from "@/supabase/types"
 import { IconSparkles } from "@tabler/icons-react"
 import { FC, useState } from "react"
+import { useTranslation } from "react-i18next"
 import { SidebarItem } from "../all/sidebar-display-item"
 
 interface ModelItemProps {
@@ -11,6 +12,7 @@ interface ModelItemProps {
 }
 
 export const ModelItem: FC<ModelItemProps> = ({ model }) => {
+  const { t } = useTranslation()
   const [isTyping, setIsTyping] = useState(false)
 
   const [apiKey, setApiKey] = useState(model.api_key)
@@ -39,10 +41,10 @@ export const ModelItem: FC<ModelItemProps> = ({ model }) => {
       renderInputs={() => (
         <>
           <div className="space-y-1">
-            <Label>Name</Label>
+            <Label>{t("name")}</Label>
 
             <Input
-              placeholder="Model name..."
+              placeholder={t("modelNamePlaceholder")}
               value={name}
               onChange={e => setName(e.target.value)}
               maxLength={MODEL_NAME_MAX}
@@ -50,42 +52,42 @@ export const ModelItem: FC<ModelItemProps> = ({ model }) => {
           </div>
 
           <div className="space-y-1">
-            <Label>Model ID</Label>
+            <Label>{t("modelId")}</Label>
 
             <Input
-              placeholder="Model ID..."
+              placeholder={t("modelIdPlaceholder")}
               value={modelId}
               onChange={e => setModelId(e.target.value)}
             />
           </div>
 
           <div className="space-y-1">
-            <Label>Base URL</Label>
+            <Label>{t("baseUrl")}</Label>
 
             <Input
-              placeholder="Base URL..."
+              placeholder={t("baseUrlPlaceholder")}
               value={baseUrl}
               onChange={e => setBaseUrl(e.target.value)}
             />
 
             <div className="pt-1 text-xs italic">
-              Your API must be compatible with the OpenAI SDK.
+              {t("apiCompatibilityNote")}
             </div>
           </div>
 
           <div className="space-y-1">
-            <Label>API Key</Label>
+            <Label>{t("apiKey")}</Label>
 
             <Input
               type="password"
-              placeholder="API Key..."
+              placeholder={t("apiKeyPlaceholder")}
               value={apiKey}
               onChange={e => setApiKey(e.target.value)}
             />
           </div>
 
           <div className="space-y-1">
-            <Label>Max Context Length</Label>
+            <Label>{t("maxContextLength")}</Label>
 
             <Input
               type="number"

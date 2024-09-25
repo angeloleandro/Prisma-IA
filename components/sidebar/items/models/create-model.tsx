@@ -5,6 +5,7 @@ import { ChatbotUIContext } from "@/context/context"
 import { MODEL_NAME_MAX } from "@/db/limits"
 import { TablesInsert } from "@/supabase/types"
 import { FC, useContext, useState } from "react"
+import { useTranslation } from "react-i18next"
 
 interface CreateModelProps {
   isOpen: boolean
@@ -12,6 +13,7 @@ interface CreateModelProps {
 }
 
 export const CreateModel: FC<CreateModelProps> = ({ isOpen, onOpenChange }) => {
+  const { t } = useTranslation()
   const { profile, selectedWorkspace } = useContext(ChatbotUIContext)
 
   const [isTyping, setIsTyping] = useState(false)
@@ -45,19 +47,16 @@ export const CreateModel: FC<CreateModelProps> = ({ isOpen, onOpenChange }) => {
       renderInputs={() => (
         <>
           <div className="space-y-1.5 text-sm">
-            <div>Create a custom model.</div>
+            <div>{t("createCustomModel")}</div>
 
-            <div>
-              Your API <span className="font-bold">*must*</span> be compatible
-              with the OpenAI SDK.
-            </div>
+            <div>{t("apiCompatibilityWarning")}</div>
           </div>
 
           <div className="space-y-1">
-            <Label>Name</Label>
+            <Label>{t("name")}</Label>
 
             <Input
-              placeholder="Model name..."
+              placeholder={t("modelNamePlaceholder")}
               value={name}
               onChange={e => setName(e.target.value)}
               maxLength={MODEL_NAME_MAX}
@@ -65,42 +64,42 @@ export const CreateModel: FC<CreateModelProps> = ({ isOpen, onOpenChange }) => {
           </div>
 
           <div className="space-y-1">
-            <Label>Model ID</Label>
+            <Label>{t("modelId")}</Label>
 
             <Input
-              placeholder="Model ID..."
+              placeholder={t("modelIdPlaceholder")}
               value={modelId}
               onChange={e => setModelId(e.target.value)}
             />
           </div>
 
           <div className="space-y-1">
-            <Label>Base URL</Label>
+            <Label>{t("baseUrl")}</Label>
 
             <Input
-              placeholder="Base URL..."
+              placeholder={t("baseUrlPlaceholder")}
               value={baseUrl}
               onChange={e => setBaseUrl(e.target.value)}
             />
 
             <div className="pt-1 text-xs italic">
-              Your API must be compatible with the OpenAI SDK.
+              {t("apiCompatibilityNote")}
             </div>
           </div>
 
           <div className="space-y-1">
-            <Label>API Key</Label>
+            <Label>{t("apiKey")}</Label>
 
             <Input
               type="password"
-              placeholder="API Key..."
+              placeholder={t("apiKeyPlaceholder")}
               value={apiKey}
               onChange={e => setApiKey(e.target.value)}
             />
           </div>
 
           <div className="space-y-1">
-            <Label>Max Context Length</Label>
+            <Label>{t("maxContextLength")}</Label>
 
             <Input
               type="number"

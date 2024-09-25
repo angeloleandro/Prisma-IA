@@ -13,6 +13,9 @@ import { Tabs, TabsList, TabsTrigger } from "../ui/tabs"
 import { ModelIcon } from "./model-icon"
 import { ModelOption } from "./model-option"
 
+// Importação da ordem personalizada
+import { CUSTOM_ORDER } from "@/lib/models/llm/llm-list"
+
 interface ModelSelectProps {
   selectedModelId: string
   onSelectModel: (modelId: LLMID) => void
@@ -41,13 +44,25 @@ export const ModelSelect: FC<ModelSelectProps> = ({
     if (isOpen) {
       setTimeout(() => {
         inputRef.current?.focus()
-      }, 100) // FIX: hacky
+      }, 100)
     }
   }, [isOpen])
 
   const handleSelectModel = (modelId: LLMID) => {
     onSelectModel(modelId)
     setIsOpen(false)
+  }
+
+  // Função para obter o nome de exibição personalizado
+  const getDisplayName = (modelName: string) => {
+    switch (modelName) {
+      case "openai/o1-preview":
+        return "o1 - Preview"
+      case "openai/o1-mini":
+        return "o1 - Mini"
+      default:
+        return modelName
+    }
   }
 
   const allModels = [
@@ -64,7 +79,18 @@ export const ModelSelect: FC<ModelSelectProps> = ({
     ...availableOpenRouterModels
   ]
 
-  const groupedModels = allModels.reduce<Record<string, LLM[]>>(
+  // Ordenação dos modelos de acordo com CUSTOM_ORDER
+  const sortedModels = allModels.sort((a, b) => {
+    const indexA = CUSTOM_ORDER.indexOf(a.modelId)
+    const indexB = CUSTOM_ORDER.indexOf(b.modelId)
+    if (indexA === -1 && indexB === -1) return 0
+    if (indexA === -1) return 1
+    if (indexB === -1) return -1
+    return indexA - indexB
+  })
+
+  // Agrupamento dos modelos ordenados por provedor
+  const groupedModels = sortedModels.reduce<Record<string, LLM[]>>(
     (groups, model) => {
       const key = model.provider
       if (!groups[key]) {
@@ -114,7 +140,7 @@ export const ModelSelect: FC<ModelSelectProps> = ({
                     height={26}
                   />
                   <div className="ml-2 flex items-center">
-                    {selectedModel?.modelName}
+                    {getDisplayName(selectedModel?.modelName)}
                   </div>
                 </>
               ) : (
@@ -156,12 +182,11 @@ export const ModelSelect: FC<ModelSelectProps> = ({
               .filter(model => {
                 if (tab === "hosted") return model.provider !== "ollama"
                 if (tab === "local") return model.provider === "ollama"
-                if (tab === "openrouter") return model.provider === "openrouter"
+                return true
               })
               .filter(model =>
                 model.modelName.toLowerCase().includes(search.toLowerCase())
               )
-              .sort((a, b) => a.provider.localeCompare(b.provider))
 
             if (filteredModels.length === 0) return null
 
@@ -174,24 +199,22 @@ export const ModelSelect: FC<ModelSelectProps> = ({
                 </div>
 
                 <div className="mb-4">
-                  {filteredModels.map(model => {
-                    return (
-                      <div
-                        key={model.modelId}
-                        className="flex items-center space-x-1"
-                      >
-                        {selectedModelId === model.modelId && (
-                          <IconCheck className="ml-2" size={32} />
-                        )}
+                  {filteredModels.map(model => (
+                    <div
+                      key={model.modelId}
+                      className="flex items-center space-x-1"
+                    >
+                      {selectedModelId === model.modelId && (
+                        <IconCheck className="ml-2" size={32} />
+                      )}
 
-                        <ModelOption
-                          key={model.modelId}
-                          model={model}
-                          onSelect={() => handleSelectModel(model.modelId)}
-                        />
-                      </div>
-                    )
-                  })}
+                      <ModelOption
+                        key={model.modelId}
+                        model={model}
+                        onSelect={() => handleSelectModel(model.modelId)}
+                      />
+                    </div>
+                  ))}
                 </div>
               </div>
             )

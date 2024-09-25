@@ -13,6 +13,7 @@ import { ChatbotUIContext } from "@/context/context"
 import { deleteWorkspace } from "@/db/workspaces"
 import { Tables } from "@/supabase/types"
 import { FC, useContext, useRef, useState } from "react"
+import { useTranslation } from "react-i18next" // Adicionado
 import { Input } from "../ui/input"
 import { useRouter } from "next/navigation"
 
@@ -25,6 +26,8 @@ export const DeleteWorkspace: FC<DeleteWorkspaceProps> = ({
   workspace,
   onDelete
 }) => {
+  const { t } = useTranslation() // Adicionado
+
   const { setWorkspaces, setSelectedWorkspace } = useContext(ChatbotUIContext)
   const { handleNewChat } = useChatHandler()
   const router = useRouter()
@@ -66,28 +69,30 @@ export const DeleteWorkspace: FC<DeleteWorkspaceProps> = ({
   return (
     <Dialog open={showWorkspaceDialog} onOpenChange={setShowWorkspaceDialog}>
       <DialogTrigger asChild>
-        <Button variant="destructive">Delete</Button>
+        <Button variant="destructive">{t("delete")}</Button>
       </DialogTrigger>
 
       <DialogContent onKeyDown={handleKeyDown}>
         <DialogHeader>
-          <DialogTitle>Delete {workspace.name}</DialogTitle>
+          <DialogTitle>
+            {t("deleteWorkspace", { name: workspace.name })}
+          </DialogTitle>
 
           <DialogDescription className="space-y-1">
-            WARNING: Deleting a workspace will delete all of its data.
+            {t("deleteWorkspaceWarning")}
           </DialogDescription>
         </DialogHeader>
 
         <Input
           className="mt-4"
-          placeholder="Type the name of this workspace to confirm"
+          placeholder={t("deleteWorkspaceConfirmPlaceholder")}
           value={name}
           onChange={e => setName(e.target.value)}
         />
 
         <DialogFooter>
           <Button variant="ghost" onClick={() => setShowWorkspaceDialog(false)}>
-            Cancel
+            {t("cancel")}
           </Button>
 
           <Button
@@ -96,7 +101,7 @@ export const DeleteWorkspace: FC<DeleteWorkspaceProps> = ({
             onClick={handleDeleteWorkspace}
             disabled={name !== workspace.name}
           >
-            Delete
+            {t("delete")}
           </Button>
         </DialogFooter>
       </DialogContent>

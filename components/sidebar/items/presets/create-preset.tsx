@@ -6,6 +6,7 @@ import { ChatbotUIContext } from "@/context/context"
 import { PRESET_NAME_MAX } from "@/db/limits"
 import { TablesInsert } from "@/supabase/types"
 import { FC, useContext, useState } from "react"
+import { useTranslation } from "react-i18next"
 
 interface CreatePresetProps {
   isOpen: boolean
@@ -16,6 +17,7 @@ export const CreatePreset: FC<CreatePresetProps> = ({
   isOpen,
   onOpenChange
 }) => {
+  const { t } = useTranslation()
   const { profile, selectedWorkspace } = useContext(ChatbotUIContext)
 
   const [name, setName] = useState("")
@@ -59,10 +61,10 @@ export const CreatePreset: FC<CreatePresetProps> = ({
       renderInputs={() => (
         <>
           <div className="space-y-1">
-            <Label>Name</Label>
+            <Label>{t("name")}</Label>
 
             <Input
-              placeholder="Preset name..."
+              placeholder={t("presetNamePlaceholder")}
               value={name}
               onChange={e => setName(e.target.value)}
               maxLength={PRESET_NAME_MAX}

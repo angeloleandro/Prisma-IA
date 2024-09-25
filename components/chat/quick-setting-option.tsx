@@ -1,8 +1,9 @@
-import { LLM_LIST } from "@/lib/models/llm/llm-list"
+import { LLM_LIST_EXCLUDE_OPENROUTER } from "@/lib/models/llm/llm-list" // Adicionado
 import { Tables } from "@/supabase/types"
 import { IconCircleCheckFilled, IconRobotFace } from "@tabler/icons-react"
 import Image from "next/image"
 import { FC } from "react"
+import { useTranslation } from "react-i18next" // Adicionado
 import { ModelIcon } from "../models/model-icon"
 import { DropdownMenuItem } from "../ui/dropdown-menu"
 
@@ -21,7 +22,10 @@ export const QuickSettingOption: FC<QuickSettingOptionProps> = ({
   onSelect,
   image
 }) => {
-  const modelDetails = LLM_LIST.find(model => model.modelId === item.model)
+  const { t } = useTranslation() // Adicionado
+  const modelDetails = LLM_LIST_EXCLUDE_OPENROUTER.find(
+    model => model.modelId === item.model
+  ) // Alterado
 
   return (
     <DropdownMenuItem
@@ -41,7 +45,7 @@ export const QuickSettingOption: FC<QuickSettingOptionProps> = ({
             style={{ width: "32px", height: "32px" }}
             className="rounded"
             src={image}
-            alt="Assistant"
+            alt={t("assistantImageAlt")} // Traduzido
             width={32}
             height={32}
           />

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { ChatbotUIContext } from "@/context/context"
 import { useContext, useEffect, useState } from "react"
 
@@ -10,9 +11,11 @@ import { useContext, useEffect, useState } from "react"
  *   - setNewMessageContentToNextUserMessage: Sets the new message content to the next user message in the chat history.
  */
 export const useChatHistoryHandler = () => {
+  const { t } = useTranslation()
+
   const { setUserInput, chatMessages, isGenerating } =
     useContext(ChatbotUIContext)
-  const userRoleString = "user"
+  const userRoleString = t("user")
 
   const [messageHistoryIndex, setMessageHistoryIndex] = useState<number>(
     chatMessages.length

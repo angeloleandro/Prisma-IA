@@ -10,6 +10,18 @@ interface ModelOptionProps {
 }
 
 export const ModelOption: FC<ModelOptionProps> = ({ model, onSelect }) => {
+  // Função para obter o nome de exibição personalizado
+  const getDisplayName = (modelName: string) => {
+    switch (modelName) {
+      case "openai/o1-preview":
+        return "o1 - Preview"
+      case "openai/o1-mini":
+        return "o1 - Mini"
+      default:
+        return modelName
+    }
+  }
+
   return (
     <WithTooltip
       display={
@@ -40,7 +52,9 @@ export const ModelOption: FC<ModelOptionProps> = ({ model, onSelect }) => {
         >
           <div className="flex items-center space-x-2">
             <ModelIcon provider={model.provider} width={28} height={28} />
-            <div className="text-sm font-semibold">{model.modelName}</div>
+            <div className="text-sm font-semibold">
+              {getDisplayName(model.modelName)}
+            </div>
           </div>
         </div>
       }

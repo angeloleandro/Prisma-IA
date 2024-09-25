@@ -2,6 +2,7 @@ import { ChatbotUIContext } from "@/context/context"
 import { Tables } from "@/supabase/types"
 import { ContentType } from "@/types"
 import { FC, useContext } from "react"
+import { useTranslation } from "react-i18next"
 import { SIDEBAR_WIDTH } from "../ui/dashboard"
 import { TabsContent } from "../ui/tabs"
 import { WorkspaceSwitcher } from "../utility/workspace-switcher"
@@ -14,6 +15,7 @@ interface SidebarProps {
 }
 
 export const Sidebar: FC<SidebarProps> = ({ contentType, showSidebar }) => {
+  const { t } = useTranslation()
   const {
     folders,
     chats,
@@ -53,7 +55,6 @@ export const Sidebar: FC<SidebarProps> = ({ contentType, showSidebar }) => {
     <TabsContent
       className="m-0 w-full space-y-2"
       style={{
-        // Sidebar - SidebarSwitcher
         minWidth: showSidebar ? `calc(${SIDEBAR_WIDTH}px - 60px)` : "0px",
         maxWidth: showSidebar ? `calc(${SIDEBAR_WIDTH}px - 60px)` : "0px",
         width: showSidebar ? `calc(${SIDEBAR_WIDTH}px - 60px)` : "0px"
@@ -63,7 +64,6 @@ export const Sidebar: FC<SidebarProps> = ({ contentType, showSidebar }) => {
       <div className="flex h-full flex-col p-3">
         <div className="flex items-center border-b-2 pb-2">
           <WorkspaceSwitcher />
-
           <WorkspaceSettings />
         </div>
 
@@ -71,36 +71,28 @@ export const Sidebar: FC<SidebarProps> = ({ contentType, showSidebar }) => {
           switch (contentType) {
             case "chats":
               return renderSidebarContent("chats", chats, chatFolders)
-
             case "presets":
               return renderSidebarContent("presets", presets, presetFolders)
-
             case "prompts":
               return renderSidebarContent("prompts", prompts, promptFolders)
-
             case "files":
               return renderSidebarContent("files", files, filesFolders)
-
             case "collections":
               return renderSidebarContent(
                 "collections",
                 collections,
                 collectionFolders
               )
-
             case "assistants":
               return renderSidebarContent(
                 "assistants",
                 assistants,
                 assistantFolders
               )
-
             case "tools":
               return renderSidebarContent("tools", tools, toolFolders)
-
             case "models":
               return renderSidebarContent("models", models, modelFolders)
-
             default:
               return null
           }

@@ -4,9 +4,11 @@ import { ChangePassword } from "@/components/utility/change-password"
 import { supabase } from "@/lib/supabase/browser-client"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
+import { useTranslation } from "react-i18next"
 
 export default function ChangePasswordPage() {
   const [loading, setLoading] = useState(true)
+  const { t } = useTranslation()
 
   const router = useRouter()
 

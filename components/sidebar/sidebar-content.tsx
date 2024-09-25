@@ -1,6 +1,7 @@
 import { Tables } from "@/supabase/types"
 import { ContentType, DataListType } from "@/types"
 import { FC, useState } from "react"
+import { useTranslation } from "react-i18next"
 import { SidebarCreateButtons } from "./sidebar-create-buttons"
 import { SidebarDataList } from "./sidebar-data-list"
 import { SidebarSearch } from "./sidebar-search"
@@ -16,6 +17,7 @@ export const SidebarContent: FC<SidebarContentProps> = ({
   data,
   folders
 }) => {
+  const { t } = useTranslation()
   const [searchTerm, setSearchTerm] = useState("")
 
   const filteredData: any = data.filter(item =>
@@ -37,6 +39,7 @@ export const SidebarContent: FC<SidebarContentProps> = ({
           contentType={contentType}
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
+          placeholder={t("searchPlaceholder", { contentType: t(contentType) })}
         />
       </div>
 

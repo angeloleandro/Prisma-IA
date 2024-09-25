@@ -13,6 +13,7 @@ import {
   IconCircleCheckFilled
 } from "@tabler/icons-react"
 import { FC, useContext, useEffect, useRef, useState } from "react"
+import { useTranslation } from "react-i18next"
 
 interface AssistantToolSelectProps {
   selectedAssistantTools: Tables<"tools">[]
@@ -23,6 +24,7 @@ export const AssistantToolSelect: FC<AssistantToolSelectProps> = ({
   selectedAssistantTools,
   onAssistantToolsSelect
 }) => {
+  const { t } = useTranslation()
   const { tools } = useContext(ChatbotUIContext)
 
   const inputRef = useRef<HTMLInputElement>(null)
@@ -64,7 +66,7 @@ export const AssistantToolSelect: FC<AssistantToolSelectProps> = ({
         >
           <div className="flex items-center">
             <div className="ml-2 flex items-center">
-              {selectedAssistantTools.length} tools selected
+              {t("toolsSelected", { count: selectedAssistantTools.length })}
             </div>
           </div>
 
@@ -79,7 +81,7 @@ export const AssistantToolSelect: FC<AssistantToolSelectProps> = ({
       >
         <Input
           ref={inputRef}
-          placeholder="Search tools..."
+          placeholder={t("searchTools")}
           value={search}
           onChange={e => setSearch(e.target.value)}
           onKeyDown={e => e.stopPropagation()}

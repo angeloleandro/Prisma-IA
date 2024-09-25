@@ -2,13 +2,23 @@
 
 import React from "react"
 import { useFormStatus } from "react-dom"
+import { useTranslation } from "react-i18next"
 import { Button, ButtonProps } from "./button"
 
-const SubmitButton = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  (props, ref) => {
-    const { pending } = useFormStatus()
+interface SubmitButtonProps extends ButtonProps {
+  pendingText?: string
+}
 
-    return <Button disabled={pending} ref={ref} {...props} />
+const SubmitButton = React.forwardRef<HTMLButtonElement, SubmitButtonProps>(
+  ({ children, pendingText, ...props }, ref) => {
+    const { pending } = useFormStatus()
+    const { t } = useTranslation()
+
+    return (
+      <Button disabled={pending} ref={ref} {...props}>
+        {pending ? pendingText || t("submitting") : children}
+      </Button>
+    )
   }
 )
 

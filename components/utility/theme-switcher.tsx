@@ -1,17 +1,18 @@
 import { IconMoon, IconSun } from "@tabler/icons-react"
 import { useTheme } from "next-themes"
 import { FC } from "react"
+import { useTranslation } from "react-i18next"
 import { SIDEBAR_ICON_SIZE } from "../sidebar/sidebar-switcher"
 import { Button } from "../ui/button"
 
 interface ThemeSwitcherProps {}
 
 export const ThemeSwitcher: FC<ThemeSwitcherProps> = () => {
+  const { t } = useTranslation()
   const { setTheme, theme } = useTheme()
 
   const handleChange = (theme: "dark" | "light") => {
     localStorage.setItem("theme", theme)
-
     setTheme(theme)
   }
 
@@ -21,6 +22,7 @@ export const ThemeSwitcher: FC<ThemeSwitcherProps> = () => {
       variant="ghost"
       size="icon"
       onClick={() => handleChange(theme === "light" ? "dark" : "light")}
+      aria-label={t("switchTheme")}
     >
       {theme === "dark" ? (
         <IconMoon size={SIDEBAR_ICON_SIZE} />

@@ -151,7 +151,7 @@ export const ChatInput: FC<ChatInputProps> = ({}) => {
       if (item.type.indexOf("image") === 0) {
         if (!imagesAllowed) {
           toast.error(
-            `Images are not supported for this model. Use models like GPT-4 Vision instead.`
+            t("imageNotSupportedError", { model: chatSettings?.model })
           )
           return
         }
@@ -205,7 +205,7 @@ export const ChatInput: FC<ChatInputProps> = ({}) => {
             )}
 
             <div className="text-sm font-bold">
-              Talking to {selectedAssistant.name}
+              {t("talkingTo", { name: selectedAssistant.name })}
             </div>
           </div>
         )}
@@ -223,7 +223,6 @@ export const ChatInput: FC<ChatInputProps> = ({}) => {
             onClick={() => fileInputRef.current?.click()}
           />
 
-          {/* Hidden input to select files from device */}
           <Input
             ref={fileInputRef}
             className="hidden"
@@ -239,10 +238,7 @@ export const ChatInput: FC<ChatInputProps> = ({}) => {
         <TextareaAutosize
           textareaRef={chatInputRef}
           className="ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring text-md flex w-full resize-none rounded-md border-none bg-transparent px-14 py-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
-          placeholder={t(
-            // `Ask anything. Type "@" for assistants, "/" for prompts, "#" for files, and "!" for tools.`
-            `Ask anything. Type @  /  #  !`
-          )}
+          placeholder={t("chatInputPlaceholder")}
           onValueChange={handleInputChange}
           value={userInput}
           minRows={1}

@@ -1,4 +1,5 @@
 import { FC } from "react"
+import { useTranslation } from "react-i18next"
 import {
   Tooltip,
   TooltipContent,
@@ -7,7 +8,7 @@ import {
 } from "./tooltip"
 
 interface WithTooltipProps {
-  display: React.ReactNode
+  display: React.ReactNode | string
   trigger: React.ReactNode
 
   delayDuration?: number
@@ -21,12 +22,16 @@ export const WithTooltip: FC<WithTooltipProps> = ({
   delayDuration = 500,
   side = "right"
 }) => {
+  const { t } = useTranslation()
+
   return (
     <TooltipProvider delayDuration={delayDuration}>
       <Tooltip>
         <TooltipTrigger>{trigger}</TooltipTrigger>
 
-        <TooltipContent side={side}>{display}</TooltipContent>
+        <TooltipContent side={side}>
+          {typeof display === "string" ? t(display) : display}
+        </TooltipContent>
       </Tooltip>
     </TooltipProvider>
   )

@@ -4,6 +4,7 @@ import { createFolder } from "@/db/folders"
 import { ContentType } from "@/types"
 import { IconFolderPlus, IconPlus } from "@tabler/icons-react"
 import { FC, useContext, useState } from "react"
+import { useTranslation } from "react-i18next"
 import { Button } from "../ui/button"
 import { CreateAssistant } from "./items/assistants/create-assistant"
 import { CreateCollection } from "./items/collections/create-collection"
@@ -22,6 +23,7 @@ export const SidebarCreateButtons: FC<SidebarCreateButtonsProps> = ({
   contentType,
   hasData
 }) => {
+  const { t } = useTranslation()
   const { profile, selectedWorkspace, folders, setFolders } =
     useContext(ChatbotUIContext)
   const { handleNewChat } = useChatHandler()
@@ -41,7 +43,7 @@ export const SidebarCreateButtons: FC<SidebarCreateButtonsProps> = ({
     const createdFolder = await createFolder({
       user_id: profile.user_id,
       workspace_id: selectedWorkspace.id,
-      name: "New Folder",
+      name: t("newFolder"),
       description: "",
       type: contentType
     })
@@ -54,44 +56,47 @@ export const SidebarCreateButtons: FC<SidebarCreateButtonsProps> = ({
         return async () => {
           handleNewChat()
         }
-
       case "presets":
         return async () => {
           setIsCreatingPreset(true)
         }
-
       case "prompts":
         return async () => {
           setIsCreatingPrompt(true)
         }
-
       case "files":
         return async () => {
           setIsCreatingFile(true)
         }
-
       case "collections":
         return async () => {
           setIsCreatingCollection(true)
         }
-
       case "assistants":
         return async () => {
           setIsCreatingAssistant(true)
         }
-
       case "tools":
         return async () => {
           setIsCreatingTool(true)
         }
-
       case "models":
         return async () => {
           setIsCreatingModel(true)
         }
-
       default:
         break
+    }
+  }
+
+  const getButtonText = () => {
+    switch (contentType) {
+      case "presets":
+        return t("newPreset")
+      case "tools":
+        return t("newTool")
+      default:
+        return `${t("new")} ${t(contentType.slice(0, -1))}`
     }
   }
 
@@ -99,9 +104,7 @@ export const SidebarCreateButtons: FC<SidebarCreateButtonsProps> = ({
     <div className="flex w-full space-x-2">
       <Button className="flex h-[36px] grow" onClick={getCreateFunction()}>
         <IconPlus className="mr-1" size={20} />
-        New{" "}
-        {contentType.charAt(0).toUpperCase() +
-          contentType.slice(1, contentType.length - 1)}
+        {getButtonText()}
       </Button>
 
       {hasData && (

@@ -5,6 +5,7 @@ import { Tables } from "@/supabase/types"
 import { CollectionFile } from "@/types"
 import { IconBooks } from "@tabler/icons-react"
 import { FC, useState } from "react"
+import { useTranslation } from "react-i18next"
 import { SidebarItem } from "../all/sidebar-display-item"
 import { CollectionFileSelect } from "./collection-file-select"
 
@@ -13,6 +14,7 @@ interface CollectionItemProps {
 }
 
 export const CollectionItem: FC<CollectionItemProps> = ({ collection }) => {
+  const { t } = useTranslation()
   const [name, setName] = useState(collection.name)
   const [isTyping, setIsTyping] = useState(false)
   const [description, setDescription] = useState(collection.description)
@@ -59,7 +61,7 @@ export const CollectionItem: FC<CollectionItemProps> = ({ collection }) => {
         return (
           <>
             <div className="space-y-1">
-              <Label>Files</Label>
+              <Label>{t("files")}</Label>
 
               <CollectionFileSelect
                 selectedCollectionFiles={
@@ -89,10 +91,10 @@ export const CollectionItem: FC<CollectionItemProps> = ({ collection }) => {
             </div>
 
             <div className="space-y-1">
-              <Label>Name</Label>
+              <Label>{t("name")}</Label>
 
               <Input
-                placeholder="Collection name..."
+                placeholder={t("collectionNamePlaceholder")}
                 value={name}
                 onChange={e => setName(e.target.value)}
                 maxLength={COLLECTION_NAME_MAX}
@@ -100,10 +102,10 @@ export const CollectionItem: FC<CollectionItemProps> = ({ collection }) => {
             </div>
 
             <div className="space-y-1">
-              <Label>Description</Label>
+              <Label>{t("description")}</Label>
 
               <Input
-                placeholder="Collection description..."
+                placeholder={t("collectionDescriptionPlaceholder")}
                 value={description}
                 onChange={e => setDescription(e.target.value)}
                 maxLength={COLLECTION_DESCRIPTION_MAX}

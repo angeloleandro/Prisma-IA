@@ -7,6 +7,7 @@ import { ChatbotUIContext } from "@/context/context"
 import { ASSISTANT_DESCRIPTION_MAX, ASSISTANT_NAME_MAX } from "@/db/limits"
 import { Tables, TablesInsert } from "@/supabase/types"
 import { FC, useContext, useEffect, useState } from "react"
+import { useTranslation } from "react-i18next"
 import { AssistantRetrievalSelect } from "./assistant-retrieval-select"
 import { AssistantToolSelect } from "./assistant-tool-select"
 
@@ -19,6 +20,7 @@ export const CreateAssistant: FC<CreateAssistantProps> = ({
   isOpen,
   onOpenChange
 }) => {
+  const { t } = useTranslation()
   const { profile, selectedWorkspace } = useContext(ChatbotUIContext)
 
   const [name, setName] = useState("")
@@ -136,10 +138,10 @@ export const CreateAssistant: FC<CreateAssistantProps> = ({
       renderInputs={() => (
         <>
           <div className="space-y-1">
-            <Label>Name</Label>
+            <Label>{t("name")}</Label>
 
             <Input
-              placeholder="Assistant name..."
+              placeholder={t("assistantNamePlaceholder")}
               value={name}
               onChange={e => setName(e.target.value)}
               maxLength={ASSISTANT_NAME_MAX}
@@ -147,10 +149,10 @@ export const CreateAssistant: FC<CreateAssistantProps> = ({
           </div>
 
           <div className="space-y-1 pt-2">
-            <Label>Description</Label>
+            <Label>{t("description")}</Label>
 
             <Input
-              placeholder="Assistant description..."
+              placeholder={t("assistantDescriptionPlaceholder")}
               value={description}
               onChange={e => setDescription(e.target.value)}
               maxLength={ASSISTANT_DESCRIPTION_MAX}
@@ -159,9 +161,9 @@ export const CreateAssistant: FC<CreateAssistantProps> = ({
 
           <div className="space-y-1 pt-2">
             <Label className="flex space-x-1">
-              <div>Image</div>
+              <div>{t("image")}</div>
 
-              <div className="text-xs">(optional)</div>
+              <div className="text-xs">({t("optional")})</div>
             </Label>
 
             <ImagePicker
@@ -181,7 +183,7 @@ export const CreateAssistant: FC<CreateAssistantProps> = ({
           />
 
           <div className="space-y-1 pt-2">
-            <Label>Files & Collections</Label>
+            <Label>{t("filesAndCollections")}</Label>
 
             <AssistantRetrievalSelect
               selectedAssistantRetrievalItems={selectedAssistantRetrievalItems}
@@ -191,7 +193,7 @@ export const CreateAssistant: FC<CreateAssistantProps> = ({
 
           {checkIfModelIsToolCompatible() ? (
             <div className="space-y-1">
-              <Label>Tools</Label>
+              <Label>{t("tools")}</Label>
 
               <AssistantToolSelect
                 selectedAssistantTools={selectedAssistantToolItems}
@@ -200,7 +202,7 @@ export const CreateAssistant: FC<CreateAssistantProps> = ({
             </div>
           ) : (
             <div className="pt-1 font-semibold">
-              Model is not compatible with tools.
+              {t("modelNotCompatibleWithTools")}
             </div>
           )}
         </>

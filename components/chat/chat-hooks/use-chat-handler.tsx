@@ -21,9 +21,11 @@ import {
   processResponse,
   validateChatSettings
 } from "../chat-helpers"
+import { useTranslation } from "react-i18next"
 
 export const useChatHandler = () => {
   const router = useRouter()
+  const { t } = useTranslation()
 
   const {
     userInput,
@@ -162,7 +164,7 @@ export const useChatHandler = () => {
       //     "gpt-4-1106-preview") as LLMID,
       //   prompt:
       //     selectedWorkspace.default_prompt ||
-      //     "You are a friendly, helpful AI assistant.",
+      //     t("You are a friendly, helpful AI assistant."),
       //   temperature: selectedWorkspace.default_temperature || 0.5,
       //   contextLength: selectedWorkspace.default_context_length || 4096,
       //   includeProfileContext:
@@ -273,7 +275,7 @@ export const useChatHandler = () => {
       let generatedText = ""
 
       if (selectedTools.length > 0) {
-        setToolInUse("Tools")
+        setToolInUse(t("Tools"))
 
         const formattedMessages = await buildFinalMessages(
           payload,
