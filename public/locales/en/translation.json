@@ -210,5 +210,15 @@
   "toolUrlPlaceholder": "Tool url...",
   "webBrowsing": "Web Browsing",
   "imageGeneration": "Image Generation",
-  "codeInterpreter": "Code Interpreter"
+  "codeInterpreter": "Code Interpreter",
+  "searchingFiles": "Searching files...",
+  "usingTool": "Using {{tool}}...",
+  "sourcesCount": "{{count}} Source",
+  "sourcesCount_plural": "{{count}} Sources",
+  "fromFilesCount": "from {{count}} File",
+  "fromFilesCount_plural": "from {{count}} Files",
+  "saveAndSend": "Save & Send",
+  "adjustRetrievalSettings": "Adjust retrieval settings.",
+  "sourceCount": "Source Count",
+  "saveAndClose": "Save & Close"
 }

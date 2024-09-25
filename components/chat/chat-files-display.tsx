@@ -247,7 +247,6 @@ export const ChatFilesDisplay: FC<ChatFilesDisplayProps> = ({}) => {
     )
   )
 }
-
 const RetrievalToggle = ({}) => {
   const { t } = useTranslation()
   const { useRetrieval, setUseRetrieval } = useContext(ChatbotUIContext)

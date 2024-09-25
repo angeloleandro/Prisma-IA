@@ -209,5 +209,15 @@
   "toolUrlPlaceholder": "URL da ferramenta...",
   "webBrowsing": "Navegação Web",
   "imageGeneration": "Geração de Imagem",
-  "codeInterpreter": "Interpretador de Código"
+  "codeInterpreter": "Interpretador de Código",
+  "searchingFiles": "Pesquisando arquivos...",
+  "usingTool": "Usando {{tool}}...",
+  "sourcesCount": "{{count}} Fonte",
+  "sourcesCount_plural": "{{count}} Fontes",
+  "fromFilesCount": "de {{count}} Arquivo",
+  "fromFilesCount_plural": "de {{count}} Arquivos",
+  "saveAndSend": "Salvar e Enviar",
+  "adjustRetrievalSettings": "Ajustar configurações de recuperação.",
+  "sourceCount": "Contagem de Fontes",
+  "saveAndClose": "Salvar e Fechar"
 }

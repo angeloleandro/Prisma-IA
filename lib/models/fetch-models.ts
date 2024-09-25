@@ -53,10 +53,18 @@ export const fetchHostedModels = async (profile: Tables<"profiles">) => {
 }
 
 export const fetchOllamaModels = async () => {
+  const enableOllama = process.env.NEXT_PUBLIC_ENABLE_OLLAMA === "true"
+
+  if (!enableOllama) {
+    // Ollama está desativado via configuração
+    return []
+  }
+
   try {
-    const response = await fetch(
-      process.env.NEXT_PUBLIC_OLLAMA_URL + "/api/tags"
-    )
+    const ollamaUrl =
+      process.env.NEXT_PUBLIC_OLLAMA_URL || "http://localhost:11434"
+
+    const response = await fetch(`${ollamaUrl}/api/tags`)
 
     if (!response.ok) {
       throw new Error(`Ollama server is not responding.`)
@@ -76,6 +84,8 @@ export const fetchOllamaModels = async () => {
     return localModels
   } catch (error) {
     console.warn("Error fetching Ollama models: " + error)
+    toast.error("Error fetching Ollama models: " + error)
+    return []
   }
 }
 
@@ -115,5 +125,6 @@ export const fetchOpenRouterModels = async () => {
   } catch (error) {
     console.error("Error fetching Open Router models: " + error)
     toast.error("Error fetching Open Router models: " + error)
+    return []
   }
 }
