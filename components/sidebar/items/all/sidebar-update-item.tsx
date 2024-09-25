@@ -81,7 +81,7 @@ import { convertBlobToBase64 } from "@/lib/blob-to-b64"
 import { Tables, TablesUpdate } from "@/supabase/types"
 import { CollectionFile, ContentType, DataItemType } from "@/types"
 import { FC, useContext, useEffect, useRef, useState } from "react"
-import profile from "react-syntax-highlighter/dist/esm/languages/hljs/profile"
+import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 import { SidebarDeleteItem } from "./sidebar-delete-item"
 
@@ -102,6 +102,7 @@ export const SidebarUpdateItem: FC<SidebarUpdateItemProps> = ({
   updateState,
   isTyping
 }) => {
+  const { t } = useTranslation()
   const {
     workspaces,
     selectedWorkspace,
@@ -371,10 +372,8 @@ export const SidebarUpdateItem: FC<SidebarUpdateItemProps> = ({
     },
     collections: async (
       collectionId: string,
-      updateState: TablesUpdate<"assistants">
+      updateState: TablesUpdate<"collections">
     ) => {
-      if (!profile) return
-
       const { ...rest } = updateState
 
       const filesToAdd = selectedCollectionFiles.filter(
@@ -384,10 +383,11 @@ export const SidebarUpdateItem: FC<SidebarUpdateItemProps> = ({
           )
       )
 
-      const filesToRemove = startingCollectionFiles.filter(startingFile =>
-        selectedCollectionFiles.some(
-          selectedFile => selectedFile.id === startingFile.id
-        )
+      const filesToRemove = startingCollectionFiles.filter(
+        startingFile =>
+          !selectedCollectionFiles.some(
+            selectedFile => selectedFile.id === startingFile.id
+          )
       )
 
       for (const file of filesToAdd) {
@@ -588,7 +588,7 @@ export const SidebarUpdateItem: FC<SidebarUpdateItemProps> = ({
       const setStateFunction = stateUpdateFunctions[contentType]
 
       if (!updateFunction || !setStateFunction) return
-      if (isTyping) return // Prevent update while typing
+      if (isTyping) return // Impede atualização durante digitação
 
       const updatedItem = await updateFunction(item.id, updateState)
 
@@ -600,9 +600,13 @@ export const SidebarUpdateItem: FC<SidebarUpdateItemProps> = ({
 
       setIsOpen(false)
 
-      toast.success(`${contentType.slice(0, -1)} updated successfully`)
+      toast.success(
+        t("itemUpdatedSuccessfully", { itemType: t(contentType.slice(0, -1)) })
+      )
     } catch (error) {
-      toast.error(`Error updating ${contentType.slice(0, -1)}. ${error}`)
+      toast.error(
+        t("errorUpdatingItem", { itemType: t(contentType.slice(0, -1)), error })
+      )
     }
   }
 
@@ -641,14 +645,14 @@ export const SidebarUpdateItem: FC<SidebarUpdateItemProps> = ({
         <div className="grow overflow-auto">
           <SheetHeader>
             <SheetTitle className="text-2xl font-bold">
-              Edit {contentType.slice(0, -1)}
+              {t("edit")} {t(contentType.slice(0, -1))}
             </SheetTitle>
           </SheetHeader>
 
           <div className="mt-4 space-y-3">
             {workspaces.length > 1 && (
               <div className="space-y-1">
-                <Label>Assigned Workspaces</Label>
+                <Label>{t("assignedWorkspaces")}</Label>
 
                 <AssignWorkspaces
                   selectedWorkspaces={selectedWorkspaces}
@@ -666,11 +670,11 @@ export const SidebarUpdateItem: FC<SidebarUpdateItemProps> = ({
 
           <div className="flex grow justify-end space-x-2">
             <Button variant="outline" onClick={() => setIsOpen(false)}>
-              Cancel
+              {t("cancel")}
             </Button>
 
             <Button ref={buttonRef} onClick={handleUpdate}>
-              Save
+              {t("save")}
             </Button>
           </div>
         </SheetFooter>

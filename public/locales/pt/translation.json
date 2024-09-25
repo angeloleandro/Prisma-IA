@@ -198,5 +198,12 @@
   "customHeaders": "Cabeçalhos Personalizados",
   "schema": "Esquema",
   "schemaPlaceholder": "{\n  \"openapi\": \"3.1.0\",\n  \"info\": {\n    \"title\": \"Obter dados meteorológicos\",\n    \"description\": \"Recupera dados meteorológicos atuais para uma localização.\",\n    \"version\": \"v1.0.0\"\n  },\n  \"servers\": [\n    {\n      \"url\": \"https://weather.example.com\"\n    }\n  ],\n  \"paths\": {\n    \"/location\": {\n      \"get\": {\n        \"description\": \"Obter temperatura para uma localização específica\",\n        \"operationId\": \"GetCurrentWeather\",\n        \"parameters\": [\n          {\n            \"name\": \"location\",\n            \"in\": \"query\",\n            \"description\": \"A cidade e o estado para obter o clima\",\n            \"required\": true,\n            \"schema\": {\n              \"type\": \"string\"\n            }\n          }\n        ],\n        \"deprecated\": false\n      }\n    }\n  },\n  \"components\": {\n    \"schemas\": {}\n  }\n}",
-  "invalidJSONFormat": "Formato JSON inválido"  
+  "invalidJSONFormat": "Formato JSON inválido",
+  "deleteConfirmation": "Tem certeza que deseja excluir {{name}}?",
+  "assistantUpdatedSuccessfully": "Assistente atualizado com sucesso",
+  "edit": "Editar",
+  "assignedWorkspaces": "Espaços de Trabalho Atribuídos",
+  "itemUpdatedSuccessfully": "{{itemType}} atualizado com sucesso",
+  "errorUpdatingItem": "Erro ao atualizar {{itemType}}. {{error}}"
+ 
 }
