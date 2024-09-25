@@ -28,6 +28,7 @@ import { Tables, TablesInsert } from "@/supabase/types"
 import { ContentType } from "@/types"
 import { FC, useContext, useRef, useState } from "react"
 import { toast } from "sonner"
+import { useTranslation } from "react-i18next"
 
 interface SidebarCreateItemProps {
   isOpen: boolean
@@ -215,6 +216,20 @@ export const SidebarCreateItem: FC<SidebarCreateItemProps> = ({
     }
   }
 
+  const { t } = useTranslation()
+
+  const getCreateTitle = (type: string) => {
+    const singularType = type.slice(0, -1)
+    switch (singularType) {
+      case "preset":
+        return t("newPreset")
+      case "tool":
+        return t("newTool")
+      default:
+        return `${t("new")} ${t(singularType)}`
+    }
+  }
+
   return (
     <Sheet open={isOpen} onOpenChange={onOpenChange}>
       <SheetContent
@@ -225,8 +240,7 @@ export const SidebarCreateItem: FC<SidebarCreateItemProps> = ({
         <div className="grow overflow-auto">
           <SheetHeader>
             <SheetTitle className="text-2xl font-bold">
-              Create{" "}
-              {contentType.charAt(0).toUpperCase() + contentType.slice(1, -1)}
+              {getCreateTitle(contentType)}
             </SheetTitle>
           </SheetHeader>
 
@@ -240,11 +254,11 @@ export const SidebarCreateItem: FC<SidebarCreateItemProps> = ({
               variant="outline"
               onClick={() => onOpenChange(false)}
             >
-              Cancel
+              {t("cancel")}
             </Button>
 
             <Button disabled={creating} ref={buttonRef} onClick={handleCreate}>
-              {creating ? "Creating..." : "Create"}
+              {creating ? t("submitting") : t("save")}
             </Button>
           </div>
         </SheetFooter>
