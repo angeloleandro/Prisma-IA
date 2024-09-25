@@ -1,4 +1,4 @@
-import { FC } from "react"
+import { FC, useMemo } from "react"
 
 interface PrismaIASVGProps {
   theme: "dark" | "light"
@@ -6,10 +6,13 @@ interface PrismaIASVGProps {
 }
 
 export const PrismaIASVG: FC<PrismaIASVGProps> = ({ theme, scale = 1 }) => {
-  const darkMode = theme === "dark"
-  const primaryColor = darkMode ? "#E0E0E0" : "#000000"
-  const secondaryColor = darkMode ? "#757779" : "#757779"
-  const tertiaryColor = darkMode ? "#323236" : "#323236"
+  const colors = useMemo(() => {
+    return {
+      primary: theme === "dark" ? "#E0E0E0" : "#000000",
+      secondary: "#757779",
+      tertiary: "#323236"
+    }
+  }, [theme])
 
   return (
     <svg
@@ -20,11 +23,11 @@ export const PrismaIASVG: FC<PrismaIASVGProps> = ({ theme, scale = 1 }) => {
       xmlns="http://www.w3.org/2000/svg"
     >
       <g>
-        <polygon points="256,34.2 256,337 0,404.3" fill={tertiaryColor} />
-        <polygon points="512,404.3 256,337 256,34.2" fill={secondaryColor} />
+        <polygon points="256,34.2 256,337 0,404.3" fill={colors.tertiary} />
+        <polygon points="512,404.3 256,337 256,34.2" fill={colors.secondary} />
         <polygon
           points="512,404.3 256,471.5 0,404.3 256,337"
-          fill={primaryColor}
+          fill={colors.primary}
         />
       </g>
     </svg>

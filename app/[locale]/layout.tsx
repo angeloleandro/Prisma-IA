@@ -58,6 +58,10 @@ export const metadata: Metadata = {
       template: APP_TITLE_TEMPLATE
     },
     description: APP_DESCRIPTION
+  },
+  // Adicionando a nova meta tag aqui
+  other: {
+    "mobile-web-app-capable": "yes"
   }
 }
 

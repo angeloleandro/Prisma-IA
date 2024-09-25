@@ -1,4 +1,4 @@
-import { FC } from "react"
+import React, { forwardRef } from "react"
 import { useTranslation } from "react-i18next"
 import {
   Tooltip,
@@ -10,29 +10,28 @@ import {
 interface WithTooltipProps {
   display: React.ReactNode | string
   trigger: React.ReactNode
-
   delayDuration?: number
   side?: "left" | "right" | "top" | "bottom"
 }
 
-export const WithTooltip: FC<WithTooltipProps> = ({
-  display,
-  trigger,
+export const WithTooltip = forwardRef<HTMLDivElement, WithTooltipProps>(
+  ({ display, trigger, delayDuration = 500, side = "right" }, ref) => {
+    const { t } = useTranslation()
 
-  delayDuration = 500,
-  side = "right"
-}) => {
-  const { t } = useTranslation()
+    return (
+      <TooltipProvider delayDuration={delayDuration}>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div ref={ref}>{trigger}</div>
+          </TooltipTrigger>
 
-  return (
-    <TooltipProvider delayDuration={delayDuration}>
-      <Tooltip>
-        <TooltipTrigger>{trigger}</TooltipTrigger>
+          <TooltipContent side={side}>
+            {typeof display === "string" ? t(display) : display}
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    )
+  }
+)
 
-        <TooltipContent side={side}>
-          {typeof display === "string" ? t(display) : display}
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
-  )
-}
+WithTooltip.displayName = "WithTooltip"
