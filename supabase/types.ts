@@ -1393,38 +1393,6 @@ export type Database = {
           },
         ]
       }
-      user_tokens: {
-        Row: {
-          is_pro: boolean
-          next_reset_date: string | null
-          tokens_remaining: number
-          tokens_used: number
-          user_id: string
-        }
-        Insert: {
-          is_pro?: boolean
-          next_reset_date?: string | null
-          tokens_remaining?: number
-          tokens_used?: number
-          user_id: string
-        }
-        Update: {
-          is_pro?: boolean
-          next_reset_date?: string | null
-          tokens_remaining?: number
-          tokens_used?: number
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "user_tokens_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: true
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       workspaces: {
         Row: {
           created_at: string
@@ -1535,16 +1503,6 @@ export type Database = {
           object_path: string
         }
         Returns: Record<string, unknown>
-      }
-      ensure_user_tokens_table: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
-      initialize_user_tokens: {
-        Args: {
-          user_id: string
-        }
-        Returns: undefined
       }
       match_file_items_local: {
         Args: {

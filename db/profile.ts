@@ -8,7 +8,8 @@ export const getProfileByUserId = async (userId: string) => {
     .eq("user_id", userId)
     .single()
 
-  if (!profile) {
+  if (error) {
+    console.error("Error fetching profile:", error)
     throw new Error(error.message)
   }
 

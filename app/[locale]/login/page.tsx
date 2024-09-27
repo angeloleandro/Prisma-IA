@@ -161,6 +161,30 @@ export default async function Login({
     return redirect("/login?message=Check email to reset password")
   }
 
+  const signInWithGoogle = async () => {
+    "use server"
+    const cookieStore = cookies()
+    const supabase = createClient(cookieStore)
+
+    const headersList = headers()
+    const host = headersList.get("host") || "localhost:3000"
+    const protocol = process.env.NODE_ENV === "production" ? "https" : "http"
+    const origin = `${protocol}://${host}`
+
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: `${origin}/auth/callback`
+      }
+    })
+
+    if (error) {
+      return redirect(`/login?message=${error.message}`)
+    }
+
+    return redirect(data.url)
+  }
+
   return (
     <div className="flex w-full flex-1 flex-col justify-center gap-2 px-8 sm:max-w-md">
       <form
@@ -198,6 +222,13 @@ export default async function Login({
           className="border-foreground/20 mb-2 rounded-md border px-4 py-2"
         >
           Inscrever-se
+        </SubmitButton>
+
+        <SubmitButton
+          formAction={signInWithGoogle}
+          className="mb-2 rounded-md border bg-red-600 px-4 py-2 text-white"
+        >
+          Entrar com Google
         </SubmitButton>
 
         <div className="text-muted-foreground mt-1 flex justify-center text-sm">
