@@ -35,6 +35,8 @@ interface GlobalStateProps {
 export const GlobalState: FC<GlobalStateProps> = ({ children }) => {
   const router = useRouter()
 
+  const [isPro, setIsPro] = useState<boolean>(false)
+
   // PROFILE STORE
   const [profile, setProfile] = useState<Tables<"profiles"> | null>(null)
 
@@ -203,6 +205,10 @@ export const GlobalState: FC<GlobalStateProps> = ({ children }) => {
         // PROFILE STORE
         profile,
         setProfile,
+
+        // PRO STATUS
+        isPro,
+        setIsPro,
 
         // ITEMS STORE
         assistants,

@@ -17,6 +17,9 @@ interface ChatbotUIContext {
   profile: Tables<"profiles"> | null
   setProfile: Dispatch<SetStateAction<Tables<"profiles"> | null>>
 
+  isPro: boolean
+  setIsPro: Dispatch<SetStateAction<boolean>>
+
   // ITEMS STORE
   assistants: Tables<"assistants">[]
   setAssistants: Dispatch<SetStateAction<Tables<"assistants">[]>>
@@ -261,5 +264,8 @@ export const ChatbotUIContext = createContext<ChatbotUIContext>({
   selectedTools: [],
   setSelectedTools: () => {},
   toolInUse: "none",
-  setToolInUse: () => {}
+  setToolInUse: () => {},
+
+  isPro: false,
+  setIsPro: () => {}
 })

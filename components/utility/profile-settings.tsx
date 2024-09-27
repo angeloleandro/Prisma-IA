@@ -20,7 +20,7 @@ import {
 } from "@tabler/icons-react"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
-import { FC, useCallback, useContext, useRef, useState } from "react"
+import { FC, useCallback, useContext, useRef, useState, useEffect } from "react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 import { SIDEBAR_ICON_SIZE } from "../sidebar/sidebar-switcher"
@@ -40,12 +40,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs"
 import { TextareaAutosize } from "../ui/textarea-autosize"
 import { WithTooltip } from "../ui/with-tooltip"
 import { ThemeSwitcher } from "./theme-switcher"
+import { loadStripe } from "@stripe/stripe-js"
 
 interface ProfileSettingsProps {}
 
 export const ProfileSettings: FC<ProfileSettingsProps> = ({}) => {
   const { t } = useTranslation()
-  const { profile, setProfile } = useContext(ChatbotUIContext)
+  const { profile, setProfile, isPro, setIsPro } = useContext(ChatbotUIContext)
 
   const router = useRouter()
 
@@ -64,6 +65,12 @@ export const ProfileSettings: FC<ProfileSettingsProps> = ({}) => {
   const [profileInstructions, setProfileInstructions] = useState(
     profile?.profile_context || ""
   )
+
+  useEffect(() => {
+    if (profile) {
+      setIsPro(profile.is_pro || false)
+    }
+  }, [profile, setIsPro])
 
   const handleSignOut = async () => {
     await supabase.auth.signOut()
@@ -89,7 +96,8 @@ export const ProfileSettings: FC<ProfileSettingsProps> = ({}) => {
       username,
       profile_context: profileInstructions,
       image_url: profileImageUrl,
-      image_path: profileImagePath
+      image_path: profileImagePath,
+      is_pro: isPro
     })
 
     setProfile(updatedProfile)
@@ -150,6 +158,35 @@ export const ProfileSettings: FC<ProfileSettingsProps> = ({}) => {
     }
   }
 
+  const handleUpgradeToPro = async () => {
+    if (!profile) {
+      toast.error(t("Profile not found. Please try again."))
+      return
+    }
+
+    try {
+      const response = await fetch("/api/stripe", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ userId: profile.id })
+      })
+
+      const { sessionId } = await response.json()
+
+      const stripe = await loadStripe(
+        process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
+      )
+      if (stripe) {
+        await stripe.redirectToCheckout({ sessionId })
+      }
+    } catch (error) {
+      console.error("Error upgrading to Pro:", error)
+      toast.error(t("Error starting upgrade process. Please try again."))
+    }
+  }
+
   if (!profile) return null
 
   return (
@@ -193,8 +230,9 @@ export const ProfileSettings: FC<ProfileSettingsProps> = ({}) => {
           </SheetHeader>
 
           <Tabs defaultValue="profile">
-            <TabsList className="mt-4 grid w-full grid-cols-1">
+            <TabsList className="mt-4 grid w-full grid-cols-2">
               <TabsTrigger value="profile">{t("Profile")}</TabsTrigger>
+              <TabsTrigger value="account">{t("Account")}</TabsTrigger>
             </TabsList>
 
             <TabsContent className="mt-4 space-y-4" value="profile">
@@ -288,6 +326,28 @@ export const ProfileSettings: FC<ProfileSettingsProps> = ({}) => {
                   used={profileInstructions.length}
                   limit={PROFILE_CONTEXT_MAX}
                 />
+              </div>
+            </TabsContent>
+
+            <TabsContent className="mt-4 space-y-4" value="account">
+              <div className="space-y-4">
+                <div>
+                  <Label>{t("Current Plan")}</Label>
+                  <div className="text-sm font-medium">
+                    {isPro ? t("Pro") : t("Free")}
+                  </div>
+                </div>
+
+                {!isPro && (
+                  <Button className="w-full" onClick={handleUpgradeToPro}>
+                    {t("Upgrade to Pro")}
+                  </Button>
+                )}
+
+                <div>
+                  <Label>{t("Email")}</Label>
+                  <div className="text-sm">{profile?.user_id}</div>
+                </div>
               </div>
             </TabsContent>
           </Tabs>

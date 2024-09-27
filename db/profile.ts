@@ -55,9 +55,11 @@ export const updateProfile = async (
     .single()
 
   if (error) {
+    console.error("Error updating profile:", error)
     throw new Error(error.message)
   }
 
+  console.log("Profile updated successfully:", updatedProfile)
   return updatedProfile
 }
 
