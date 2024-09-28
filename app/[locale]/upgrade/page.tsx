@@ -11,7 +11,7 @@ export default function UpgradePage() {
   const { t } = useTranslation()
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { setIsPro } = useContext(ChatbotUIContext)
+  const { setIsPro, setProfile } = useContext(ChatbotUIContext)
 
   useEffect(() => {
     const success = searchParams.get("success")
@@ -20,13 +20,19 @@ export default function UpgradePage() {
     if (success) {
       toast.success(t("Upgrade successful! You are now a Pro user."))
       setIsPro(true)
-      // Não redirecione imediatamente, dê tempo para o usuário ver a mensagem
+      // Atualizar o perfil no contexto
+      setProfile(prevProfile => {
+        if (prevProfile) {
+          return { ...prevProfile, is_pro: true }
+        }
+        return prevProfile
+      })
       setTimeout(() => router.push("/"), 2000)
     } else if (canceled) {
       toast.error(t("Upgrade canceled. You can try again anytime."))
       setTimeout(() => router.push("/"), 2000)
     }
-  }, [searchParams, router, t, setIsPro])
+  }, [searchParams, router, t, setIsPro, setProfile])
 
   return (
     <div className="flex h-screen items-center justify-center">

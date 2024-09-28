@@ -89,3 +89,8 @@ EXECUTE PROCEDURE prevent_home_field_update();
 CREATE UNIQUE INDEX idx_unique_home_workspace_per_user 
 ON workspaces(user_id) 
 WHERE is_home;
+
+CREATE TRIGGER prevent_home_workspace_deletion
+BEFORE DELETE ON workspaces
+FOR EACH ROW
+EXECUTE PROCEDURE prevent_home_workspace_deletion();

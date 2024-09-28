@@ -18,23 +18,27 @@ export const getAssistantById = async (assistantId: string) => {
 export const getAssistantWorkspacesByWorkspaceId = async (
   workspaceId: string
 ) => {
-  const { data: workspace, error } = await supabase
-    .from("workspaces")
+  const { data: assistantWorkspaces, error } = await supabase
+    .from("assistant_workspaces")
     .select(
       `
-      id,
-      name,
+      workspace_id,
       assistants (*)
     `
     )
-    .eq("id", workspaceId)
-    .single()
+    .eq("workspace_id", workspaceId)
 
-  if (!workspace) {
+  if (error) {
     throw new Error(error.message)
   }
 
-  return workspace
+  if (!assistantWorkspaces || assistantWorkspaces.length === 0) {
+    return { workspace_id: workspaceId, assistants: [] }
+  }
+
+  // Transformar os resultados para o formato esperado
+  const assistants = assistantWorkspaces.map(aw => aw.assistants)
+  return { workspace_id: workspaceId, assistants }
 }
 
 export const getAssistantWorkspacesByAssistantId = async (

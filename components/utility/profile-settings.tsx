@@ -160,7 +160,7 @@ export const ProfileSettings: FC<ProfileSettingsProps> = ({}) => {
 
   const handleUpgradeToPro = async () => {
     if (!profile) {
-      toast.error(t("Profile not found. Please try again."))
+      toast.error(t("Perfil não encontrado. Por favor, tente novamente."))
       return
     }
 
@@ -182,8 +182,12 @@ export const ProfileSettings: FC<ProfileSettingsProps> = ({}) => {
         await stripe.redirectToCheckout({ sessionId })
       }
     } catch (error) {
-      console.error("Error upgrading to Pro:", error)
-      toast.error(t("Error starting upgrade process. Please try again."))
+      console.error("Erro ao atualizar para Pro:", error)
+      toast.error(
+        t(
+          "Erro ao iniciar o processo de atualização. Por favor, tente novamente."
+        )
+      )
     }
   }
 
@@ -346,7 +350,9 @@ export const ProfileSettings: FC<ProfileSettingsProps> = ({}) => {
 
                 <div>
                   <Label>{t("Email")}</Label>
-                  <div className="text-sm">{profile?.user_id}</div>
+                  <div className="text-sm">
+                    {profile.user_id || t("Email not available")}
+                  </div>
                 </div>
               </div>
             </TabsContent>

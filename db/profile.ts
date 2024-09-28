@@ -13,6 +13,7 @@ export const getProfileByUserId = async (userId: string) => {
     throw new Error(error.message)
   }
 
+  console.log("Fetched profile:", profile)
   return profile
 }
 

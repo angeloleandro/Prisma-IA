@@ -2,7 +2,7 @@ import { NextResponse } from "next/server"
 import stripe from "@/lib/stripe"
 import { updateProfile } from "@/db/profile"
 
-export const runtime = "edge"
+export const runtime = "nodejs"
 
 export async function POST(req: Request) {
   const body = await req.text()
@@ -24,26 +24,27 @@ export async function POST(req: Request) {
     )
   }
 
-  // Handle the event
+  console.log("Received event:", event.type)
+
   switch (event.type) {
     case "checkout.session.completed":
       const session = event.data.object as any
       console.log("Checkout session completed:", session)
-      // Atualizar o status do usuário para Pro
-      try {
-        await updateProfile(session.client_reference_id, { is_pro: true })
-        console.log("User updated to Pro:", session.client_reference_id)
-      } catch (error) {
-        console.error("Error updating user to Pro:", error)
+      if (session.client_reference_id) {
+        try {
+          const updatedProfile = await updateProfile(
+            session.client_reference_id,
+            { is_pro: true }
+          )
+          console.log("User updated to Pro:", updatedProfile)
+        } catch (error) {
+          console.error("Error updating user to Pro:", error)
+        }
+      } else {
+        console.error("No client_reference_id found in session")
       }
       break
-    case "customer.subscription.deleted":
-      const subscription = event.data.object as any
-      console.log("Subscription deleted:", subscription)
-      // Implementar lógica para remover o status Pro do usuário
-      break
-    default:
-      console.log(`Unhandled event type ${event.type}`)
+    // Adicione outros casos conforme necessário
   }
 
   return NextResponse.json({ received: true })
