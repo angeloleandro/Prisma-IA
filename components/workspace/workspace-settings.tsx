@@ -81,7 +81,7 @@ export const WorkspaceSettings: FC<WorkspaceSettingsProps> = ({}) => {
   const handleSave = async () => {
     if (!selectedWorkspace) return
 
-    let imagePath = ""
+    let imagePath = selectedWorkspace.image_path
 
     if (selectedImage) {
       imagePath = await uploadWorkspaceImage(selectedWorkspace, selectedImage)
@@ -126,8 +126,8 @@ export const WorkspaceSettings: FC<WorkspaceSettingsProps> = ({}) => {
       defaultChatSettings.prompt &&
       defaultChatSettings.temperature &&
       defaultChatSettings.contextLength &&
-      defaultChatSettings.includeProfileContext &&
-      defaultChatSettings.includeWorkspaceInstructions &&
+      defaultChatSettings.includeProfileContext !== undefined &&
+      defaultChatSettings.includeWorkspaceInstructions !== undefined &&
       defaultChatSettings.embeddingsProvider
     ) {
       setChatSettings({
@@ -156,7 +156,7 @@ export const WorkspaceSettings: FC<WorkspaceSettingsProps> = ({}) => {
       })
     })
 
-    toast.success("Workspace updated!")
+    toast.success(t("workspaceUpdated"))
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {

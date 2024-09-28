@@ -94,7 +94,7 @@ BEGIN
         'Home',
         4096,
         'gpt-4o', -- Updated default model
-        'You are a friendly, helpful AI assistant.',
+        'Você é um assistente de IA amigável e prestativo.',
         0.5,
         'My home workspace.',
         'openai',

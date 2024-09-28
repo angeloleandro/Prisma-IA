@@ -219,5 +219,12 @@
   "saveAndSend": "Salvar e Enviar",
   "adjustRetrievalSettings": "Ajustar configurações de recuperação.",
   "sourceCount": "Contagem de Fontes",
-  "saveAndClose": "Salvar e Fechar"
+  "saveAndClose": "Salvar e Fechar",
+  "workspaceUpdated": "Espaço de trabalho atualizado!",
+  "excluir": "Excluir",
+  "excluirEspacoDeTrabalho": "Excluir {{name}}",
+  "avisoExclusaoEspacoDeTrabalho": "AVISO: Excluir um espaço de trabalho irá excluir todos os seus dados.",
+  "digitarNomeEspacoParaConfirmar": "Digite o nome deste espaço de trabalho para confirmar",
+  "cancelar": "Cancelar"
+
 }

@@ -9,7 +9,7 @@ import {
 import { ChatbotUIContext } from "@/context/context"
 import { createWorkspace } from "@/db/workspaces"
 import useHotkey from "@/lib/hooks/use-hotkey"
-import { IconBuilding, IconHome, IconPlus } from "@tabler/icons-react"
+import { IconBuilding, IconHome, IconPlus, IconSettings } from "@tabler/icons-react"
 import { ChevronsUpDown } from "lucide-react"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
@@ -42,7 +42,6 @@ export const WorkspaceSwitcher: FC<WorkspaceSwitcherProps> = ({}) => {
 
   useEffect(() => {
     if (!selectedWorkspace) return
-
     setValue(selectedWorkspace.id)
   }, [selectedWorkspace])
 
@@ -74,20 +73,18 @@ export const WorkspaceSwitcher: FC<WorkspaceSwitcherProps> = ({}) => {
 
   const getWorkspaceName = (workspaceId: string) => {
     const workspace = workspaces.find(workspace => workspace.id === workspaceId)
+    return workspace ? workspace.name : ""
+  }
 
-    if (!workspace) return
-
-    return workspace.name
+  const truncateWorkspaceName = (name: string, maxLength: number) => {
+    return name.length > maxLength ? name.slice(0, maxLength) + '...' : name
   }
 
   const handleSelect = (workspaceId: string) => {
     const workspace = workspaces.find(workspace => workspace.id === workspaceId)
-
     if (!workspace) return
-
     setSelectedWorkspace(workspace)
     setOpen(false)
-
     return router.push(`/${workspace.id}/chat`)
   }
 
@@ -121,26 +118,31 @@ export const WorkspaceSwitcher: FC<WorkspaceSwitcherProps> = ({}) => {
                   alt={selectedWorkspace.name}
                 />
               ) : (
-                <IconComponent className="mb-0.5 mr-2" size={22} />
+                <IconComponent className="mr-2" size={22} />
               )}
             </div>
           )}
 
-          {getWorkspaceName(value) || t("selectWorkspace")}
+          <span className="truncate max-w-[100px]">
+            {truncateWorkspaceName(getWorkspaceName(value), 10) || t("selectWorkspace")}
+          </span>
         </div>
 
-        <ChevronsUpDown className="ml-2 size-4 shrink-0 opacity-50" />
+        <div className="flex items-center space-x-1 ml-2">
+          <IconSettings size={18} className="opacity-50" />
+          <ChevronsUpDown size={18} className="opacity-50" />
+        </div>
       </PopoverTrigger>
 
       <PopoverContent className="p-2">
         <div className="space-y-2">
           <Button
-            className="flex w-full items-center space-x-2"
+            className="flex w-full items-center justify-start space-x-2"
             size="sm"
             onClick={handleCreateWorkspace}
           >
-            <IconPlus />
-            <div className="ml-2">{t("newWorkspace")}</div>
+            <IconPlus size={18} />
+            <span>{t("newWorkspace")}</span>
           </Button>
 
           <Input
@@ -167,20 +169,18 @@ export const WorkspaceSwitcher: FC<WorkspaceSwitcherProps> = ({}) => {
                   >
                     {image ? (
                       <Image
-                        style={{ width: "28px", height: "28px" }}
-                        className="mr-3 rounded"
+                        style={{ width: "22px", height: "22px" }}
+                        className="mr-2 rounded"
                         src={image.url || ""}
-                        width={28}
-                        height={28}
+                        width={22}
+                        height={22}
                         alt={workspace.name}
                       />
                     ) : (
-                      <IconHome className="mr-3" size={28} />
+                      <IconHome className="mr-2" size={22} />
                     )}
 
-                    <div className="text-lg font-semibold">
-                      {workspace.name}
-                    </div>
+                    <span className="text-sm font-medium">{workspace.name}</span>
                   </Button>
                 )
               })}
@@ -206,20 +206,18 @@ export const WorkspaceSwitcher: FC<WorkspaceSwitcherProps> = ({}) => {
                   >
                     {image ? (
                       <Image
-                        style={{ width: "28px", height: "28px" }}
-                        className="mr-3 rounded"
+                        style={{ width: "22px", height: "22px" }}
+                        className="mr-2 rounded"
                         src={image.url || ""}
-                        width={28}
-                        height={28}
+                        width={22}
+                        height={22}
                         alt={workspace.name}
                       />
                     ) : (
-                      <IconBuilding className="mr-3" size={28} />
+                      <IconBuilding className="mr-2" size={22} />
                     )}
 
-                    <div className="text-lg font-semibold">
-                      {workspace.name}
-                    </div>
+                    <span className="text-sm font-medium">{workspace.name}</span>
                   </Button>
                 )
               })}

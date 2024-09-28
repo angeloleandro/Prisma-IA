@@ -2,7 +2,7 @@ import { ChatbotUIContext } from "@/context/context"
 import { Tables } from "@/supabase/types"
 import { IconChevronDown, IconCircleCheckFilled } from "@tabler/icons-react"
 import { FC, useContext, useEffect, useRef, useState } from "react"
-import { useTranslation } from "react-i18next" // Adicionado
+import { useTranslation } from "react-i18next"
 import { Button } from "../ui/button"
 import {
   DropdownMenu,
@@ -21,7 +21,7 @@ export const AssignWorkspaces: FC<AssignWorkspaces> = ({
   selectedWorkspaces,
   onSelectWorkspace
 }) => {
-  const { t } = useTranslation() // Adicionado
+  const { t } = useTranslation()
   const { workspaces } = useContext(ChatbotUIContext)
 
   const inputRef = useRef<HTMLInputElement>(null)
@@ -136,7 +136,7 @@ const WorkspaceItem: FC<WorkspaceItemProps> = ({
   selected,
   onSelect
 }) => {
-  const { t } = useTranslation() // Adicionado
+  const { t } = useTranslation()
 
   const handleSelect = () => {
     if (selected && selectedWorkspaces.length === 1) {

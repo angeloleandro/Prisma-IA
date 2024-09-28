@@ -51,7 +51,7 @@ SECURITY DEFINER
 AS $$
 DECLARE
   project_url TEXT := 'https://dvsefpqgigsayqcjgolu.supabase.co';
-  service_role_key TEXT := 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR2c2VmcHFnaWdzYXlxY2pnb2x1Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTcyNjY2MTA0MywiZXhwIjoyMDQyMjM3MDQzfQ.OdRI8A1P43P9sXuGx9Yz0d0OvNoeaVcxC-0wdE7AuGo'; -- full access needed for http request to storage
+  service_role_key TEXT := current_setting('SUPABASE_SERVICE_ROLE_KEY'); -- Usando variável de ambiente
   url TEXT := project_url || '/storage/v1/object/' || bucket || '/' || object;
 BEGIN
   SELECT
