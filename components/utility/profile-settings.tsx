@@ -75,7 +75,9 @@ export const ProfileSettings: FC<ProfileSettingsProps> = ({}) => {
 
   const fetchUserEmail = useCallback(async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser()
+      const {
+        data: { user }
+      } = await supabase.auth.getUser()
       if (user && user.email) {
         setUserEmail(user.email)
       } else {
@@ -110,7 +112,10 @@ export const ProfileSettings: FC<ProfileSettingsProps> = ({}) => {
       let profileImagePath = ""
 
       if (profileImageFile) {
-        const { path, url } = await uploadProfileImage(profile, profileImageFile)
+        const { path, url } = await uploadProfileImage(
+          profile,
+          profileImageFile
+        )
         profileImageUrl = url ?? profileImageUrl
         profileImagePath = path
       }
@@ -227,11 +232,7 @@ export const ProfileSettings: FC<ProfileSettingsProps> = ({}) => {
       }
     } catch (error) {
       console.error("Error upgrading to Pro:", error)
-      toast.error(
-        t(
-          "Error starting the upgrade process. Please try again."
-        )
-      )
+      toast.error(t("Error starting the upgrade process. Please try again."))
     }
   }
 

@@ -16,9 +16,12 @@ export async function POST(req: Request) {
 
     const cookieStore = cookies()
     const supabase = createClient(cookieStore)
-    
-    const { data: { user }, error: userError } = await supabase.auth.getUser()
-    
+
+    const {
+      data: { user },
+      error: userError
+    } = await supabase.auth.getUser()
+
     if (userError || !user) {
       console.error("Error fetching user:", userError)
       return NextResponse.json(
@@ -28,10 +31,7 @@ export async function POST(req: Request) {
     }
 
     if (user.id !== userId) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 403 }
-      )
+      return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
     }
 
     const priceId = process.env.NEXT_PUBLIC_STRIPE_PRO_PLAN_PRICE_ID

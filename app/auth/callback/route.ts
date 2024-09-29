@@ -18,12 +18,14 @@ export async function GET(request: Request) {
     } catch (error) {
       console.error("Error exchanging code for session:", error)
       // Aqui você pode redirecionar para uma página de erro
-      return NextResponse.redirect(requestUrl.origin + "/error?message=auth_error")
+      return NextResponse.redirect(
+        requestUrl.origin + "/error?message=auth_error"
+      )
     }
   }
 
   // Garanta que 'next' é uma rota válida para evitar redirecionamentos maliciosos
-  const validRoutes = ["/dashboard", "/profile", "/settings"]; // adicione todas as rotas válidas
+  const validRoutes = ["/dashboard", "/profile", "/settings"] // adicione todas as rotas válidas
   if (next && validRoutes.includes(next)) {
     return NextResponse.redirect(requestUrl.origin + next)
   } else {

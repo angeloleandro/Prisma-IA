@@ -4,8 +4,8 @@ import { updateProfile } from "@/db/profile"
 
 export const config = {
   api: {
-    bodyParser: false,
-  },
+    bodyParser: false
+  }
 }
 
 export const runtime = "nodejs"
@@ -54,10 +54,10 @@ export async function POST(req: Request) {
         // Aqui você pode querer registrar este erro de alguma forma
         // já que isso não deveria acontecer em condições normais
       }
-      break;
-    
+      break
+
     case "customer.subscription.deleted":
-      const subscription = event.data.object as any;
+      const subscription = event.data.object as any
       if (subscription.client_reference_id) {
         try {
           const updatedProfile = await updateProfile(
@@ -71,7 +71,7 @@ export async function POST(req: Request) {
       } else {
         console.error("No client_reference_id found in subscription")
       }
-      break;
+      break
 
     // Adicione outros casos conforme necessário
   }
