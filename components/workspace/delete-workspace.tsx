@@ -68,7 +68,9 @@ export const DeleteWorkspace: FC<DeleteWorkspaceProps> = ({
 
       <DialogContent onKeyDown={handleKeyDown}>
         <DialogHeader>
-          <DialogTitle>{t("excluirEspacoDeTrabalho", { name: workspace.name })}</DialogTitle>
+          <DialogTitle>
+            {t("excluirEspacoDeTrabalho", { name: workspace.name })}
+          </DialogTitle>
           <DialogDescription className="space-y-1">
             {t("avisoExclusaoEspacoDeTrabalho")}
           </DialogDescription>

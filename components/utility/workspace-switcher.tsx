@@ -9,7 +9,12 @@ import {
 import { ChatbotUIContext } from "@/context/context"
 import { createWorkspace } from "@/db/workspaces"
 import useHotkey from "@/lib/hooks/use-hotkey"
-import { IconBuilding, IconHome, IconPlus, IconSettings } from "@tabler/icons-react"
+import {
+  IconBuilding,
+  IconHome,
+  IconPlus,
+  IconSettings
+} from "@tabler/icons-react"
 import { ChevronsUpDown } from "lucide-react"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
@@ -77,7 +82,7 @@ export const WorkspaceSwitcher: FC<WorkspaceSwitcherProps> = ({}) => {
   }
 
   const truncateWorkspaceName = (name: string, maxLength: number) => {
-    return name.length > maxLength ? name.slice(0, maxLength) + '...' : name
+    return name.length > maxLength ? name.slice(0, maxLength) + "..." : name
   }
 
   const handleSelect = (workspaceId: string) => {
@@ -123,12 +128,13 @@ export const WorkspaceSwitcher: FC<WorkspaceSwitcherProps> = ({}) => {
             </div>
           )}
 
-          <span className="truncate max-w-[100px]">
-            {truncateWorkspaceName(getWorkspaceName(value), 10) || t("selectWorkspace")}
+          <span className="max-w-[100px] truncate">
+            {truncateWorkspaceName(getWorkspaceName(value), 10) ||
+              t("selectWorkspace")}
           </span>
         </div>
 
-        <div className="flex items-center space-x-1 ml-2">
+        <div className="ml-2 flex items-center space-x-1">
           <IconSettings size={18} className="opacity-50" />
           <ChevronsUpDown size={18} className="opacity-50" />
         </div>
@@ -180,7 +186,9 @@ export const WorkspaceSwitcher: FC<WorkspaceSwitcherProps> = ({}) => {
                       <IconHome className="mr-2" size={22} />
                     )}
 
-                    <span className="text-sm font-medium">{workspace.name}</span>
+                    <span className="text-sm font-medium">
+                      {workspace.name}
+                    </span>
                   </Button>
                 )
               })}
@@ -217,7 +225,9 @@ export const WorkspaceSwitcher: FC<WorkspaceSwitcherProps> = ({}) => {
                       <IconBuilding className="mr-2" size={22} />
                     )}
 
-                    <span className="text-sm font-medium">{workspace.name}</span>
+                    <span className="text-sm font-medium">
+                      {workspace.name}
+                    </span>
                   </Button>
                 )
               })}

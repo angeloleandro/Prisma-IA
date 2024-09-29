@@ -64,8 +64,8 @@ export const updateWorkspace = async (
   workspaceId: string,
   workspace: TablesUpdate<"workspaces">
 ) => {
-  console.log("Updating workspace:", workspaceId, workspace);
-  
+  console.log("Updating workspace:", workspaceId, workspace)
+
   const { data: updatedWorkspace, error } = await supabase
     .from("workspaces")
     .update(workspace)
@@ -74,12 +74,12 @@ export const updateWorkspace = async (
     .single()
 
   if (error) {
-    console.error("Error updating workspace:", error);
-    throw new Error(`Failed to update workspace: ${error.message}`);
+    console.error("Error updating workspace:", error)
+    throw new Error(`Failed to update workspace: ${error.message}`)
   }
 
-  console.log("Updated workspace:", updatedWorkspace);
-  return updatedWorkspace;
+  console.log("Updated workspace:", updatedWorkspace)
+  return updatedWorkspace
 }
 
 export const deleteWorkspace = async (workspaceId: string) => {

@@ -53,6 +53,7 @@ export const ProfileSettings: FC<ProfileSettingsProps> = ({}) => {
   const buttonRef = useRef<HTMLButtonElement>(null)
 
   const [isOpen, setIsOpen] = useState(false)
+  const [userEmail, setUserEmail] = useState<string | null>(null)
 
   const [displayName, setDisplayName] = useState(profile?.display_name || "")
   const [username, setUsername] = useState(profile?.username || "")
@@ -72,38 +73,66 @@ export const ProfileSettings: FC<ProfileSettingsProps> = ({}) => {
     }
   }, [profile, setIsPro])
 
+  const fetchUserEmail = useCallback(async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user && user.email) {
+        setUserEmail(user.email)
+      } else {
+        console.error("User or user email not found")
+        toast.error(t("Failed to fetch user email"))
+      }
+    } catch (error) {
+      console.error("Error fetching user email:", error)
+      toast.error(t("Failed to fetch user email"))
+    }
+  }, [t])
+
+  useEffect(() => {
+    fetchUserEmail()
+  }, [fetchUserEmail])
+
   const handleSignOut = async () => {
-    await supabase.auth.signOut()
-    router.push("/login")
-    router.refresh()
-    return
+    try {
+      await supabase.auth.signOut()
+      router.push("/login")
+      router.refresh()
+    } catch (error) {
+      console.error("Error signing out:", error)
+      toast.error(t("Failed to sign out"))
+    }
   }
 
   const handleSave = async () => {
     if (!profile) return
-    let profileImageUrl = profile.image_url
-    let profileImagePath = ""
+    try {
+      let profileImageUrl = profile.image_url
+      let profileImagePath = ""
 
-    if (profileImageFile) {
-      const { path, url } = await uploadProfileImage(profile, profileImageFile)
-      profileImageUrl = url ?? profileImageUrl
-      profileImagePath = path
+      if (profileImageFile) {
+        const { path, url } = await uploadProfileImage(profile, profileImageFile)
+        profileImageUrl = url ?? profileImageUrl
+        profileImagePath = path
+      }
+
+      const updatedProfile = await updateProfile(profile.id, {
+        ...profile,
+        display_name: displayName,
+        username,
+        profile_context: profileInstructions,
+        image_url: profileImageUrl,
+        image_path: profileImagePath,
+        is_pro: isPro
+      })
+
+      setProfile(updatedProfile)
+
+      toast.success(t("Profile updated!"))
+      setIsOpen(false)
+    } catch (error) {
+      console.error("Error updating profile:", error)
+      toast.error(t("Failed to update profile"))
     }
-
-    const updatedProfile = await updateProfile(profile.id, {
-      ...profile,
-      display_name: displayName,
-      username,
-      profile_context: profileInstructions,
-      image_url: profileImageUrl,
-      image_path: profileImagePath,
-      is_pro: isPro
-    })
-
-    setProfile(updatedProfile)
-
-    toast.success(t("Profile updated!"))
-    setIsOpen(false)
   }
 
   const checkUsernameAvailability = useCallback(
@@ -133,23 +162,32 @@ export const ProfileSettings: FC<ProfileSettingsProps> = ({}) => {
 
       setLoadingUsername(true)
 
-      const response = await fetch(`/api/username/available`, {
-        method: "POST",
-        body: JSON.stringify({ username })
-      })
+      try {
+        const response = await fetch(`/api/username/available`, {
+          method: "POST",
+          body: JSON.stringify({ username })
+        })
 
-      const data = await response.json()
-      const isAvailable = data.isAvailable
+        if (!response.ok) {
+          throw new Error("Failed to check username availability")
+        }
 
-      setUsernameAvailable(isAvailable)
+        const data = await response.json()
+        const isAvailable = data.isAvailable
 
-      if (username === profile?.username) {
-        setUsernameAvailable(true)
+        setUsernameAvailable(isAvailable)
+
+        if (username === profile?.username) {
+          setUsernameAvailable(true)
+        }
+      } catch (error) {
+        console.error("Error checking username availability:", error)
+        toast.error(t("Failed to check username availability"))
+      } finally {
+        setLoadingUsername(false)
       }
-
-      setLoadingUsername(false)
     }, 500),
-    []
+    [profile, t]
   )
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
@@ -160,7 +198,7 @@ export const ProfileSettings: FC<ProfileSettingsProps> = ({}) => {
 
   const handleUpgradeToPro = async () => {
     if (!profile) {
-      toast.error(t("Perfil não encontrado. Por favor, tente novamente."))
+      toast.error(t("Profile not found. Please try again."))
       return
     }
 
@@ -173,6 +211,10 @@ export const ProfileSettings: FC<ProfileSettingsProps> = ({}) => {
         body: JSON.stringify({ userId: profile.id })
       })
 
+      if (!response.ok) {
+        throw new Error("Failed to create Stripe session")
+      }
+
       const { sessionId } = await response.json()
 
       const stripe = await loadStripe(
@@ -180,12 +222,14 @@ export const ProfileSettings: FC<ProfileSettingsProps> = ({}) => {
       )
       if (stripe) {
         await stripe.redirectToCheckout({ sessionId })
+      } else {
+        throw new Error("Failed to load Stripe")
       }
     } catch (error) {
-      console.error("Erro ao atualizar para Pro:", error)
+      console.error("Error upgrading to Pro:", error)
       toast.error(
         t(
-          "Erro ao iniciar o processo de atualização. Por favor, tente novamente."
+          "Error starting the upgrade process. Please try again."
         )
       )
     }
@@ -351,7 +395,7 @@ export const ProfileSettings: FC<ProfileSettingsProps> = ({}) => {
                 <div>
                   <Label>{t("Email")}</Label>
                   <div className="text-sm">
-                    {profile.user_id || t("Email not available")}
+                    {userEmail || t("Email not available")}
                   </div>
                 </div>
               </div>
