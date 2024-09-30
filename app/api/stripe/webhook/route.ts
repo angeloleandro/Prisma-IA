@@ -80,6 +80,14 @@ export async function POST(req: Request) {
             session.client_reference_id
           )
 
+          if (!updatedProfile) {
+            console.error("Failed to upgrade user to Pro")
+            return NextResponse.json(
+              { error: "Failed to upgrade user to Pro" },
+              { status: 500 }
+            )
+          }
+
           console.log(
             "User successfully upgraded to Pro:",
             JSON.stringify(updatedProfile, null, 2)

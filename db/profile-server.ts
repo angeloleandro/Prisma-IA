@@ -3,12 +3,12 @@ import { cookies } from "next/headers"
 
 export const upgradeToProStatus = async (userId: string) => {
   const supabase = createClient(cookies())
-
+  
   const { data: updatedProfile, error } = await supabase
     .from("profiles")
     .update({ is_pro: true })
     .eq("user_id", userId)
-    .select("*")
+    .select()
     .single()
 
   if (error) {
@@ -19,3 +19,5 @@ export const upgradeToProStatus = async (userId: string) => {
   console.log("Profile upgraded to Pro successfully:", updatedProfile)
   return updatedProfile
 }
+
+// Adicione outras funções do lado do servidor aqui, se necessário

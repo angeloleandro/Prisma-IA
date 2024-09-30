@@ -31,6 +31,7 @@ export default function SetupPage() {
   const router = useRouter()
 
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   const [currentStep, setCurrentStep] = useState(1)
 
@@ -40,14 +41,17 @@ export default function SetupPage() {
   const [usernameAvailable, setUsernameAvailable] = useState(true)
 
   useEffect(() => {
-    ;(async () => {
-      const session = (await supabase.auth.getSession()).data.session
+    const initializeSetup = async () => {
+      try {
+        const { data: sessionData, error: sessionError } = await supabase.auth.getSession()
+        if (sessionError) throw sessionError
 
-      if (!session) {
-        return router.push("/login")
-      } else {
+        const session = sessionData.session
+        if (!session) {
+          return router.push("/login")
+        }
+
         const user = session.user
-
         let profile = await getProfileByUserId(user.id)
         if (!profile) {
           profile = await createProfileIfNotExists(user.id)
@@ -65,11 +69,16 @@ export default function SetupPage() {
             return router.push(`/${homeWorkspaceId}/chat`)
           }
         } else {
-          console.error("Failed to create or fetch profile")
-          return router.push("/login")
+          throw new Error("Failed to create or fetch profile")
         }
+      } catch (error) {
+        console.error("Setup initialization error:", error)
+        setError("An error occurred during setup. Please try again.")
+        setLoading(false)
       }
-    })()
+    }
+
+    initializeSetup()
   }, [])
 
   const handleShouldProceed = (proceed: boolean) => {
@@ -85,43 +94,49 @@ export default function SetupPage() {
   }
 
   const handleSaveSetupSetting = async () => {
-    const session = (await supabase.auth.getSession()).data.session
-    if (!session) {
-      return router.push("/login")
-    }
+    try {
+      const { data: sessionData, error: sessionError } = await supabase.auth.getSession()
+      if (sessionError) throw sessionError
 
-    const user = session.user
-    const profile = await getProfileByUserId(user.id)
-
-    if (profile) {
-      const updateProfilePayload: TablesUpdate<"profiles"> = {
-        ...profile,
-        has_onboarded: true,
-        display_name: displayName,
-        username
+      const session = sessionData.session
+      if (!session) {
+        return router.push("/login")
       }
 
-      const updatedProfile = await updateProfile(
-        profile.id,
-        updateProfilePayload
-      )
-      setProfile(updatedProfile)
-      setIsPro(updatedProfile.is_pro ?? false)
+      const user = session.user
+      const profile = await getProfileByUserId(user.id)
 
-      const workspaces = await getWorkspacesByUserId(profile.user_id)
-      const homeWorkspace = workspaces.find(w => w.is_home)
+      if (profile) {
+        const updateProfilePayload: TablesUpdate<"profiles"> = {
+          ...profile,
+          has_onboarded: true,
+          display_name: displayName,
+          username
+        }
 
-      if (homeWorkspace) {
-        setSelectedWorkspace(homeWorkspace)
-        setWorkspaces(workspaces)
-        return router.push(`/${homeWorkspace.id}/chat`)
+        const updatedProfile = await updateProfile(
+          profile.id,
+          updateProfilePayload
+        )
+        setProfile(updatedProfile)
+        setIsPro(updatedProfile.is_pro ?? false)
+
+        const workspaces = await getWorkspacesByUserId(profile.user_id)
+        const homeWorkspace = workspaces.find(w => w.is_home)
+
+        if (homeWorkspace) {
+          setSelectedWorkspace(homeWorkspace)
+          setWorkspaces(workspaces)
+          return router.push(`/${homeWorkspace.id}/chat`)
+        } else {
+          throw new Error("No home workspace found")
+        }
       } else {
-        console.error("No home workspace found")
-        return router.push("/")
+        throw new Error("Profile not found")
       }
-    } else {
-      console.error("Profile not found")
-      return router.push("/login")
+    } catch (error) {
+      console.error("Error saving setup settings:", error)
+      setError("An error occurred while saving your settings. Please try again.")
     }
   }
 
@@ -171,7 +186,11 @@ export default function SetupPage() {
   }
 
   if (loading) {
-    return null
+    return <div>Loading...</div>
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>
   }
 
   return (

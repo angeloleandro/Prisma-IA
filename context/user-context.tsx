@@ -13,13 +13,15 @@ type UserContextType = {
   isPro: boolean
   setIsPro: (value: boolean) => void
   refreshProStatus: () => Promise<void>
+  updateProStatus: (isPro: boolean) => Promise<void>
 }
 
 const UserContext = createContext<UserContextType>({
   user: null,
   isPro: false,
   setIsPro: () => {},
-  refreshProStatus: async () => {}
+  refreshProStatus: async () => {},
+  updateProStatus: async () => {}
 })
 
 type UserProviderProps = {
@@ -32,13 +34,35 @@ export function UserProvider({ children }: UserProviderProps) {
 
   const refreshProStatus = async () => {
     if (user) {
-      const { data: profile } = await supabase
+      const { data: profile, error } = await supabase
         .from("profiles")
         .select("is_pro")
         .eq("id", user.id)
         .single()
 
+      if (error) {
+        console.error("Error fetching pro status:", error)
+        return
+      }
+
       setIsPro(profile?.is_pro || false)
+    }
+  }
+
+  const updateProStatus = async (newProStatus: boolean) => {
+    if (user) {
+      const { data, error } = await supabase
+        .from("profiles")
+        .update({ is_pro: newProStatus })
+        .eq("id", user.id)
+        .select()
+
+      if (error) {
+        console.error("Error updating pro status:", error)
+        return
+      }
+
+      setIsPro(newProStatus)
     }
   }
 
@@ -60,7 +84,7 @@ export function UserProvider({ children }: UserProviderProps) {
   }, [])
 
   return (
-    <UserContext.Provider value={{ user, isPro, setIsPro, refreshProStatus }}>
+    <UserContext.Provider value={{ user, isPro, setIsPro, refreshProStatus, updateProStatus }}>
       {children}
     </UserContext.Provider>
   )
