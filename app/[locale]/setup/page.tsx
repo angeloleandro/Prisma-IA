@@ -1,7 +1,7 @@
 "use client"
 
 import { ChatbotUIContext } from "@/context/context"
-import { getProfileByUserId, updateProfile } from "@/db/profile"
+import { getProfileByUserId, updateProfile, createProfileIfNotExists } from "@/db/profile"
 import {
   getHomeWorkspaceByUserId,
   getWorkspacesByUserId
@@ -44,18 +44,25 @@ export default function SetupPage() {
       } else {
         const user = session.user
 
-        const profile = await getProfileByUserId(user.id)
-        setProfile(profile)
-        setUsername(profile.username)
-        setIsPro(profile.is_pro ?? false) // Set the Pro status
+        let profile = await getProfileByUserId(user.id)
+        if (!profile) {
+          profile = await createProfileIfNotExists(user.id)
+        }
 
-        if (!profile.has_onboarded) {
-          setLoading(false)
+        if (profile) {
+          setProfile(profile)
+          setUsername(profile.username || "")
+          setIsPro(profile.is_pro ?? false)
+
+          if (!profile.has_onboarded) {
+            setLoading(false)
+          } else {
+            const homeWorkspaceId = await getHomeWorkspaceByUserId(user.id)
+            return router.push(`/${homeWorkspaceId}/chat`)
+          }
         } else {
-          const homeWorkspaceId = await getHomeWorkspaceByUserId(
-            session.user.id
-          )
-          return router.push(`/${homeWorkspaceId}/chat`)
+          console.error("Failed to create or fetch profile")
+          return router.push("/login")
         }
       }
     })()
@@ -82,25 +89,33 @@ export default function SetupPage() {
     const user = session.user
     const profile = await getProfileByUserId(user.id)
 
-    const updateProfilePayload: TablesUpdate<"profiles"> = {
-      ...profile,
-      has_onboarded: true,
-      display_name: displayName,
-      username
+    if (profile) {
+      const updateProfilePayload: TablesUpdate<"profiles"> = {
+        ...profile,
+        has_onboarded: true,
+        display_name: displayName,
+        username
+      }
+
+      const updatedProfile = await updateProfile(profile.id, updateProfilePayload)
+      setProfile(updatedProfile)
+      setIsPro(updatedProfile.is_pro ?? false)
+
+      const workspaces = await getWorkspacesByUserId(profile.user_id)
+      const homeWorkspace = workspaces.find(w => w.is_home)
+
+      if (homeWorkspace) {
+        setSelectedWorkspace(homeWorkspace)
+        setWorkspaces(workspaces)
+        return router.push(`/${homeWorkspace.id}/chat`)
+      } else {
+        console.error("No home workspace found")
+        return router.push("/")
+      }
+    } else {
+      console.error("Profile not found")
+      return router.push("/login")
     }
-
-    const updatedProfile = await updateProfile(profile.id, updateProfilePayload)
-    setProfile(updatedProfile)
-    setIsPro(updatedProfile.is_pro ?? false) // Update the Pro status
-
-    const workspaces = await getWorkspacesByUserId(profile.user_id)
-    const homeWorkspace = workspaces.find(w => w.is_home)
-
-    // There will always be a home workspace
-    setSelectedWorkspace(homeWorkspace!)
-    setWorkspaces(workspaces)
-
-    return router.push(`/${homeWorkspace?.id}/chat`)
   }
 
   const renderStep = (stepNum: number) => {

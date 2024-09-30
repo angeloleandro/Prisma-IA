@@ -6,24 +6,35 @@ import { useState, useContext, useEffect, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { ChatbotUIContext } from "@/context/context"
+import { getProfileByUserId, createProfileIfNotExists } from "@/db/profile"
+import { supabase } from "@/lib/supabase/browser-client"
+import { loadStripe } from '@stripe/stripe-js'
 
 export default function UpgradePage() {
   const { t } = useTranslation()
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
-  const { profile, isPro, checkProStatus, updateProStatus } =
-    useContext(ChatbotUIContext)
+  const { profile, isPro, checkProStatus, updateProStatus } = useContext(ChatbotUIContext)
 
   const fetchProStatus = useCallback(async () => {
     try {
-      await checkProStatus()
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        let userProfile = await getProfileByUserId(user.id)
+        if (!userProfile) {
+          userProfile = await createProfileIfNotExists(user.id)
+        }
+        if (userProfile) {
+          await updateProStatus(userProfile.is_pro || false)
+        }
+      }
     } catch (error) {
       console.error("Erro ao verificar o status Pro:", error)
       toast.error(
         t("Erro ao verificar o status da conta. Por favor, tente novamente.")
       )
     }
-  }, [checkProStatus, t])
+  }, [updateProStatus, t])
 
   useEffect(() => {
     fetchProStatus()
@@ -32,37 +43,33 @@ export default function UpgradePage() {
   const handleUpgrade = async () => {
     setIsLoading(true)
     try {
-      if (!profile || !profile.id) {
-        throw new Error("Perfil de usuário não encontrado")
+      const stripe = await loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
+      
+      if (!stripe) {
+        throw new Error("Stripe failed to initialize")
       }
 
-      const response = await fetch("/api/stripe", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ userId: profile.id })
+      const { data: { user } } = await supabase.auth.getUser()
+      
+      if (!user) {
+        throw new Error("User not authenticated")
+      }
+
+      const { error } = await stripe.redirectToCheckout({
+        mode: 'subscription',
+        lineItems: [{ price: process.env.NEXT_PUBLIC_STRIPE_PRO_PLAN_PRICE_ID!, quantity: 1 }],
+        successUrl: `${window.location.origin}/upgrade/success`,
+        cancelUrl: `${window.location.origin}/upgrade/failed`,
+        clientReferenceId: user.id,
+        customerEmail: user.email,
       })
 
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || "Falha ao criar sessão do Stripe")
-      }
-
-      const { sessionUrl } = await response.json()
-
-      if (sessionUrl) {
-        window.location.href = sessionUrl
-      } else {
-        throw new Error("URL da sessão não retornada")
+      if (error) {
+        throw error
       }
     } catch (error) {
       console.error("Erro ao atualizar para Pro:", error)
-      toast.error(
-        t(
-          "Erro ao iniciar o processo de atualização. Por favor, tente novamente."
-        )
-      )
+      toast.error(t("Erro ao iniciar o processo de atualização. Por favor, tente novamente."))
     } finally {
       setIsLoading(false)
     }

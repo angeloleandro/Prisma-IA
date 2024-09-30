@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import stripe from "@/lib/stripe"
 import { createClient } from "@/lib/supabase/server"
 import { cookies } from "next/headers"
+import { getProfileByUserId, createProfileIfNotExists } from "@/db/profile"
 
 export const dynamic = "force-dynamic"
 export const runtime = "nodejs"
@@ -26,25 +27,24 @@ export async function POST(req: Request) {
 
     console.log("Authenticated user:", user.id)
 
-    // Verificar se o usuário já é pro
-    const { data: profile, error: profileError } = await supabase
-      .from("profiles")
-      .select("is_pro")
-      .eq("id", user.id)
-      .single()
+    try {
+      let profile = await getProfileByUserId(user.id)
+      if (!profile) {
+        profile = await createProfileIfNotExists(user.id)
+      }
+      console.log("Fetched or created profile:", profile)
 
-    if (profileError) {
-      console.error("Error fetching profile:", profileError)
+      if (profile && profile.is_pro) {
+        return NextResponse.json(
+          { message: "User is already a Pro member" },
+          { status: 200 }
+        )
+      }
+    } catch (profileError) {
+      console.error("Error fetching or creating profile:", profileError)
       return NextResponse.json(
-        { error: "Failed to fetch user profile" },
+        { error: "Failed to fetch or create user profile" },
         { status: 500 }
-      )
-    }
-
-    if (profile && profile.is_pro) {
-      return NextResponse.json(
-        { error: "User is already a Pro member" },
-        { status: 400 }
       )
     }
 
@@ -65,7 +65,7 @@ export async function POST(req: Request) {
         }
       ],
       mode: "subscription",
-      success_url: `${baseUrl}/upgrade/success`,
+      success_url: `${baseUrl}/upgrade/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${baseUrl}/upgrade/failed`,
       client_reference_id: user.id,
       customer_email: user.email

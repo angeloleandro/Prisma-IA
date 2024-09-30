@@ -12,12 +12,14 @@ type UserContextType = {
   user: User | null
   isPro: boolean
   setIsPro: (value: boolean) => void
+  refreshProStatus: () => Promise<void>
 }
 
 const UserContext = createContext<UserContextType>({
   user: null,
   isPro: false,
-  setIsPro: () => {}
+  setIsPro: () => {},
+  refreshProStatus: async () => {}
 })
 
 type UserProviderProps = {
@@ -28,18 +30,24 @@ export function UserProvider({ children }: UserProviderProps) {
   const [user, setUser] = useState<User | null>(null)
   const [isPro, setIsPro] = useState(false)
 
+  const refreshProStatus = async () => {
+    if (user) {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("is_pro")
+        .eq("id", user.id)
+        .single()
+
+      setIsPro(profile?.is_pro || false)
+    }
+  }
+
   useEffect(() => {
     const { data: authListener } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         setUser(session?.user ?? null)
         if (session?.user) {
-          const { data: profile } = await supabase
-            .from("profiles")
-            .select("is_pro")
-            .eq("id", session.user.id)
-            .single()
-
-          setIsPro(profile?.is_pro || false)
+          await refreshProStatus()
         } else {
           setIsPro(false)
         }
@@ -52,7 +60,7 @@ export function UserProvider({ children }: UserProviderProps) {
   }, [])
 
   return (
-    <UserContext.Provider value={{ user, isPro, setIsPro }}>
+    <UserContext.Provider value={{ user, isPro, setIsPro, refreshProStatus }}>
       {children}
     </UserContext.Provider>
   )

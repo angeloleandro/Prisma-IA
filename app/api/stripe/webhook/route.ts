@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { createClient } from "@/lib/supabase/server"
 import { cookies } from "next/headers"
 import Stripe from "stripe"
+import { getProfileByUserId, createProfileIfNotExists, upgradeToProStatus } from "@/db/profile"
 
 export const dynamic = "force-dynamic"
 export const runtime = "nodejs"
@@ -48,53 +49,34 @@ export async function POST(req: Request) {
 
         const supabase = createClient(cookies())
 
-        // Verificar se o usuário já é pro
-        const { data: userData, error: userError } = await supabase
-          .from("profiles")
-          .select("*")
-          .eq("id", session.client_reference_id)
-          .single()
+        try {
+          let profile = await getProfileByUserId(session.client_reference_id)
+          
+          if (!profile) {
+            console.log("No profile found, creating new profile")
+            profile = await createProfileIfNotExists(session.client_reference_id)
+          }
 
-        console.log("Supabase query result:", { userData, userError })
+          console.log("Profile before update:", profile)
 
-        if (userError) {
-          console.error("Error fetching user data:", userError)
+          if (profile.is_pro) {
+            console.log("User is already Pro, skipping update")
+            return NextResponse.json({ message: "User is already Pro" })
+          }
+
+          console.log("Attempting to upgrade user to Pro")
+          const updatedProfile = await upgradeToProStatus(session.client_reference_id)
+
+          console.log("User successfully upgraded to Pro:", updatedProfile)
+
+          return NextResponse.json({ message: "User upgraded to Pro successfully" })
+        } catch (error) {
+          console.error("Error processing pro upgrade:", error)
           return NextResponse.json(
-            { error: "Failed to fetch user data" },
+            { error: "Failed to process pro upgrade" },
             { status: 500 }
           )
         }
-
-        if (!userData) {
-          console.error("No user found with id:", session.client_reference_id)
-          return NextResponse.json({ error: "User not found" }, { status: 404 })
-        }
-
-        console.log("User data before update:", userData)
-
-        if (userData.is_pro) {
-          console.log("User is already Pro, skipping update")
-          return NextResponse.json({ message: "User is already Pro" })
-        }
-
-        console.log("Attempting to update user to Pro")
-        const { data: updateData, error: updateError } = await supabase
-          .from("profiles")
-          .update({ is_pro: true })
-          .eq("id", session.client_reference_id)
-          .select()
-
-        console.log("Update result:", { updateData, updateError })
-
-        if (updateError) {
-          console.error("Error updating user to Pro:", updateError)
-          return NextResponse.json(
-            { error: "Failed to update user to Pro" },
-            { status: 500 }
-          )
-        }
-
-        console.log("User successfully updated to Pro")
       } else {
         console.error("No client_reference_id found in session")
         return NextResponse.json(
