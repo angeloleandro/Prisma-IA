@@ -123,7 +123,7 @@ export const GlobalState: FC<GlobalStateProps> = ({ children }) => {
   const [selectedTools, setSelectedTools] = useState<Tables<"tools">[]>([])
   const [toolInUse, setToolInUse] = useState<string>("none")
 
-    const checkProStatus = useCallback(async () => {
+  const checkProStatus = useCallback(async () => {
     const {
       data: { user }
     } = await supabase.auth.getUser()
@@ -193,7 +193,7 @@ export const GlobalState: FC<GlobalStateProps> = ({ children }) => {
       const user = session.user
 
       let profile = await getProfileByUserId(user.id)
-      
+
       if (!profile) {
         profile = await createProfileIfNotExists(user.id)
       }

@@ -1,7 +1,11 @@
 "use client"
 
 import { ChatbotUIContext } from "@/context/context"
-import { getProfileByUserId, updateProfile, createProfileIfNotExists } from "@/db/profile"
+import {
+  getProfileByUserId,
+  updateProfile,
+  createProfileIfNotExists
+} from "@/db/profile"
 import {
   getHomeWorkspaceByUserId,
   getWorkspacesByUserId
@@ -97,7 +101,10 @@ export default function SetupPage() {
         username
       }
 
-      const updatedProfile = await updateProfile(profile.id, updateProfilePayload)
+      const updatedProfile = await updateProfile(
+        profile.id,
+        updateProfilePayload
+      )
       setProfile(updatedProfile)
       setIsPro(updatedProfile.is_pro ?? false)
 

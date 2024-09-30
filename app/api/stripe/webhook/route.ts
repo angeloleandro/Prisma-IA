@@ -2,7 +2,11 @@ import { NextResponse } from "next/server"
 import { createClient } from "@/lib/supabase/server"
 import { cookies } from "next/headers"
 import Stripe from "stripe"
-import { getProfileByUserId, createProfileIfNotExists, upgradeToProStatus } from "@/db/profile"
+import {
+  getProfileByUserId,
+  createProfileIfNotExists,
+  upgradeToProStatus
+} from "@/db/profile"
 
 export const dynamic = "force-dynamic"
 export const runtime = "nodejs"
@@ -51,10 +55,12 @@ export async function POST(req: Request) {
 
         try {
           let profile = await getProfileByUserId(session.client_reference_id)
-          
+
           if (!profile) {
             console.log("No profile found, creating new profile")
-            profile = await createProfileIfNotExists(session.client_reference_id)
+            profile = await createProfileIfNotExists(
+              session.client_reference_id
+            )
           }
 
           console.log("Profile before update:", profile)
@@ -65,11 +71,15 @@ export async function POST(req: Request) {
           }
 
           console.log("Attempting to upgrade user to Pro")
-          const updatedProfile = await upgradeToProStatus(session.client_reference_id)
+          const updatedProfile = await upgradeToProStatus(
+            session.client_reference_id
+          )
 
           console.log("User successfully upgraded to Pro:", updatedProfile)
 
-          return NextResponse.json({ message: "User upgraded to Pro successfully" })
+          return NextResponse.json({
+            message: "User upgraded to Pro successfully"
+          })
         } catch (error) {
           console.error("Error processing pro upgrade:", error)
           return NextResponse.json(
