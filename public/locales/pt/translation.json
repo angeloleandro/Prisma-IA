@@ -225,6 +225,24 @@
   "excluirEspacoDeTrabalho": "Excluir {{name}}",
   "avisoExclusaoEspacoDeTrabalho": "AVISO: Excluir um espaço de trabalho irá excluir todos os seus dados.",
   "digitarNomeEspacoParaConfirmar": "Digite o nome deste espaço de trabalho para confirmar",
-  "cancelar": "Cancelar"
+  "cancelar": "Cancelar",
+  "Selecione seu plano": "Selecione seu plano",
+  "Gratuito": "Gratuito",
+  "/mês": "/mês",
+  "Modelo de IA básico para teste": "Modelo de IA básico para teste",
+  "Ferramentas de modelos liberadas para IA básica de teste": "Ferramentas de modelos liberadas para IA básica de teste",
+  "Permanecer no Gratuito": "Permanecer no Gratuito",
+  "Pro": "Pro",
+  "cobrado mensalmente": "cobrado mensalmente",
+  "Use os modelos mais avançados de IA do Mercado": "Use os modelos mais avançados de IA do Mercado",
+  "Biblioteca de Prompts": "Biblioteca de Prompts",
+  "Configurações de Chat Reutilizáveis": "Configurações de Chat Reutilizáveis",
+  "Assistentes de IA e Ferramentas": "Assistentes de IA e Ferramentas",
+  "Arquivos e Recuperação": "Arquivos e Recuperação",
+  "Espaços de Trabalho": "Espaços de Trabalho",
+  "Mensagens Mais Rápidas": "Mensagens Mais Rápidas",
+  "Processando...": "Processando...",
+  "Atualizar para Pro": "Atualizar para Pro",
+  "Erro ao iniciar o processo de atualização. Por favor, tente novamente.": "Erro ao iniciar o processo de atualização. Por favor, tente novamente."
 
 }

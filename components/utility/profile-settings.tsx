@@ -47,7 +47,6 @@ interface ProfileSettingsProps {}
 export const ProfileSettings: FC<ProfileSettingsProps> = ({}) => {
   const { t } = useTranslation()
   const { profile, setProfile, isPro, setIsPro } = useContext(ChatbotUIContext)
-
   const router = useRouter()
 
   const buttonRef = useRef<HTMLButtonElement>(null)
@@ -201,39 +200,8 @@ export const ProfileSettings: FC<ProfileSettingsProps> = ({}) => {
     }
   }
 
-  const handleUpgradeToPro = async () => {
-    if (!profile) {
-      toast.error(t("Profile not found. Please try again."))
-      return
-    }
-
-    try {
-      const response = await fetch("/api/stripe", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ userId: profile.id })
-      })
-
-      if (!response.ok) {
-        throw new Error("Failed to create Stripe session")
-      }
-
-      const { sessionId } = await response.json()
-
-      const stripe = await loadStripe(
-        process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
-      )
-      if (stripe) {
-        await stripe.redirectToCheckout({ sessionId })
-      } else {
-        throw new Error("Failed to load Stripe")
-      }
-    } catch (error) {
-      console.error("Error upgrading to Pro:", error)
-      toast.error(t("Error starting the upgrade process. Please try again."))
-    }
+  const handleUpgradeToPro = () => {
+    router.push("/upgrade")
   }
 
   if (!profile) return null

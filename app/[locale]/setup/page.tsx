@@ -21,7 +21,7 @@ import {
 export default function SetupPage() {
   const { t } = useTranslation()
 
-  const { profile, setProfile, setWorkspaces, setSelectedWorkspace } =
+  const { profile, setProfile, setWorkspaces, setSelectedWorkspace, setIsPro } =
     useContext(ChatbotUIContext)
 
   const router = useRouter()
@@ -47,6 +47,7 @@ export default function SetupPage() {
         const profile = await getProfileByUserId(user.id)
         setProfile(profile)
         setUsername(profile.username)
+        setIsPro(profile.is_pro ?? false) // Set the Pro status
 
         if (!profile.has_onboarded) {
           setLoading(false)
@@ -90,6 +91,7 @@ export default function SetupPage() {
 
     const updatedProfile = await updateProfile(profile.id, updateProfilePayload)
     setProfile(updatedProfile)
+    setIsPro(updatedProfile.is_pro ?? false) // Update the Pro status
 
     const workspaces = await getWorkspacesByUserId(profile.user_id)
     const homeWorkspace = workspaces.find(w => w.is_home)

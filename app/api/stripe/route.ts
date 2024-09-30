@@ -3,17 +3,11 @@ import stripe from "@/lib/stripe"
 import { createClient } from "@/lib/supabase/server"
 import { cookies } from "next/headers"
 
+export const dynamic = "force-dynamic"
+export const runtime = "nodejs"
+
 export async function POST(req: Request) {
   try {
-    const { userId } = await req.json()
-
-    if (!userId) {
-      return NextResponse.json(
-        { error: "User ID is required" },
-        { status: 400 }
-      )
-    }
-
     const cookieStore = cookies()
     const supabase = createClient(cookieStore)
 
@@ -30,8 +24,28 @@ export async function POST(req: Request) {
       )
     }
 
-    if (user.id !== userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
+    console.log("Authenticated user:", user.id)
+
+    // Verificar se o usuário já é pro
+    const { data: profile, error: profileError } = await supabase
+      .from("profiles")
+      .select("is_pro")
+      .eq("id", user.id)
+      .single()
+
+    if (profileError) {
+      console.error("Error fetching profile:", profileError)
+      return NextResponse.json(
+        { error: "Failed to fetch user profile" },
+        { status: 500 }
+      )
+    }
+
+    if (profile && profile.is_pro) {
+      return NextResponse.json(
+        { error: "User is already a Pro member" },
+        { status: 400 }
+      )
     }
 
     const priceId = process.env.NEXT_PUBLIC_STRIPE_PRO_PLAN_PRICE_ID
@@ -39,8 +53,6 @@ export async function POST(req: Request) {
     if (!priceId) {
       throw new Error("NEXT_PUBLIC_STRIPE_PRO_PLAN_PRICE_ID is not set")
     }
-
-    console.log("Using price ID:", priceId)
 
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"
 
@@ -53,15 +65,20 @@ export async function POST(req: Request) {
         }
       ],
       mode: "subscription",
-      success_url: `${baseUrl}/upgrade?success=true`,
-      cancel_url: `${baseUrl}/upgrade?canceled=true`,
-      client_reference_id: userId,
+      success_url: `${baseUrl}/upgrade/success`,
+      cancel_url: `${baseUrl}/upgrade/failed`,
+      client_reference_id: user.id,
       customer_email: user.email
     })
 
-    return NextResponse.json({ sessionId: session.id })
+    console.log("Stripe session created:", session.id)
+
+    return NextResponse.json({ sessionUrl: session.url })
   } catch (error) {
-    console.error("Error creating Stripe session:", error)
+    console.error(
+      "Error creating Stripe session:",
+      error instanceof Error ? error.message : String(error)
+    )
     return NextResponse.json(
       { error: "Error creating Stripe session" },
       { status: 500 }

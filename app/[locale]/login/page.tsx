@@ -78,6 +78,22 @@ export default async function Login({
       )
     }
 
+    // Atualize o status Pro do usuário após o login
+    const { data: profile, error: profileError } = await supabase
+      .from("profiles")
+      .select("is_pro")
+      .eq("id", data.user.id)
+      .single()
+
+    if (profileError) {
+      console.error("Error fetching profile:", profileError)
+    } else if (profile) {
+      // Aqui você pode atualizar o estado global se necessário
+      // Por exemplo, usando um cookie ou localStorage
+      // Isso depende de como você está gerenciando o estado global na sua aplicação
+      cookieStore.set("isPro", profile.is_pro ? "true" : "false", { path: "/" })
+    }
+
     return redirect(`/${homeWorkspace.id}/chat`)
   }
 

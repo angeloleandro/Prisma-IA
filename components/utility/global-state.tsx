@@ -1,5 +1,3 @@
-// TODO: Separate into multiple contexts, keeping simple for now
-
 "use client"
 
 import { ChatbotUIContext } from "@/context/context"
@@ -26,7 +24,7 @@ import {
 import { AssistantImage } from "@/types/images/assistant-image"
 import { VALID_ENV_KEYS } from "@/types/valid-keys"
 import { useRouter } from "next/navigation"
-import { FC, useEffect, useState } from "react"
+import { FC, useEffect, useState, useCallback } from "react"
 
 interface GlobalStateProps {
   children: React.ReactNode
@@ -125,8 +123,34 @@ export const GlobalState: FC<GlobalStateProps> = ({ children }) => {
   const [selectedTools, setSelectedTools] = useState<Tables<"tools">[]>([])
   const [toolInUse, setToolInUse] = useState<string>("none")
 
+  const checkProStatus = useCallback(async () => {
+    const {
+      data: { user }
+    } = await supabase.auth.getUser()
+    if (user) {
+      const profile = await getProfileByUserId(user.id)
+      if (profile) {
+        setIsPro(profile.is_pro || false)
+      }
+    }
+  }, [])
+
+  const updateProStatus = useCallback(async (newProStatus: boolean) => {
+    const {
+      data: { user }
+    } = await supabase.auth.getUser()
+    if (user) {
+      await supabase
+        .from("profiles")
+        .update({ is_pro: newProStatus })
+        .eq("user_id", user.id)
+
+      setIsPro(newProStatus)
+    }
+  }, [])
+
   useEffect(() => {
-    ;(async () => {
+    const fetchData = async () => {
       const profile = await fetchStartingData()
 
       if (profile) {
@@ -151,8 +175,12 @@ export const GlobalState: FC<GlobalStateProps> = ({ children }) => {
         if (!localModels) return
         setAvailableLocalModels(localModels)
       }
-    })()
-  }, [])
+
+      await checkProStatus()
+    }
+
+    fetchData()
+  }, [checkProStatus])
 
   const fetchStartingData = async () => {
     const session = (await supabase.auth.getSession()).data.session
@@ -164,7 +192,8 @@ export const GlobalState: FC<GlobalStateProps> = ({ children }) => {
       setProfile(profile)
 
       if (!profile.has_onboarded) {
-        return router.push("/setup")
+        router.push("/setup")
+        return null
       }
 
       const workspaces = await getWorkspacesByUserId(user.id)
@@ -197,6 +226,7 @@ export const GlobalState: FC<GlobalStateProps> = ({ children }) => {
 
       return profile
     }
+    return null
   }
 
   return (
@@ -209,6 +239,8 @@ export const GlobalState: FC<GlobalStateProps> = ({ children }) => {
         // PRO STATUS
         isPro,
         setIsPro,
+        checkProStatus,
+        updateProStatus,
 
         // ITEMS STORE
         assistants,
