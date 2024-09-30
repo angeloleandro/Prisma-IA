@@ -86,23 +86,6 @@ export const deleteProfile = async (profileId: string) => {
   return true
 }
 
-export const upgradeToProStatus = async (userId: string) => {
-  const { data: updatedProfile, error } = await supabase
-    .from("profiles")
-    .update({ is_pro: true })
-    .eq("user_id", userId)
-    .select("*")
-    .single()
-
-  if (error) {
-    console.error("Error upgrading to Pro:", error)
-    throw new Error(error.message)
-  }
-
-  console.log("Profile upgraded to Pro successfully:", updatedProfile)
-  return updatedProfile
-}
-
 export const createProfileIfNotExists = async (userId: string) => {
   const existingProfile = await getProfileByUserId(userId)
   if (!existingProfile) {

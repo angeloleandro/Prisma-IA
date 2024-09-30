@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button"
 import { useTranslation } from "react-i18next"
 import { useState, useContext, useEffect } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { toast } from "sonner"
 import { ChatbotUIContext } from "@/context/context"
 import { loadStripe } from "@stripe/stripe-js"
@@ -11,12 +11,19 @@ import { loadStripe } from "@stripe/stripe-js"
 export default function UpgradePage() {
   const { t } = useTranslation()
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [isLoading, setIsLoading] = useState(false)
   const { profile, isPro, checkProStatus } = useContext(ChatbotUIContext)
 
   useEffect(() => {
     checkProStatus()
-  }, [checkProStatus])
+
+    const success = searchParams.get("success")
+    if (success === "true") {
+      toast.success(t("Upgrade concluído com sucesso!"))
+      router.push("/")
+    }
+  }, [checkProStatus, searchParams, router, t])
 
   const handleUpgrade = async () => {
     setIsLoading(true)

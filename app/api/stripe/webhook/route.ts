@@ -1,12 +1,7 @@
 import { NextResponse } from "next/server"
-import { createClient } from "@/lib/supabase/server"
-import { cookies } from "next/headers"
 import Stripe from "stripe"
-import {
-  getProfileByUserId,
-  createProfileIfNotExists,
-  upgradeToProStatus
-} from "@/db/profile"
+import { getProfileByUserId, createProfileIfNotExists } from "@/db/profile"
+import { upgradeToProStatus } from "@/db/profile-server"
 
 export const dynamic = "force-dynamic"
 export const runtime = "nodejs"
@@ -32,18 +27,27 @@ export async function POST(req: Request) {
       )
     }
 
-    const event = stripe.webhooks.constructEvent(
-      body,
-      signature,
-      process.env.STRIPE_WEBHOOK_SECRET!
-    )
+    let event: Stripe.Event
+
+    try {
+      event = stripe.webhooks.constructEvent(
+        body,
+        signature,
+        process.env.STRIPE_WEBHOOK_SECRET!
+      )
+    } catch (err: unknown) {
+      console.error(
+        `Webhook signature verification failed: ${err instanceof Error ? err.message : String(err)}`
+      )
+      return NextResponse.json({ error: "Invalid signature" }, { status: 400 })
+    }
 
     console.log("Event type:", event.type)
 
     if (event.type === "checkout.session.completed") {
       console.log("Processing checkout.session.completed")
       const session = event.data.object as Stripe.Checkout.Session
-      console.log("Session data:", session)
+      console.log("Session data:", JSON.stringify(session, null, 2))
 
       if (session.client_reference_id) {
         console.log(
@@ -51,19 +55,20 @@ export async function POST(req: Request) {
           session.client_reference_id
         )
 
-        const supabase = createClient(cookies())
-
         try {
           let profile = await getProfileByUserId(session.client_reference_id)
+          console.log("Retrieved profile:", JSON.stringify(profile, null, 2))
 
           if (!profile) {
             console.log("No profile found, creating new profile")
             profile = await createProfileIfNotExists(
               session.client_reference_id
             )
+            console.log(
+              "Created new profile:",
+              JSON.stringify(profile, null, 2)
+            )
           }
-
-          console.log("Profile before update:", profile)
 
           if (profile.is_pro) {
             console.log("User is already Pro, skipping update")
@@ -75,7 +80,10 @@ export async function POST(req: Request) {
             session.client_reference_id
           )
 
-          console.log("User successfully upgraded to Pro:", updatedProfile)
+          console.log(
+            "User successfully upgraded to Pro:",
+            JSON.stringify(updatedProfile, null, 2)
+          )
 
           return NextResponse.json({
             message: "User upgraded to Pro successfully"
@@ -94,6 +102,8 @@ export async function POST(req: Request) {
           { status: 400 }
         )
       }
+    } else {
+      console.log("Unhandled event type:", event.type)
     }
 
     return NextResponse.json({ received: true })
