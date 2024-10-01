@@ -1,8 +1,16 @@
-import { generateLocalEmbedding } from "@/lib/generate-local-embedding"
 import { checkApiKey, getServerProfile } from "@/lib/server/server-chat-helpers"
 import { Database } from "@/supabase/types"
 import { createClient } from "@supabase/supabase-js"
 import OpenAI from "openai"
+
+let generateLocalEmbedding: (content: string) => Promise<number[]>
+
+// Importe a função generateLocalEmbedding de forma dinâmica
+if (typeof window === "undefined") {
+  import("@/lib/generate-local-embedding").then(
+    module => (generateLocalEmbedding = module.generateLocalEmbedding)
+  )
+}
 
 export async function POST(request: Request) {
   const json = await request.json()

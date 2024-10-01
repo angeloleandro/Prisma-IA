@@ -1,5 +1,5 @@
 import React from "react"
-import getStripe from "@/lib/stripe"
+import getStripe from "@/lib/stripe-client"
 
 interface CheckoutButtonProps {
   priceId: string
@@ -20,7 +20,15 @@ const CheckoutButton: React.FC<CheckoutButtonProps> = ({ priceId }) => {
 
       const { sessionId } = await response.json()
       const stripe = await getStripe()
-      stripe?.redirectToCheckout({ sessionId })
+
+      if (stripe) {
+        const { error } = await stripe.redirectToCheckout({ sessionId })
+        if (error) {
+          console.error("Stripe redirect error:", error)
+        }
+      } else {
+        console.error("Stripe failed to load")
+      }
     } catch (error) {
       console.error("Error:", error)
     }

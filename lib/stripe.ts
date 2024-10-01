@@ -4,8 +4,15 @@ if (!process.env.STRIPE_SECRET_KEY) {
   throw new Error("STRIPE_SECRET_KEY is not set")
 }
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: "2024-06-20" // Atualizado para a versão mais recente
-})
+let stripeInstance: Stripe | null = null
 
-export default stripe
+const getStripe = (): Stripe => {
+  if (!stripeInstance) {
+    stripeInstance = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+      apiVersion: "2024-06-20" // Atualizado para a versão mais recente
+    })
+  }
+  return stripeInstance as Stripe // Garantindo que sempre retornamos uma instância de Stripe
+}
+
+export default getStripe

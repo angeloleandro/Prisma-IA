@@ -12,6 +12,23 @@ export async function middleware(request: NextRequest) {
 
     const session = await supabase.auth.getSession()
 
+    if (session) {
+      // Verificar status Pro
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("is_pro")
+        .eq("id", session.data.session?.user.id)
+        .single()
+
+      const isPro = profile?.is_pro || false
+
+      // Redirecionar usuários não-Pro tentando acessar recursos Pro
+      const isAccessingProFeature = request.nextUrl.pathname.startsWith('/pro-features')
+      if (isAccessingProFeature && !isPro) {
+        return NextResponse.redirect(new URL('/upgrade', request.url))
+      }
+    }
+
     const redirectToChat = session && request.nextUrl.pathname === "/"
 
     if (redirectToChat) {

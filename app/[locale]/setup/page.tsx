@@ -1,5 +1,6 @@
 "use client"
 
+import { checkSubscriptionStatus } from "@/lib/subscription"
 import { ChatbotUIContext } from "@/context/context"
 import {
   getProfileByUserId,
@@ -125,6 +126,9 @@ export default function SetupPage() {
 
         const workspaces = await getWorkspacesByUserId(profile.user_id)
         const homeWorkspace = workspaces.find(w => w.is_home)
+
+        const isProUser = await checkSubscriptionStatus(profile.user_id)
+        setIsPro(isProUser)
 
         if (homeWorkspace) {
           setSelectedWorkspace(homeWorkspace)
