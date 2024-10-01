@@ -18,9 +18,14 @@ export default function UpgradeFailedPage() {
           "Não se preocupe, nenhuma cobrança foi feita. Por favor, tente novamente ou entre em contato com o suporte se o problema persistir."
         )}
       </p>
-      <Button onClick={() => router.push("/upgrade")}>
-        {t("Tentar Novamente")}
-      </Button>
+      <div className="space-x-4">
+        <Button onClick={() => router.push("/upgrade")}>
+          {t("Tentar Novamente")}
+        </Button>
+        <Button variant="outline" onClick={() => router.push("/")}>
+          {t("Voltar para o início")}
+        </Button>
+      </div>
     </div>
   )
 }

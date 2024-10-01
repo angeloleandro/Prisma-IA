@@ -13,19 +13,11 @@ export default function UpgradePage() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [isLoading, setIsLoading] = useState(false)
-  const { profile, isPro, checkProStatus, updateProStatus } =
-    useContext(ChatbotUIContext)
+  const { profile, isPro, checkProStatus } = useContext(ChatbotUIContext)
 
   useEffect(() => {
     checkProStatus()
-
-    const success = searchParams.get("success")
-    if (success === "true") {
-      updateProStatus(true)
-      toast.success(t("Upgrade concluído com sucesso!"))
-      router.push("/")
-    }
-  }, [checkProStatus, searchParams, router, t, updateProStatus])
+  }, [checkProStatus])
 
   const handleUpgrade = async () => {
     setIsLoading(true)
