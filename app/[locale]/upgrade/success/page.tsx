@@ -37,7 +37,9 @@ export default function UpgradeSuccessPage() {
 
   return (
     <div className="container mx-auto px-4 py-8 text-center">
-      <h1 className="mb-6 text-3xl font-bold">{t("Processando seu upgrade...")}</h1>
+      <h1 className="mb-6 text-3xl font-bold">
+        {t("Processando seu upgrade...")}
+      </h1>
       <p>{t("Por favor, aguarde enquanto confirmamos seu pagamento.")}</p>
     </div>
   )

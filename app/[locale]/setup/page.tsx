@@ -43,7 +43,8 @@ export default function SetupPage() {
   useEffect(() => {
     const initializeSetup = async () => {
       try {
-        const { data: sessionData, error: sessionError } = await supabase.auth.getSession()
+        const { data: sessionData, error: sessionError } =
+          await supabase.auth.getSession()
         if (sessionError) throw sessionError
 
         const session = sessionData.session
@@ -95,7 +96,8 @@ export default function SetupPage() {
 
   const handleSaveSetupSetting = async () => {
     try {
-      const { data: sessionData, error: sessionError } = await supabase.auth.getSession()
+      const { data: sessionData, error: sessionError } =
+        await supabase.auth.getSession()
       if (sessionError) throw sessionError
 
       const session = sessionData.session
@@ -136,7 +138,9 @@ export default function SetupPage() {
       }
     } catch (error) {
       console.error("Error saving setup settings:", error)
-      setError("An error occurred while saving your settings. Please try again.")
+      setError(
+        "An error occurred while saving your settings. Please try again."
+      )
     }
   }
 

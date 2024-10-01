@@ -84,7 +84,9 @@ export function UserProvider({ children }: UserProviderProps) {
   }, [])
 
   return (
-    <UserContext.Provider value={{ user, isPro, setIsPro, refreshProStatus, updateProStatus }}>
+    <UserContext.Provider
+      value={{ user, isPro, setIsPro, refreshProStatus, updateProStatus }}
+    >
       {children}
     </UserContext.Provider>
   )
