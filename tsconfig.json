@@ -1,27 +1,49 @@
 {
   "compilerOptions": {
-    "target": "ESNext",
-    "lib": ["dom", "dom.iterable", "esnext"],
-    "allowJs": true,
-    "skipLibCheck": true,
-    "strict": true,
-    "noEmit": true,
-    "esModuleInterop": true,
-    "module": "esnext",
-    "moduleResolution": "bundler",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "jsx": "preserve",
-    "incremental": true,
+    "target": "ESNext", // Especifica o alvo mais moderno para o JavaScript
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ], // Bibliotecas necessárias
+    "allowJs": true, // Permite usar arquivos .js em seu projeto
+    "skipLibCheck": true, // Ignora verificações de bibliotecas de tipos para acelerar a compilação
+    "strict": true, // Ativa todas as verificações de tipo estritas
+    "noEmit": true, // Evita a emissão de arquivos de saída
+    "esModuleInterop": true, // Para compatibilidade com CommonJS e módulos ES
+    "module": "esnext", // Define o módulo para o ESNext (ideal para o Next.js)
+    "moduleResolution": "bundler", // Suporte à resolução de módulos do bundler (para Next.js)
+    "resolveJsonModule": true, // Permite importações de JSON
+    "isolatedModules": true, // Necessário para o compilador do Next.js
+    "jsx": "preserve", // Preserva o JSX para o Next.js compilar
+    "incremental": true, // Permite compilações incrementais para maior velocidade
+    "baseUrl": ".", // Define a raiz do projeto
+    "paths": {
+      "@/*": [
+        "./*"
+      ] // Atalho para importar a partir da raiz
+    },
+    "forceConsistentCasingInFileNames": true, // Para forçar a consistência em nomes de arquivos (útil para evitar erros de case)
+    "types": [
+      "node",
+      "jest",
+      "next",
+      "react",
+      "react-dom"
+    ], // Adiciona os tipos do Node, Jest e Next.js, React
+    "allowSyntheticDefaultImports": true, // Permite importações padrão de módulos sem um export default
+    "strictNullChecks": true, // Garantir que nulos e indefinidos sejam tratados corretamente
+    "strictFunctionTypes": true, // Forçar a verificação estrita em tipos de funções
+    "noUnusedLocals": true, // Marca variáveis locais não utilizadas como erro
+    "noUnusedParameters": true, // Marca parâmetros não utilizados como erro
+    "noImplicitReturns": true, // Força que todas as funções retornem um valor ou nada
+    "noFallthroughCasesInSwitch": true // Garante que não haja casos de fallthrough nos switches
+    ,
     "plugins": [
       {
         "name": "next"
       }
-    ],
-    "baseUrl": ".",  // Adicionado
-    "paths": {
-      "@/*": ["./*"]
-    }
+    ]
   },
   "include": [
     "next-env.d.ts",
@@ -30,7 +52,11 @@
     ".next/types/**/*.ts",
     "i18nConfig.js"
   ],
-  "exclude": ["node_modules"],
-  "typeRoots": ["./node_modules/@types", "./@types"]
+  "exclude": [
+    "node_modules"
+  ],
+  "typeRoots": [
+    "./node_modules/@types",
+    "./@types"
+  ] // Define onde buscar tipos customizados
 }
-

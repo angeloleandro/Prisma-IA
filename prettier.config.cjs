@@ -7,6 +7,8 @@ module.exports = {
   arrowParens: 'avoid',
   tabWidth: 2,
   trailingComma: 'none',
+  plugins: ['prettier-plugin-tailwindcss'], // Adicionado plugin Tailwind
+  tailwindConfig: './tailwind.config.ts', // Especifica o caminho para o config do Tailwind
   importOrder: [
     '^.+\\.scss$',
     '^.+\\.css$',

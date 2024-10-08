@@ -16,7 +16,7 @@ import { TablesUpdate } from "@/supabase/types"
 import { useRouter } from "next/navigation"
 import { useContext, useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { FinishStep } from "../../../components/setup/finish-step"
+import { Finish } from "../../../components/setup/finish-step" // Atualize a importação aqui
 import { ProfileStep } from "../../../components/setup/profile-step"
 import {
   SETUP_STEP_COUNT,
@@ -185,7 +185,7 @@ export default function SetupPage() {
             showBackButton={true}
             totalSteps={2}
           >
-            <FinishStep displayName={displayName} />
+            <Finish displayName={displayName} />
           </StepContainer>
         )
       default:

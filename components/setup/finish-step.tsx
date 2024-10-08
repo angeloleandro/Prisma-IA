@@ -1,11 +1,11 @@
 import { FC } from "react"
 import { useTranslation } from "react-i18next"
 
-interface FinishStepProps {
+interface FinishProps {
   displayName: string
 }
 
-export const FinishStep: FC<FinishStepProps> = ({ displayName }) => {
+export const Finish: FC<FinishProps> = ({ displayName }) => {
   const { t } = useTranslation()
 
   return (

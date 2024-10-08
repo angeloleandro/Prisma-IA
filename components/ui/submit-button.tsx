@@ -1,27 +1,24 @@
-"use client"
+// components/ui/submit-button.tsx
+import { ButtonHTMLAttributes, forwardRef, ReactNode } from 'react';
 
-import React from "react"
-import { useFormStatus } from "react-dom"
-import { useTranslation } from "react-i18next"
-import { Button, ButtonProps } from "./button"
-
-interface SubmitButtonProps extends ButtonProps {
-  pendingText?: string
+interface SubmitButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  children: ReactNode;
+  formAction?: () => Promise<void>;
 }
 
-const SubmitButton = React.forwardRef<HTMLButtonElement, SubmitButtonProps>(
-  ({ children, pendingText, ...props }, ref) => {
-    const { pending } = useFormStatus()
-    const { t } = useTranslation()
-
+export const SubmitButton = forwardRef<HTMLButtonElement, SubmitButtonProps>(
+  ({ children, formAction, className, ...props }, ref) => {
     return (
-      <Button disabled={pending} ref={ref} {...props}>
-        {pending ? pendingText || t("submitting") : children}
-      </Button>
-    )
+      <button
+        ref={ref}
+        onClick={formAction}
+        className={`rounded-md px-4 py-2 ${className}`}
+        {...props}
+      >
+        {children}
+      </button>
+    );
   }
-)
+);
 
-SubmitButton.displayName = "SubmitButton"
-
-export { SubmitButton }
+SubmitButton.displayName = 'SubmitButton';

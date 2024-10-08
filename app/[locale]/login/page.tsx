@@ -1,68 +1,70 @@
-import { Brand } from "@/components/ui/brand"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { SubmitButton } from "@/components/ui/submit-button"
-import { createClient } from "@/lib/supabase/server"
-import { Database } from "@/supabase/types"
-import { createServerClient } from "@supabase/ssr"
-import { get } from "@vercel/edge-config"
-import { Metadata } from "next"
-import { cookies, headers } from "next/headers"
-import { redirect } from "next/navigation"
+import { Brand } from "@/components/ui/brand";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { SubmitButton } from "@/components/ui/submit-button"; // Mantendo o componente SubmitButton atualizado
+import { createClient } from "@/lib/supabase/server";
+import { Database } from "@/supabase/types";
+import { createServerClient } from "@supabase/ssr";
+import { get } from "@vercel/edge-config";
+import { Metadata } from "next";
+import { cookies, headers } from "next/headers";
+import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
   title: "Entrar"
-}
+};
 
 export default async function Login({
   searchParams
 }: {
   searchParams: { message: string }
 }) {
-  const cookieStore = cookies()
+  const cookieStore = cookies();
   const supabase = createServerClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
         get(name: string) {
-          return cookieStore.get(name)?.value
+          return cookieStore.get(name)?.value;
         }
       }
     }
-  )
-  const session = (await supabase.auth.getSession()).data.session
+  );
+  const session = (await supabase.auth.getSession()).data.session;
 
+  // Se o usuário já está autenticado, redireciona para o workspace home
   if (session) {
     const { data: homeWorkspace, error } = await supabase
       .from("workspaces")
       .select("*")
       .eq("user_id", session.user.id)
       .eq("is_home", true)
-      .single()
+      .single();
 
     if (!homeWorkspace) {
-      throw new Error(error.message)
+      throw new Error(error.message);
     }
 
-    return redirect(`/${homeWorkspace.id}/chat`)
+    return redirect(`/${homeWorkspace.id}/chat`);
   }
 
+  // Função para login
   const signIn = async (formData: FormData) => {
-    "use server"
+    "use server";
 
-    const email = formData.get("email") as string
-    const password = formData.get("password") as string
-    const cookieStore = cookies()
-    const supabase = createClient(cookieStore)
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+    const cookieStore = cookies();
+    const supabase = createClient(cookieStore);
 
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password
-    })
+    });
 
     if (error) {
-      return redirect(`/login?message=${error.message}`)
+      return redirect(`/login?message=${error.message}`);
     }
 
     const { data: homeWorkspace, error: homeWorkspaceError } = await supabase
@@ -70,136 +72,117 @@ export default async function Login({
       .select("*")
       .eq("user_id", data.user.id)
       .eq("is_home", true)
-      .single()
+      .single();
 
     if (!homeWorkspace) {
       throw new Error(
         homeWorkspaceError?.message || "An unexpected error occurred"
-      )
+      );
     }
 
-    // Atualize o status Pro do usuário após o login
-    const { data: profile, error: profileError } = await supabase
-      .from("profiles")
-      .select("is_pro")
-      .eq("id", data.user.id)
-      .single()
+    // Redireciona para o chat após o login
+    return redirect(`/${homeWorkspace.id}/chat`);
+  };
 
-    if (profileError) {
-      console.error("Error fetching profile:", profileError)
-    } else if (profile) {
-      // Aqui você pode atualizar o estado global se necessário
-      // Por exemplo, usando um cookie ou localStorage
-      // Isso depende de como você está gerenciando o estado global na sua aplicação
-      cookieStore.set("isPro", profile.is_pro ? "true" : "false", { path: "/" })
-    }
-
-    return redirect(`/${homeWorkspace.id}/chat`)
-  }
-
-  const getEnvVarOrEdgeConfigValue = async (name: string) => {
-    "use server"
-    if (process.env.EDGE_CONFIG) {
-      return await get<string>(name)
-    }
-
-    return process.env[name]
-  }
-
+  // Função para cadastro
   const signUp = async (formData: FormData) => {
-    "use server"
+    "use server";
 
-    const email = formData.get("email") as string
-    const password = formData.get("password") as string
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
 
     const emailDomainWhitelistPatternsString = await getEnvVarOrEdgeConfigValue(
       "EMAIL_DOMAIN_WHITELIST"
-    )
+    );
     const emailDomainWhitelist = emailDomainWhitelistPatternsString?.trim()
       ? emailDomainWhitelistPatternsString?.split(",")
-      : []
+      : [];
     const emailWhitelistPatternsString =
-      await getEnvVarOrEdgeConfigValue("EMAIL_WHITELIST")
+      await getEnvVarOrEdgeConfigValue("EMAIL_WHITELIST");
     const emailWhitelist = emailWhitelistPatternsString?.trim()
       ? emailWhitelistPatternsString?.split(",")
-      : []
+      : [];
 
-    // If there are whitelist patterns, check if the email is allowed to sign up
     if (emailDomainWhitelist.length > 0 || emailWhitelist.length > 0) {
-      const domainMatch = emailDomainWhitelist?.includes(email.split("@")[1])
-      const emailMatch = emailWhitelist?.includes(email)
+      const domainMatch = emailDomainWhitelist?.includes(email.split("@")[1]);
+      const emailMatch = emailWhitelist?.includes(email);
       if (!domainMatch && !emailMatch) {
         return redirect(
           `/login?message=Email ${email} is not allowed to sign up.`
-        )
+        );
       }
     }
 
-    const cookieStore = cookies()
-    const supabase = createClient(cookieStore)
+    const cookieStore = cookies();
+    const supabase = createClient(cookieStore);
 
     const { error } = await supabase.auth.signUp({
       email,
-      password,
-      options: {
-        // USE IF YOU WANT TO SEND EMAIL VERIFICATION, ALSO CHANGE TOML FILE
-        // emailRedirectTo: `${origin}/auth/callback`
-      }
-    })
+      password
+    });
 
     if (error) {
-      console.error(error)
-      return redirect(`/login?message=${error.message}`)
+      console.error(error);
+      return redirect(`/login?message=${error.message}`);
     }
 
-    return redirect("/setup")
+    // Redireciona para a página de setup após o signup
+    return redirect("/setup");
+  };
 
-    // USE IF YOU WANT TO SEND EMAIL VERIFICATION, ALSO CHANGE TOML FILE
-    // return redirect("/login?message=Check email to continue sign in process")
-  }
+  const getEnvVarOrEdgeConfigValue = async (name: string) => {
+    "use server";
+    if (process.env.EDGE_CONFIG) {
+      return await get<string>(name);
+    }
 
+    return process.env[name];
+  };
+
+  // Função para resetar senha
   const handleResetPassword = async (formData: FormData) => {
-    "use server"
+    "use server";
 
-    const origin = headers().get("origin")
-    const email = formData.get("email") as string
-    const cookieStore = cookies()
-    const supabase = createClient(cookieStore)
+    const origin = headers().get("origin");
+    const email = formData.get("email") as string;
+    const cookieStore = cookies();
+    const supabase = createClient(cookieStore);
 
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${origin}/auth/callback?next=/login/password`
-    })
+    });
 
     if (error) {
-      return redirect(`/login?message=${error.message}`)
+      return redirect(`/login?message=${error.message}`);
     }
 
-    return redirect("/login?message=Check email to reset password")
-  }
+    return redirect("/login?message=Check email to reset password");
+  };
 
+  // Função para login com Google OAuth
   const signInWithGoogle = async () => {
-    "use server"
-    const cookieStore = cookies()
-    const supabase = createClient(cookieStore)
+    "use server";
+    const cookieStore = cookies();
+    const supabase = createClient(cookieStore);
 
-    const headersList = headers()
-    const host = headersList.get("host") || "localhost:3000"
-    const protocol = process.env.NODE_ENV === "production" ? "https" : "http"
-    const origin = `${protocol}://${host}`
+    const headersList = headers();
+    const host = headersList.get("host") || "localhost:3000";
+    const protocol = process.env.NODE_ENV === "production" ? "https" : "http";
+    const origin = `${protocol}://${host}`;
 
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
         redirectTo: `${origin}/auth/callback`
       }
-    })
+    });
 
     if (error) {
-      return redirect(`/login?message=${error.message}`)
+      return redirect(`/login?message=${error.message}`);
     }
 
-    return redirect(data.url)
-  }
+    return redirect(data.url);
+  };
 
   return (
     <div className="flex w-full flex-1 flex-col justify-center gap-2 px-8 sm:max-w-md">
@@ -229,10 +212,12 @@ export default async function Login({
           placeholder="••••••••"
         />
 
+        {/* Botão de login */}
         <SubmitButton className="mb-2 rounded-md bg-blue-700 px-4 py-2 text-white">
           Entrar
         </SubmitButton>
 
+        {/* Botão de signup */}
         <SubmitButton
           formAction={signUp}
           className="border-foreground/20 mb-2 rounded-md border px-4 py-2"
@@ -240,6 +225,7 @@ export default async function Login({
           Inscrever-se
         </SubmitButton>
 
+        {/* Botão para login com Google */}
         <SubmitButton
           formAction={signInWithGoogle}
           className="mb-2 rounded-md border bg-red-600 px-4 py-2 text-white"
@@ -247,6 +233,7 @@ export default async function Login({
           Entrar com Google
         </SubmitButton>
 
+        {/* Esqueceu a senha */}
         <div className="text-muted-foreground mt-1 flex justify-center text-sm">
           <span className="mr-1">Esqueceu sua senha?</span>
           <button
@@ -264,5 +251,5 @@ export default async function Login({
         )}
       </form>
     </div>
-  )
+  );
 }

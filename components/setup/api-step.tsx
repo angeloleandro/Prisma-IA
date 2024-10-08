@@ -4,7 +4,7 @@ import { FC } from "react"
 import { useTranslation } from "react-i18next"
 import { Button } from "../ui/button"
 
-interface APIStepProps {
+interface APIProps {
   openaiAPIKey: string
   openaiOrgID: string
   azureOpenaiAPIKey: string
@@ -37,7 +37,7 @@ interface APIStepProps {
   onGroqAPIKeyChange: (value: string) => void
 }
 
-export const APIStep: FC<APIStepProps> = ({
+export const API: FC<APIProps> = ({
   openaiAPIKey,
   openaiOrgID,
   azureOpenaiAPIKey,

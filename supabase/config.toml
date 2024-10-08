@@ -1,122 +1,113 @@
-# A string used to distinguish different Supabase projects on the same host. Defaults to the
-# working directory name when running `supabase init`.
+# Identificador único para o projeto local
 project_id = "chatbotui"
 
 [api]
-# Port to use for the API URL.
+# Habilitar API para desenvolvimento local
+enabled = true
+# Porta que será utilizada para a API
 port = 54321
-# Schemas to expose in your API. Tables, views and stored procedures in this schema will get API
-# endpoints. public and storage are always included.
+# Esquemas que serão expostos na API local
 schemas = ["public", "storage", "graphql_public"]
-# Extra schemas to add to the search_path of every request. public is always included.
+# Esquemas adicionais no search_path para cada solicitação
 extra_search_path = ["public", "extensions"]
-# The maximum number of rows returns from a view, table, or stored procedure. Limits payload size
-# for accidental or malicious requests.
+# Limite máximo de linhas que podem ser retornadas para evitar grandes payloads
 max_rows = 1000
 
 [db]
-# Port to use for the local database URL.
+# Porta para o banco de dados local
 port = 54322
-# Port used by db diff command to initialise the shadow database.
+# Porta usada pelo comando `db diff` para inicializar o banco de sombra
 shadow_port = 54320
-# The database major version to use. This has to be the same as your remote database's. Run `SHOW
-# server_version;` on the remote database to check.
+# Versão principal do banco de dados, deve ser igual à versão remota
 major_version = 15
 
 [db.pooler]
+# Pool de conexões desativado no ambiente local
 enabled = false
+# Porta utilizada pelo pooler de conexões
 port = 54329
+# Modo do pooler de conexões (sessão ou transação)
 pool_mode = "transaction"
+# Tamanho padrão do pool de conexões
 default_pool_size = 20
+# Número máximo de conexões de clientes
 max_client_conn = 100
 
 [studio]
+# Habilitar o Supabase Studio para desenvolvimento
 enabled = true
-# Port to use for Supabase Studio.
+# Porta utilizada pelo Supabase Studio
 port = 54323
-# External URL of the API server that frontend connects to.
+# URL externa da API local
 api_url = "http://localhost"
 
-# Email testing server. Emails sent with the local dev setup are not actually sent - rather, they
-# are monitored, and you can view the emails that would have been sent from the web interface.
 [inbucket]
+# Habilitar o servidor de testes de email no ambiente local
 enabled = true
-# Port to use for the email testing server web interface.
+# Porta utilizada para o web interface de testes de email
 port = 54324
-# Uncomment to expose additional ports for testing user applications that send emails.
+# Portas opcionais para SMTP e POP3 (comentadas)
 # smtp_port = 54325
 # pop3_port = 54326
 
 [storage]
-# The maximum file size allowed (e.g. "5MB", "500KB").
+# Limite de tamanho de arquivos permitidos no armazenamento local
 file_size_limit = "50MiB"
 
 [auth]
-# The base URL of your website. Used as an allow-list for redirects and for constructing URLs used
-# in emails.
+# URL base do site para autenticação
 site_url = "http://localhost:3000"
-# A list of *exact* URLs that auth providers are permitted to redirect to post authentication.
-additional_redirect_urls = ["https://localhost:3000"]
-# How long tokens are valid for, in seconds. Defaults to 3600 (1 hour), maximum 604,800 (1 week).
+# URLs adicionais permitidas para redirecionamento pós-autenticação
+additional_redirect_urls = ["http://localhost:3000"]
+# Tempo de expiração dos tokens JWT (padrão: 1 semana)
 jwt_expiry = 604800
-# If disabled, the refresh token will never expire.
+# Habilitar rotação de tokens de atualização (refresh tokens)
 enable_refresh_token_rotation = true
-# Allows refresh tokens to be reused after expiry, up to the specified interval in seconds.
-# Requires enable_refresh_token_rotation = true.
+# Intervalo de reutilização de tokens de atualização
 refresh_token_reuse_interval = 10
-# Allow/disallow new user signups to your project.
+# Permitir novos cadastros de usuários
 enable_signup = true
 
 [auth.email]
-# Allow/disallow new user signups via email to your project.
+# Permitir novos cadastros de usuários via email
 enable_signup = true
-# If enabled, a user will be required to confirm any email change on both the old, and new email
-# addresses. If disabled, only the new email is required to confirm.
+# Exigir confirmação de mudança de email nas duas contas (antiga e nova)
 double_confirm_changes = true
-# If enabled, users need to confirm their email address before signing in.
+# Exigir confirmação de email antes de login
 enable_confirmations = false
-
-# Uncomment to customize email template
-# [auth.email.template.invite]
-# subject = "You have been invited"
-# content_path = "./supabase/templates/invite.html"
 
 [auth.sms]
-# Allow/disallow new user signups via SMS to your project.
+# Permitir novos cadastros de usuários via SMS
 enable_signup = true
-# If enabled, users need to confirm their phone number before signing in.
+# Não exigir confirmação de número de telefone antes de login
 enable_confirmations = false
 
-# Configure one of the supported SMS providers: `twilio`, `twilio_verify`, `messagebird`, `textlocal`, `vonage`.
+# Configuração de provedores SMS (exemplo: twilio)
 [auth.sms.twilio]
 enabled = false
 account_sid = ""
 message_service_sid = ""
-# DO NOT commit your Twilio auth token to git. Use environment variable substitution instead:
+# Variável de ambiente para o token de autenticação do Twilio
 auth_token = "env(SUPABASE_AUTH_SMS_TWILIO_AUTH_TOKEN)"
 
-# Use an external OAuth provider. The full list of providers are: `apple`, `azure`, `bitbucket`,
-# `discord`, `facebook`, `github`, `gitlab`, `google`, `keycloak`, `linkedin`, `notion`, `twitch`,
-# `twitter`, `slack`, `spotify`, `workos`, `zoom`.
-[auth.external.apple]
-enabled = false
-client_id = ""
-# DO NOT commit your OAuth provider secret to git. Use environment variable substitution instead:
-secret = "env(SUPABASE_AUTH_EXTERNAL_APPLE_SECRET)"
-# Overrides the default auth redirectUrl.
-redirect_uri = ""
-# Overrides the default auth provider URL. Used to support self-hosted gitlab, single-tenant Azure,
-# or any other third-party OIDC providers.
-url = ""
-
-[analytics]
-enabled = false
-port = 54327
-vector_port = 54328
-# Configure one of the supported backends: `postgres`, `bigquery`
-backend = "postgres"
-
+# Configuração de provedores OAuth externos
 [auth.external.google]
 enabled = true
 client_id = "SEU_GOOGLE_CLIENT_ID"
+# Variável de ambiente para o segredo de autenticação do Google
 secret = "SEU_GOOGLE_CLIENT_SECRET"
+
+[auth.external.github]
+enabled = true
+client_id = "SEU_GITHUB_CLIENT_ID"
+# Variável de ambiente para o segredo de autenticação do GitHub
+secret = "SEU_GITHUB_CLIENT_SECRET"
+redirect_uri = "http://localhost:3000/auth/callback"
+
+[analytics]
+# Habilitar analytics no ambiente local (opcional)
+enabled = false
+port = 54327
+vector_port = 54328
+# Backend de analytics utilizado
+backend = "postgres"
