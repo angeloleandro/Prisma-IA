@@ -58,7 +58,7 @@ export const CommandK: FC<CommandKProps> = ({}) => {
 
               <div className="border-input relative flex min-h-[50px] w-full items-center justify-center rounded-xl border-2">
                 <TextareaAutosize
-                  className="ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring text-md flex w-full resize-none rounded-md border-none bg-transparent px-3 py-2 pr-14 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                  className="placeholder:text-muted-foreground focus-visible:ring-ring text-md flex w-full resize-none rounded-md border-none bg-transparent px-3 py-2 pr-14 ring-offset-background focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
                   placeholder="create a prompt for writing sql code"
                   value={value}
                   onValueChange={setValue}

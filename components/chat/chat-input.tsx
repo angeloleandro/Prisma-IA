@@ -237,7 +237,7 @@ export const ChatInput: FC<ChatInputProps> = ({}) => {
 
         <TextareaAutosize
           textareaRef={chatInputRef}
-          className="ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring text-md flex w-full resize-none rounded-md border-none bg-transparent px-14 py-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+          className="placeholder:text-muted-foreground focus-visible:ring-ring text-md flex w-full resize-none rounded-md border-none bg-transparent px-14 py-2 ring-offset-background focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
           placeholder={t("chatInputPlaceholder")}
           onValueChange={handleInputChange}
           value={userInput}
@@ -252,7 +252,7 @@ export const ChatInput: FC<ChatInputProps> = ({}) => {
         <div className="absolute bottom-[14px] right-3 cursor-pointer hover:opacity-50">
           {isGenerating ? (
             <IconPlayerStopFilled
-              className="hover:bg-background animate-pulse rounded bg-transparent p-1"
+              className="animate-pulse rounded bg-transparent p-1 hover:bg-background"
               onClick={handleStopMessage}
               size={30}
             />

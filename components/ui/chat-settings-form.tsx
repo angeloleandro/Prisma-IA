@@ -56,7 +56,7 @@ export const ChatSettingsForm: FC<ChatSettingsFormProps> = ({
         <Label>{t("prompt")}</Label>
 
         <TextareaAutosize
-          className="bg-background border-input border-2"
+          className="border-input border-2 bg-background"
           placeholder={t("promptPlaceholder")}
           onValueChange={prompt => {
             onChangeChatSettings({ ...chatSettings, prompt })
