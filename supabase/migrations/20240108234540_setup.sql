@@ -50,7 +50,7 @@ LANGUAGE 'plpgsql'
 SECURITY DEFINER
 AS $$
 DECLARE
-  project_url TEXT := 'https://dvsefpqgigsayqcjgolu.supabase.co';
+  project_url TEXT := 'https://ohxqoesfxwffbopcpkzw.supabase.co';
   service_role_key TEXT := current_setting('SUPABASE_SERVICE_ROLE_KEY'); -- Usando variável de ambiente
   url TEXT := project_url || '/storage/v1/object/' || bucket || '/' || object;
 BEGIN

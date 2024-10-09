@@ -17,13 +17,6 @@ interface ChatbotUIContext {
   profile: Tables<"profiles"> | null
   setProfile: Dispatch<SetStateAction<Tables<"profiles"> | null>>
 
-  // PRO STATUS STORE
-  isPro: boolean
-  setIsPro: Dispatch<SetStateAction<boolean>>
-  checkProStatus: () => Promise<void>
-  updateProStatus: (isPro: boolean) => Promise<void>
-  refreshProStatus: () => Promise<void>
-
   // ITEMS STORE
   assistants: Tables<"assistants">[]
   setAssistants: Dispatch<SetStateAction<Tables<"assistants">[]>>
@@ -149,13 +142,6 @@ export const ChatbotUIContext = createContext<ChatbotUIContext>({
   // PROFILE STORE
   profile: null,
   setProfile: () => {},
-
-  // PRO STATUS STORE
-  isPro: false,
-  setIsPro: () => {},
-  checkProStatus: async () => {},
-  updateProStatus: async () => {},
-  refreshProStatus: async () => {},
 
   // ITEMS STORE
   assistants: [],

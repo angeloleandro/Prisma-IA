@@ -189,7 +189,7 @@ export const ChatInput: FC<ChatInputProps> = ({}) => {
           ))}
 
         {selectedAssistant && (
-          <div className="border-primary mx-auto flex w-fit items-center space-x-2 rounded-lg border p-1.5">
+          <div className="mx-auto flex w-fit items-center space-x-2 rounded-lg border border-primary p-1.5">
             {selectedAssistant.image_path && (
               <Image
                 className="rounded"
@@ -211,7 +211,7 @@ export const ChatInput: FC<ChatInputProps> = ({}) => {
         )}
       </div>
 
-      <div className="border-input relative mt-3 flex min-h-[60px] w-full items-center justify-center rounded-xl border-2">
+      <div className="relative mt-3 flex min-h-[60px] w-full items-center justify-center rounded-xl border-2 border-input">
         <div className="absolute bottom-[76px] left-0 max-h-[300px] w-full overflow-auto rounded-xl dark:border-none">
           <ChatCommandInput />
         </div>
@@ -237,7 +237,7 @@ export const ChatInput: FC<ChatInputProps> = ({}) => {
 
         <TextareaAutosize
           textareaRef={chatInputRef}
-          className="placeholder:text-muted-foreground focus-visible:ring-ring text-md flex w-full resize-none rounded-md border-none bg-transparent px-14 py-2 ring-offset-background focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+          className="text-md flex w-full resize-none rounded-md border-none bg-transparent px-14 py-2 ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
           placeholder={t("chatInputPlaceholder")}
           onValueChange={handleInputChange}
           value={userInput}
@@ -259,7 +259,7 @@ export const ChatInput: FC<ChatInputProps> = ({}) => {
           ) : (
             <IconSend
               className={cn(
-                "bg-primary text-secondary rounded p-1",
+                "rounded bg-primary p-1 text-secondary",
                 !userInput && "cursor-not-allowed opacity-50"
               )}
               onClick={() => {

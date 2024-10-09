@@ -1,60 +1,67 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from "@/lib/supabase/middleware"; // Corrija este caminho conforme necessário
-// import { i18nRouter } from "next-i18n-router"; // Descomente se necessário
-// import i18nConfig from "./i18nConfig"; // Descomente se necessário
+import { createClient, updateSession } from '@/utils/supabase/middleware';
+import { i18nRouter } from 'next-i18n-router';
+import { NextResponse, type NextRequest } from 'next/server';
+import i18nConfig from './i18nConfig';
 
 export async function middleware(request: NextRequest) {
-  // const i18nResult = i18nRouter(request, i18nConfig); // Descomente se necessário
-  // if (i18nResult) return i18nResult;
+  // Internacionalização (i18n)
+  const i18nResult = i18nRouter(request, i18nConfig);
+  if (i18nResult) return i18nResult;
+
+  // Atualizar a sessão (Vercel Payment)
+  const sessionUpdateResponse = await updateSession(request);
+  if (sessionUpdateResponse) return sessionUpdateResponse;
 
   try {
+    // Criar o cliente Supabase e obter a sessão
     const { supabase, response } = createClient(request);
+    const { data: sessionData } = await supabase.auth.getSession();
 
-    const session = await supabase.auth.getSession();
+    // Se o usuário estiver logado e tentar acessar a home page ("/"), redirecionar para o chat
+    if (sessionData?.session?.user && request.nextUrl.pathname === '/') {
+      const userId = sessionData.session.user.id;
 
-    if (session) {
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("is_pro")
-        .eq("id", session.data.session?.user.id)
-        .single();
-
-      const isPro = profile?.is_pro || false;
-      const isAccessingProFeature = request.nextUrl.pathname.startsWith('/pro-features');
-      
-      // Redirecionar usuários não-Pro tentando acessar recursos Pro
-      if (isAccessingProFeature && !isPro) {
-        return NextResponse.redirect(new URL('/upgrade', request.url));
-      }
-    }
-
-    // Redirecionar usuários logados para o chat
-    const redirectToChat = session && request.nextUrl.pathname === "/";
-    if (redirectToChat) {
+      // Buscar o workspace padrão do usuário
       const { data: homeWorkspace, error } = await supabase
-        .from("workspaces")
-        .select("*")
-        .eq("user_id", session.data.session?.user.id)
-        .eq("is_home", true)
+        .from('workspaces')
+        .select('*')
+        .eq('user_id', userId)
+        .eq('is_home', true)
         .single();
 
-      if (!homeWorkspace) {
-        throw new Error(error?.message);
+      // Caso ocorra um erro ao buscar o workspace ou o workspace não seja encontrado
+      if (error || !homeWorkspace) {
+        console.error('Erro ao buscar workspace:', error?.message || 'Workspace não encontrado.');
+        return NextResponse.redirect(new URL('/login', request.url)); // Redireciona para a página de login ou outra apropriada
       }
 
+      // Redirecionar o usuário para o workspace de chat após login
       return NextResponse.redirect(new URL(`/${homeWorkspace.id}/chat`, request.url));
     }
 
+    // Retorna a resposta padrão (caso a sessão não exista ou não haja redirecionamento necessário)
     return response;
   } catch (e) {
+    console.error('Erro no middleware:', e);
+    // Retornar a requisição padrão no caso de falha (passando adiante)
     return NextResponse.next({
       request: {
-        headers: request.headers
-      }
+        headers: request.headers,
+      },
     });
   }
 }
 
+// Configuração do middleware para corresponder a certas rotas
 export const config = {
-  matcher: "/((?!api|static|.*\\..*|_next|auth).*)"
+  matcher: [
+    /*
+     * Match all request paths except:
+     * - _next/static (arquivos estáticos)
+     * - _next/image (otimização de imagem)
+     * - favicon.ico (ícone da página)
+     * - imagens (svg, png, jpg, jpeg, gif, webp)
+     */
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+  ],
 };

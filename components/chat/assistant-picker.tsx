@@ -91,7 +91,7 @@ export const AssistantPicker: FC<AssistantPickerProps> = ({}) => {
                     itemsRef.current[index] = ref
                   }}
                   tabIndex={0}
-                  className="hover:bg-accent focus:bg-accent flex cursor-pointer items-center rounded p-2 focus:outline-none"
+                  className="flex cursor-pointer items-center rounded p-2 hover:bg-accent focus:bg-accent focus:outline-none"
                   onClick={() =>
                     callSelectAssistant(item as Tables<"assistants">)
                   }

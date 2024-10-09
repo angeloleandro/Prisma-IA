@@ -35,11 +35,11 @@ export const StepContainer: FC<StepContainerProps> = ({
         <div className="mb-4 text-center">
           <div className="mb-2 text-2xl font-bold">{stepTitle}</div>
 
-          <div className="text-muted-foreground mb-2 text-sm">
+          <div className="mb-2 text-sm text-muted-foreground">
             {stepDescription}
           </div>
 
-          <div className="text-muted-foreground text-sm">
+          <div className="text-sm text-muted-foreground">
             {t("Step")} {stepNum} {t("of")} {totalSteps}
           </div>
         </div>
