@@ -8,20 +8,22 @@ import {
 import { cookies } from 'next/headers'; // Importa cookies do Next.js
 
 export default async function PricingPage() {
-  const cookieStore = cookies(); // Obter cookies
-  const supabase = createClient(cookieStore); // Passa o cookieStore para o cliente
+  const cookieStore = cookies(); // Obtenção de cookies
+  const supabase = createClient(cookieStore); // Criação do cliente Supabase passando os cookies
 
+  // Obtenção de dados do usuário, produtos e assinatura de forma assíncrona
   const [user, products, subscription] = await Promise.all([
-    getUser(supabase),
-    getProducts(supabase),
-    getSubscription(supabase)
+    getUser(supabase), // Obtém dados do usuário autenticado
+    getProducts(supabase), // Obtém a lista de produtos disponíveis
+    getSubscription(supabase) // Obtém a assinatura ativa do usuário, se houver
   ]);
 
+  // Renderização do componente de preços, passando os dados obtidos
   return (
     <Pricing
       user={user}
-      products={products ?? []}
-      subscription={subscription}
+      products={products ?? []} // Garante que o array de produtos seja vazio caso seja indefinido
+      subscription={subscription} // Assinatura atual do usuário
     />
   );
 }

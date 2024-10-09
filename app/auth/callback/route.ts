@@ -1,41 +1,39 @@
-import { createClient } from "@/lib/supabase/server"
-import { cookies } from "next/headers"
-import { NextResponse } from "next/server"
-import { getProfileByUserId } from "@/db/profile"
+import { createClient } from '@/utils/supabase/server'; // Certifique-se de que esta função está implementada corretamente
+import { NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
+import { getErrorRedirect, getStatusRedirect } from '@/utils/helpers';
+import { cookies } from 'next/headers'; // Importa cookies para Next.js
 
-export async function GET(request: Request) {
-  const requestUrl = new URL(request.url)
-  const code = requestUrl.searchParams.get("code")
-  const next = requestUrl.searchParams.get("next")
+export async function GET(request: NextRequest) {
+  // URL de requisição e código de autenticação da query string
+  const requestUrl = new URL(request.url);
+  const code = requestUrl.searchParams.get('code');
 
+  // Verifica se há um código de autenticação
   if (code) {
-    const cookieStore = cookies()
-    const supabase = createClient(cookieStore)
-    try {
-      const { data, error } = await supabase.auth.exchangeCodeForSession(code)
-      if (error) throw error
+    const cookieStore = cookies(); // Obter cookies do Next.js para manter a sessão
+    const supabase = createClient(cookieStore); // Passa cookies ao cliente Supabase
 
-      if (data.user) {
-        const profile = await getProfileByUserId(data.user.id)
-        if (profile) {
-          console.log("User Pro status:", profile.is_pro)
-          // Here you can update the global state or do something with the Pro status
-        }
-      }
+    const { error } = await supabase.auth.exchangeCodeForSession(code);
 
-      console.log("Session established for user:", data.user?.id)
-    } catch (error) {
-      console.error("Error exchanging code for session:", error)
+    if (error) {
+      // Redireciona em caso de erro na troca de código por sessão
       return NextResponse.redirect(
-        requestUrl.origin + "/error?message=auth_error"
-      )
+        getErrorRedirect(
+          `${requestUrl.origin}/signin`,
+          error.name,
+          "Sorry, we weren't able to log you in. Please try again."
+        )
+      );
     }
   }
 
-  const validRoutes = ["/dashboard", "/profile", "/settings", "/upgrade"]
-  if (next && validRoutes.includes(next)) {
-    return NextResponse.redirect(requestUrl.origin + next)
-  } else {
-    return NextResponse.redirect(requestUrl.origin)
-  }
+  // Redireciona após a autenticação com sucesso
+  return NextResponse.redirect(
+    getStatusRedirect(
+      `${requestUrl.origin}/account`,
+      'Success!',
+      'You are now signed in.'
+    )
+  );
 }
