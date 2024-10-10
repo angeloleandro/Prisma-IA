@@ -21,8 +21,8 @@ export const CreatePreset: FC<CreatePresetProps> = ({
   const { profile, selectedWorkspace } = useContext(ChatbotUIContext)
 
   const [name, setName] = useState("")
-  const [isTyping, setIsTyping] = useState(false)
-  const [description, setDescription] = useState("")
+  const [isTyping] = useState(false)
+  const [description] = useState("")
   const [presetChatSettings, setPresetChatSettings] = useState({
     model: selectedWorkspace?.default_model,
     prompt: selectedWorkspace?.default_prompt,

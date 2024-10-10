@@ -49,6 +49,10 @@ export const fetchHostedModels = async (profile: Tables<"profiles">) => {
     }
   } catch (error) {
     console.warn("Error fetching hosted models: " + error)
+    return {
+      envKeyMap: {},
+      hostedModels: [] // Retorna um valor válido em caso de erro
+    }
   }
 }
 

@@ -1,10 +1,10 @@
-import { ReactNode } from 'react';
+import { ReactNode } from "react"
 
 interface Props {
-  title: string;
-  description?: string;
-  footer?: ReactNode;
-  children: ReactNode;
+  title: string
+  description?: string
+  footer?: ReactNode
+  children: ReactNode
 }
 
 export default function Card({ title, description, footer, children }: Props) {
@@ -21,5 +21,5 @@ export default function Card({ title, description, footer, children }: Props) {
         </div>
       )}
     </div>
-  );
+  )
 }

@@ -10,7 +10,6 @@ interface SidebarSearchProps {
 }
 
 export const SidebarSearch: FC<SidebarSearchProps> = ({
-  contentType,
   searchTerm,
   setSearchTerm,
   placeholder

@@ -11,11 +11,8 @@ import { ChatbotUIContext } from "@/context/context"
 import useHotkey from "@/lib/hooks/use-hotkey"
 import { useTheme } from "next-themes"
 import { useContext } from "react"
-import { useTranslation } from "react-i18next"
 
 export default function ChatPage() {
-  const { t } = useTranslation()
-
   useHotkey("o", () => handleNewChat())
   useHotkey("l", () => {
     handleFocusChatInput()

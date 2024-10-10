@@ -1,6 +1,7 @@
+// app/[locale]/setup/page.tsx
+
 "use client"
 
-import { checkSubscriptionStatus } from "@/lib/subscription"
 import { ChatbotUIContext } from "@/context/context"
 import {
   getProfileByUserId,
@@ -26,7 +27,8 @@ import {
 export default function SetupPage() {
   const { t } = useTranslation()
 
-  const { profile, setProfile, setWorkspaces, setSelectedWorkspace, setIsPro } =
+  // Removido setIsPro da desestruturação
+  const { profile, setProfile, setWorkspaces, setSelectedWorkspace } =
     useContext(ChatbotUIContext)
 
   const router = useRouter()
@@ -62,7 +64,8 @@ export default function SetupPage() {
         if (profile) {
           setProfile(profile)
           setUsername(profile.username || "")
-          setIsPro(profile.is_pro ?? false)
+          // Removido setIsPro
+          // setIsPro(profile.is_pro ?? false)
 
           if (!profile.has_onboarded) {
             setLoading(false)
@@ -81,7 +84,7 @@ export default function SetupPage() {
     }
 
     initializeSetup()
-  }, [])
+  }, [router, setProfile])
 
   const handleShouldProceed = (proceed: boolean) => {
     if (proceed) {
@@ -122,17 +125,19 @@ export default function SetupPage() {
           updateProfilePayload
         )
         setProfile(updatedProfile)
-        setIsPro(updatedProfile.is_pro ?? false)
+        // Removido setIsPro
+        // setIsPro(updatedProfile.is_pro ?? false)
 
-        const workspaces = await getWorkspacesByUserId(profile.user_id)
+        const workspaces = (await getWorkspacesByUserId(profile.user_id)) || [] // Garantir array
         const homeWorkspace = workspaces.find(w => w.is_home)
 
-        const isProUser = await checkSubscriptionStatus(profile.user_id)
-        setIsPro(isProUser)
+        // Removido isProUser e setIsPro
+        // const isProUser = await checkSubscriptionStatus(profile.user_id)
+        // setIsPro(isProUser)
 
         if (homeWorkspace) {
           setSelectedWorkspace(homeWorkspace)
-          setWorkspaces(workspaces)
+          setWorkspaces(workspaces) // workspaces é sempre um array
           return router.push(`/${homeWorkspace.id}/chat`)
         } else {
           throw new Error("No home workspace found")
@@ -140,7 +145,7 @@ export default function SetupPage() {
       } else {
         throw new Error("Profile not found")
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error saving setup settings:", error)
       setError(
         "An error occurred while saving your settings. Please try again."

@@ -1,15 +1,15 @@
-import { createClient } from '@/utils/supabase/server';
-import s from './Navbar.module.css';
-import Navlinks from './Navlinks';
-import { cookies } from 'next/headers'; // Importa o gerenciamento de cookies
+import { createClient } from "@/utils/supabase/server"
+import s from "./Navbar.module.css"
+import Navlinks from "./Navlinks"
+import { cookies } from "next/headers" // Importa o gerenciamento de cookies
 
 export default async function Navbar() {
-  const cookieStore = cookies(); // Obtém os cookies do Next.js
-  const supabase = createClient(cookieStore); // Passa o cookieStore ao criar o cliente
+  const cookieStore = cookies() // Obtém os cookies do Next.js
+  const supabase = createClient(cookieStore) // Passa o cookieStore ao criar o cliente
 
   const {
     data: { user }
-  } = await supabase.auth.getUser();
+  } = await supabase.auth.getUser()
 
   return (
     <nav className={s.root}>
@@ -20,5 +20,5 @@ export default async function Navbar() {
         <Navlinks user={user} />
       </div>
     </nav>
-  );
+  )
 }

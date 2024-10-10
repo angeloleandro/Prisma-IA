@@ -16,9 +16,9 @@ interface ToolItemProps {
 export const ToolItem: FC<ToolItemProps> = ({ tool }) => {
   const { t } = useTranslation()
   const [name, setName] = useState(tool.name)
-  const [isTyping, setIsTyping] = useState(false)
+  const [isTyping] = useState(false)
   const [description, setDescription] = useState(tool.description)
-  const [url, setUrl] = useState(tool.url)
+  const [url] = useState(tool.url)
   const [customHeaders, setCustomHeaders] = useState(
     tool.custom_headers as string
   )

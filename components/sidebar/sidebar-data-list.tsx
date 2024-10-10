@@ -96,9 +96,9 @@ export const SidebarDataList: FC<SidebarDataListProps> = ({
   }
 
   const getSortedData = (
-    data: any,
+    data: any[],
     dateCategory: "Today" | "Yesterday" | "Previous Week" | "Older"
-  ) => {
+  ): any[] => {
     const now = new Date()
     const todayStart = new Date(now.setHours(0, 0, 0, 0))
     const yesterdayStart = new Date(
@@ -121,7 +121,7 @@ export const SidebarDataList: FC<SidebarDataListProps> = ({
           case "Older":
             return itemDate < oneWeekAgoStart
           default:
-            return true
+            return false // Garantir retorno para todos os casos
         }
       })
       .sort(
@@ -159,12 +159,16 @@ export const SidebarDataList: FC<SidebarDataListProps> = ({
   const updateFolder = async (itemId: string, folderId: string | null) => {
     const item: any = data.find(item => item.id === itemId)
 
-    if (!item) return null
+    if (!item) {
+      return null // Retorna explicitamente null caso o item não seja encontrado
+    }
 
     const updateFunction = updateFunctions[contentType]
     const setStateFunction = stateUpdateFunctions[contentType]
 
-    if (!updateFunction || !setStateFunction) return
+    if (!updateFunction || !setStateFunction) {
+      return // Certifica-se de que algo é retornado, mesmo que seja undefined
+    }
 
     const updatedItem = await updateFunction(item.id, {
       folder_id: folderId
@@ -175,6 +179,8 @@ export const SidebarDataList: FC<SidebarDataListProps> = ({
         item.id === updatedItem.id ? updatedItem : item
       )
     )
+
+    return // Retorna undefined para garantir que todos os caminhos tenham retorno
   }
 
   const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {

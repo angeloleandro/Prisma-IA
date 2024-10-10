@@ -5,7 +5,6 @@ import Image from "next/image"
 import { FC, useContext, useEffect, useRef } from "react"
 import { usePromptAndCommand } from "./chat-hooks/use-prompt-and-command"
 import { useTranslation } from "react-i18next"
-import { LLM_LIST } from "@/lib/models/llm/llm-list" // Ajustado
 
 interface AssistantPickerProps {}
 

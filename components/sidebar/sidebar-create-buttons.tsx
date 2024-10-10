@@ -85,7 +85,7 @@ export const SidebarCreateButtons: FC<SidebarCreateButtonsProps> = ({
           setIsCreatingModel(true)
         }
       default:
-        break
+        return () => {} // Corrige o erro de "Not all code paths return a value"
     }
   }
 

@@ -1,27 +1,27 @@
-'use client';
+"use client"
 
-import Button from '@/components/ui/Button/Button';
-import Card from '@/components/ui/Card/Card';
-import { updateName } from '@/utils/auth-helpers/server';
-import { handleRequest } from '@/utils/auth-helpers/client';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import Button from "@/components/ui/Button/Button"
+import Card from "@/components/ui/Card/Card"
+import { updateName } from "@/utils/auth-helpers/server"
+import { handleRequest } from "@/utils/auth-helpers/client"
+import { useRouter } from "next/navigation"
+import { useState } from "react"
 
 export default function NameForm({ userName }: { userName: string }) {
-  const router = useRouter();
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter()
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    setIsSubmitting(true);
+    setIsSubmitting(true)
     // Check if the new name is the same as the old name
     if (e.currentTarget.fullName.value === userName) {
-      e.preventDefault();
-      setIsSubmitting(false);
-      return;
+      e.preventDefault()
+      setIsSubmitting(false)
+      return
     }
-    handleRequest(e, updateName, router);
-    setIsSubmitting(false);
-  };
+    handleRequest(e, updateName, router)
+    setIsSubmitting(false)
+  }
 
   return (
     <Card
@@ -42,7 +42,7 @@ export default function NameForm({ userName }: { userName: string }) {
       }
     >
       <div className="mb-4 mt-8 text-xl font-semibold">
-        <form id="nameForm" onSubmit={(e) => handleSubmit(e)}>
+        <form id="nameForm" onSubmit={e => handleSubmit(e)}>
           <input
             type="text"
             name="fullName"
@@ -54,5 +54,5 @@ export default function NameForm({ userName }: { userName: string }) {
         </form>
       </div>
     </Card>
-  );
+  )
 }

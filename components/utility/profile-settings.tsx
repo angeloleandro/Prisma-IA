@@ -9,7 +9,6 @@ import { updateProfile } from "@/db/profile"
 import { uploadProfileImage } from "@/db/storage/profile-images"
 import { exportLocalStorageAsJSON } from "@/lib/export-old-data"
 import { supabase } from "@/lib/supabase/browser-client"
-import { cn } from "@/lib/utils"
 import {
   IconCircleCheckFilled,
   IconCircleXFilled,
@@ -46,13 +45,12 @@ interface ProfileSettingsProps {}
 export const ProfileSettings: FC<ProfileSettingsProps> = ({}) => {
   const router = useRouter()
   const { t } = useTranslation()
-  const { profile, setProfile, isPro, setIsPro } = useContext(ChatbotUIContext)
+  const { profile, setProfile } = useContext(ChatbotUIContext)
 
   const buttonRef = useRef<HTMLButtonElement>(null)
 
   const [isOpen, setIsOpen] = useState(false)
   const [userEmail, setUserEmail] = useState<string | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
 
   const [displayName, setDisplayName] = useState(profile?.display_name || "")
   const [username, setUsername] = useState(profile?.username || "")
@@ -65,12 +63,6 @@ export const ProfileSettings: FC<ProfileSettingsProps> = ({}) => {
   const [profileInstructions, setProfileInstructions] = useState(
     profile?.profile_context || ""
   )
-
-  useEffect(() => {
-    if (profile) {
-      setIsPro(profile.is_pro || false)
-    }
-  }, [profile, setIsPro])
 
   const fetchUserEmail = useCallback(async () => {
     try {
@@ -125,8 +117,7 @@ export const ProfileSettings: FC<ProfileSettingsProps> = ({}) => {
         username,
         profile_context: profileInstructions,
         image_url: profileImageUrl,
-        image_path: profileImagePath,
-        is_pro: isPro
+        image_path: profileImagePath
       })
 
       setProfile(updatedProfile)
@@ -351,11 +342,11 @@ export const ProfileSettings: FC<ProfileSettingsProps> = ({}) => {
                 <div>
                   <Label>{t("Current Plan")}</Label>
                   <div className="text-sm font-medium">
-                    {isPro ? t("Pro") : t("Free")}
+                    {profile.is_pro ? t("Pro") : t("Free")}
                   </div>
                 </div>
 
-                {!isPro && (
+                {!profile.is_pro && (
                   <Button className="w-full" onClick={handleUpgradeToPro}>
                     {t("Upgrade to Pro")}
                   </Button>
@@ -377,13 +368,9 @@ export const ProfileSettings: FC<ProfileSettingsProps> = ({}) => {
             <ThemeSwitcher />
 
             <WithTooltip
-              display={
-                <div>
-                  {t(
-                    "Download Chatbot UI 1.0 data as JSON. Import coming soon!"
-                  )}
-                </div>
-              }
+              display={t(
+                "Download Chatbot UI 1.0 data as JSON. Import coming soon!"
+              )}
               trigger={
                 <IconFileDownload
                   className="cursor-pointer hover:opacity-50"

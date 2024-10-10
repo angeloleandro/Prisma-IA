@@ -1,28 +1,36 @@
-'use client';
+// components/ui/AuthForms/Signup.tsx
 
-import Button from '@/components/ui/Button/Button';
-import React from 'react';
-import Link from 'next/link';
-import { signUp } from '@/utils/auth-helpers/server';
-import { handleRequest } from '@/utils/auth-helpers/client';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+"use client"
+
+import Button from "@/components/ui/Button/Button"
+import React from "react"
+import Link from "next/link"
+import { signUp } from "@/utils/auth-helpers/server"
+import { handleRequest } from "@/utils/auth-helpers/client"
+import { useRouter } from "next/navigation"
+import { useState } from "react"
 
 interface SignUpProps {
-  allowEmail: boolean;
-  redirectMethod: string;
+  allowEmail: boolean
+  redirectMethod: string
 }
 
 export default function SignUp({ allowEmail, redirectMethod }: SignUpProps) {
-  const router = redirectMethod === 'client' ? useRouter() : null;
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter() // Hook chamado incondicionalmente
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    await handleRequest(e, signUp, router);
-    setIsSubmitting(false);
-  };
+    e.preventDefault()
+    setIsSubmitting(true)
+    try {
+      const redirect = redirectMethod === "client" ? router : null
+      await handleRequest(e, signUp, redirect)
+    } catch (err: any) {
+      setError(err.message)
+    }
+    setIsSubmitting(false)
+  }
 
   return (
     <div className="my-8">
@@ -39,6 +47,7 @@ export default function SignUp({ allowEmail, redirectMethod }: SignUpProps) {
               autoComplete="email"
               autoCorrect="off"
               className="w-full rounded-md bg-zinc-800 p-3"
+              required
             />
             <label htmlFor="password">Password</label>
             <input
@@ -46,15 +55,22 @@ export default function SignUp({ allowEmail, redirectMethod }: SignUpProps) {
               placeholder="Password"
               type="password"
               name="password"
-              autoComplete="current-password"
+              autoComplete="new-password"
               className="w-full rounded-md bg-zinc-800 p-3"
+              required
             />
           </div>
-          <Button variant="slim" type="submit" className="mt-1" loading={isSubmitting}>
+          <Button
+            variant="slim"
+            type="submit"
+            className="mt-1"
+            loading={isSubmitting}
+          >
             Sign up
           </Button>
         </div>
       </form>
+      {error && <p className="text-red-500">{error}</p>}
       <p>Already have an account?</p>
       <p>
         <Link href="/signin/password_signin" className="text-sm font-light">
@@ -69,5 +85,5 @@ export default function SignUp({ allowEmail, redirectMethod }: SignUpProps) {
         </p>
       )}
     </div>
-  );
+  )
 }

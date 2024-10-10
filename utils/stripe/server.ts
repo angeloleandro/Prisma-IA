@@ -1,10 +1,10 @@
 'use server';
 
 import Stripe from 'stripe';
-import { stripe } from '@/utils/stripe/config'; // Certifique-se de que este arquivo config existe
-import { supabaseAdmin, createOrRetrieveCustomer } from '@/utils/supabase/admin'; // Certifique-se de que essas funções estão exportadas corretamente
+import { stripe } from '@/utils/stripe/config'; 
+import { supabaseAdmin, createOrRetrieveCustomer } from '@/utils/supabase/admin'; 
 import { getURL, getErrorRedirect, calculateTrialEndUnixTimestamp } from '@/utils/helpers';
-import { Tables } from '@/types/types_db'; // Ajuste o caminho conforme a localização do arquivo
+import { Tables } from '@/types/types_db';
 
 type Price = Tables<'prices'>;
 
@@ -19,12 +19,10 @@ export async function checkoutWithStripe(
 ): Promise<CheckoutResponse> {
   try {
     const {
-      error,
       data: { user }
     } = await supabaseAdmin.auth.getUser();
 
-    if (error || !user) {
-      console.error(error);
+    if (!user) {
       throw new Error('Could not get user session.');
     }
 
@@ -85,7 +83,6 @@ export async function checkoutWithStripe(
 export async function createStripePortal(currentPath: string) {
   try {
     const {
-      error,
       data: { user }
     } = await supabaseAdmin.auth.getUser();
 

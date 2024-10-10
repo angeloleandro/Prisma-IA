@@ -1,9 +1,9 @@
 // components/ui/submit-button.tsx
-import { ButtonHTMLAttributes, forwardRef, ReactNode } from 'react';
+import { ButtonHTMLAttributes, forwardRef, ReactNode } from "react"
 
 interface SubmitButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  children: ReactNode;
-  formAction?: () => Promise<void>;
+  children: ReactNode
+  formAction?: () => Promise<void>
 }
 
 export const SubmitButton = forwardRef<HTMLButtonElement, SubmitButtonProps>(
@@ -17,8 +17,8 @@ export const SubmitButton = forwardRef<HTMLButtonElement, SubmitButtonProps>(
       >
         {children}
       </button>
-    );
+    )
   }
-);
+)
 
-SubmitButton.displayName = 'SubmitButton';
+SubmitButton.displayName = "SubmitButton"

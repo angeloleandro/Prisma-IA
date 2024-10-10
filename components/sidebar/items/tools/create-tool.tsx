@@ -19,9 +19,9 @@ export const CreateTool: FC<CreateToolProps> = ({ isOpen, onOpenChange }) => {
   const { profile, selectedWorkspace } = useContext(ChatbotUIContext)
 
   const [name, setName] = useState("")
-  const [isTyping, setIsTyping] = useState(false)
+  const [isTyping] = useState(false)
   const [description, setDescription] = useState("")
-  const [url, setUrl] = useState("")
+  const [url] = useState("")
   const [customHeaders, setCustomHeaders] = useState("")
   const [schema, setSchema] = useState("")
   const [schemaError, setSchemaError] = useState("")

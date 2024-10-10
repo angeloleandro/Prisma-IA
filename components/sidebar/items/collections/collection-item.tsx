@@ -16,7 +16,7 @@ interface CollectionItemProps {
 export const CollectionItem: FC<CollectionItemProps> = ({ collection }) => {
   const { t } = useTranslation()
   const [name, setName] = useState(collection.name)
-  const [isTyping, setIsTyping] = useState(false)
+  const [isTyping] = useState(false)
   const [description, setDescription] = useState(collection.description)
 
   const handleFileSelect = (

@@ -12,11 +12,11 @@ export const ChatCommandInput: FC<ChatCommandInputProps> = ({}) => {
   const {
     newMessageFiles,
     chatFiles,
-    slashCommand,
+    // Removido slashCommand
     isFilePickerOpen,
     setIsFilePickerOpen,
     hashtagCommand,
-    focusPrompt,
+    // Removido focusPrompt
     focusFile
   } = useContext(ChatbotUIContext)
 

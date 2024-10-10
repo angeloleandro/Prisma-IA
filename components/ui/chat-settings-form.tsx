@@ -35,7 +35,7 @@ export const ChatSettingsForm: FC<ChatSettingsFormProps> = ({
   showTooltip = true
 }) => {
   const { t } = useTranslation()
-  const { profile, models } = useContext(ChatbotUIContext)
+  const { profile } = useContext(ChatbotUIContext)
 
   if (!profile) return null
 

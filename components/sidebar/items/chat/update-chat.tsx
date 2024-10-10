@@ -1,3 +1,5 @@
+// components/sidebar/items/chat/update-chat.tsx
+
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -27,7 +29,7 @@ export const UpdateChat: FC<UpdateChatProps> = ({ chat }) => {
   const [showChatDialog, setShowChatDialog] = useState(false)
   const [name, setName] = useState(chat.name)
 
-  const handleUpdateChat = async (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleUpdateChat = async () => {
     const updatedChat = await updateChat(chat.id, {
       name
     })

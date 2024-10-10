@@ -51,9 +51,7 @@ export const WorkspaceSettings: FC<WorkspaceSettingsProps> = ({}) => {
   const [name, setName] = useState(selectedWorkspace?.name || "")
   const [imageLink, setImageLink] = useState("")
   const [selectedImage, setSelectedImage] = useState<File | null>(null)
-  const [description, setDescription] = useState(
-    selectedWorkspace?.description || ""
-  )
+  const [description] = useState(selectedWorkspace?.description || "")
   const [instructions, setInstructions] = useState(
     selectedWorkspace?.instructions || ""
   )
@@ -146,14 +144,17 @@ export const WorkspaceSettings: FC<WorkspaceSettingsProps> = ({}) => {
 
     setIsOpen(false)
     setSelectedWorkspace(updatedWorkspace)
-    setWorkspaces(workspaces => {
-      return workspaces.map(workspace => {
-        if (workspace.id === selectedWorkspace.id) {
-          return updatedWorkspace
-        }
 
-        return workspace
-      })
+    setWorkspaces(workspaces => {
+      return workspaces
+        .map(workspace => {
+          // Verificação se o workspace selecionado não é nulo
+          if (selectedWorkspace && workspace.id === selectedWorkspace.id) {
+            return updatedWorkspace
+          }
+          return workspace
+        })
+        .filter(workspace => workspace !== null) // Remove quaisquer valores 'null'
     })
 
     toast.success(t("workspaceUpdated"))
@@ -208,30 +209,28 @@ export const WorkspaceSettings: FC<WorkspaceSettingsProps> = ({}) => {
             </TabsList>
 
             <TabsContent className="mt-4 space-y-4" value="main">
-              <>
-                <div className="space-y-1">
-                  <Label>{t("workspaceName")}</Label>
+              <div className="space-y-1">
+                <Label>{t("workspaceName")}</Label>
 
-                  <Input
-                    placeholder={t("namePlaceholder")}
-                    value={name}
-                    onChange={e => setName(e.target.value)}
-                  />
-                </div>
+                <Input
+                  placeholder={t("namePlaceholder")}
+                  value={name}
+                  onChange={e => setName(e.target.value)}
+                />
+              </div>
 
-                <div className="space-y-1">
-                  <Label>{t("workspaceImage")}</Label>
+              <div className="space-y-1">
+                <Label>{t("workspaceImage")}</Label>
 
-                  <ImagePicker
-                    src={imageLink}
-                    image={selectedImage}
-                    onSrcChange={setImageLink}
-                    onImageChange={setSelectedImage}
-                    width={50}
-                    height={50}
-                  />
-                </div>
-              </>
+                <ImagePicker
+                  src={imageLink}
+                  image={selectedImage}
+                  onSrcChange={setImageLink}
+                  onImageChange={setSelectedImage}
+                  width={50}
+                  height={50}
+                />
+              </div>
 
               <div className="space-y-1">
                 <Label>{t("workspaceInstructions")}</Label>

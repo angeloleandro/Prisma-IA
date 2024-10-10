@@ -1,3 +1,5 @@
+// components/sidebar/items/folders/folder-item.tsx
+
 import { cn } from "@/lib/utils"
 import { Tables } from "@/supabase/types"
 import { ContentType } from "@/types"
@@ -55,7 +57,7 @@ export const Folder: FC<FolderProps> = ({
     }
   }
 
-  const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleClick = () => {
     setIsExpanded(!isExpanded)
   }
 

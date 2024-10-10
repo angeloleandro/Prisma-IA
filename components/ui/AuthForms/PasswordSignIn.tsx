@@ -1,38 +1,42 @@
-'use client';
+// components/ui/AuthForms/PasswordSignIn.tsx
 
-import Button from '@/components/ui/Button/Button';
-import Link from 'next/link';
-import { signInWithPassword } from '@/utils/auth-helpers/server';
-import { handleRequest } from '@/utils/auth-helpers/client';
-import { useRouter } from 'next/navigation';
-import React, { useState } from 'react';
+"use client"
+
+import Button from "@/components/ui/Button/Button"
+import Link from "next/link"
+import { signInWithPassword } from "@/utils/auth-helpers/server"
+import { handleRequest } from "@/utils/auth-helpers/client"
+import { useRouter } from "next/navigation"
+import React, { useState } from "react"
 
 interface PasswordSignInProps {
-  allowEmail: boolean;
-  redirectMethod: string;
+  allowEmail: boolean
+  redirectMethod: string
 }
 
 export default function PasswordSignIn({
   allowEmail,
   redirectMethod
 }: PasswordSignInProps) {
-  const router = redirectMethod === 'client' ? useRouter() : null;
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter() // Hook chamado incondicionalmente
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setIsSubmitting(true); // Desativa o botão enquanto a requisição é tratada
-    await handleRequest(e, signInWithPassword, router);
-    setIsSubmitting(false);
-  };
+    e.preventDefault()
+    setIsSubmitting(true) // Desativa o botão enquanto a requisição é tratada
+    try {
+      const redirect = redirectMethod === "client" ? router : null
+      await handleRequest(e, signInWithPassword, redirect)
+    } catch (err: any) {
+      setError(err.message)
+    }
+    setIsSubmitting(false)
+  }
 
   return (
     <div className="my-8">
-      <form
-        noValidate={true}
-        className="mb-4"
-        onSubmit={(e) => handleSubmit(e)}
-      >
+      <form noValidate className="mb-4" onSubmit={handleSubmit}>
         <div className="grid gap-2">
           <div className="grid gap-1">
             <label htmlFor="email">Email</label>
@@ -45,6 +49,7 @@ export default function PasswordSignIn({
               autoComplete="email"
               autoCorrect="off"
               className="w-full rounded-md bg-zinc-800 p-3"
+              required
             />
             <label htmlFor="password">Password</label>
             <input
@@ -52,8 +57,9 @@ export default function PasswordSignIn({
               placeholder="Password"
               type="password"
               name="password"
-              autoComplete="current-password"
+              autoComplete="new-password"
               className="w-full rounded-md bg-zinc-800 p-3"
+              required
             />
           </div>
           <Button
@@ -66,6 +72,7 @@ export default function PasswordSignIn({
           </Button>
         </div>
       </form>
+      {error && <p className="text-red-500">{error}</p>}
       <p>
         <Link href="/signin/forgot_password" className="text-sm font-light">
           Forgot your password?
@@ -80,9 +87,9 @@ export default function PasswordSignIn({
       )}
       <p>
         <Link href="/signin/signup" className="text-sm font-light">
-          Don't have an account? Sign up
+          Don&apos;t have an account? Sign up
         </Link>
       </p>
     </div>
-  );
+  )
 }

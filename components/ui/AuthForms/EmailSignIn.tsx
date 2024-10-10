@@ -1,17 +1,19 @@
-'use client';
+// components/ui/AuthForms/EmailSignIn.tsx
 
-import Button from '@/components/ui/Button/Button';
-import Link from 'next/link';
-import { signInWithEmail } from '@/utils/auth-helpers/server';
-import { handleRequest } from '@/utils/auth-helpers/client';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+"use client"
 
-// Define prop type with allowPassword boolean
+import Button from "@/components/ui/Button/Button"
+import Link from "next/link"
+import { signInWithEmail } from "@/utils/auth-helpers/server"
+import { handleRequest } from "@/utils/auth-helpers/client"
+import { useRouter } from "next/navigation"
+import { useState } from "react"
+
+// Define prop type com allowPassword boolean
 interface EmailSignInProps {
-  allowPassword: boolean;
-  redirectMethod: string;
-  disableButton?: boolean;
+  allowPassword: boolean
+  redirectMethod: string
+  disableButton?: boolean
 }
 
 export default function EmailSignIn({
@@ -19,22 +21,28 @@ export default function EmailSignIn({
   redirectMethod,
   disableButton
 }: EmailSignInProps) {
-  const router = redirectMethod === 'client' ? useRouter() : null;
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter() // Hook chamado incondicionalmente
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    setIsSubmitting(true); // Disable the button while the request is being handled
-    await handleRequest(e, signInWithEmail, router);
-    setIsSubmitting(false);
-  };
+    e.preventDefault()
+    setIsSubmitting(true)
+    try {
+      await handleRequest(
+        e,
+        signInWithEmail,
+        redirectMethod === "client" ? router : null
+      )
+    } catch (err: any) {
+      setError(err.message)
+    }
+    setIsSubmitting(false)
+  }
 
   return (
     <div className="my-8">
-      <form
-        noValidate={true}
-        className="mb-4"
-        onSubmit={(e) => handleSubmit(e)}
-      >
+      <form noValidate className="mb-4" onSubmit={handleSubmit}>
         <div className="grid gap-2">
           <div className="grid gap-1">
             <label htmlFor="email">Email</label>
@@ -47,6 +55,7 @@ export default function EmailSignIn({
               autoComplete="email"
               autoCorrect="off"
               className="w-full rounded-md bg-zinc-800 p-3"
+              required
             />
           </div>
           <Button
@@ -60,6 +69,7 @@ export default function EmailSignIn({
           </Button>
         </div>
       </form>
+      {error && <p className="text-red-500">{error}</p>}
       {allowPassword && (
         <>
           <p>
@@ -69,11 +79,11 @@ export default function EmailSignIn({
           </p>
           <p>
             <Link href="/signin/signup" className="text-sm font-light">
-              Don't have an account? Sign up
+              Don&apos;t have an account? Sign up
             </Link>
           </p>
         </>
       )}
     </div>
-  );
+  )
 }

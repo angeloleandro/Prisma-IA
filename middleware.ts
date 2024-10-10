@@ -1,12 +1,24 @@
+// middleware.ts
+
 import { createClient, updateSession } from '@/utils/supabase/middleware';
 import { i18nRouter } from 'next-i18n-router';
 import { NextResponse, type NextRequest } from 'next/server';
 import i18nConfig from './i18nConfig';
 
 export async function middleware(request: NextRequest) {
-  // Internacionalização (i18n)
-  const i18nResult = i18nRouter(request, i18nConfig);
-  if (i18nResult) return i18nResult;
+  const pathname = request.nextUrl.pathname;
+
+  // Excluir rotas de autenticação, pagamento e API do roteamento i18n
+  if (
+    !pathname.startsWith('/signin') &&
+    !pathname.startsWith('/auth') &&
+    !pathname.startsWith('/api') &&
+    !pathname.startsWith('/payment') // Adicione outras rotas a serem excluídas conforme necessário
+  ) {
+    // Internacionalização (i18n)
+    const i18nResult = i18nRouter(request, i18nConfig);
+    if (i18nResult) return i18nResult;
+  }
 
   // Atualizar a sessão (Vercel Payment)
   const sessionUpdateResponse = await updateSession(request);
@@ -17,42 +29,44 @@ export async function middleware(request: NextRequest) {
     const { supabase, response } = createClient(request);
     const { data: sessionData } = await supabase.auth.getSession();
 
-    // Se o usuário estiver logado e tentar acessar a home page ("/"), redirecionar para o chat
-    if (sessionData?.session?.user && request.nextUrl.pathname === '/') {
-      const userId = sessionData.session.user.id;
-
-      // Buscar o workspace padrão do usuário
-      const { data: homeWorkspace, error } = await supabase
-        .from('workspaces')
-        .select('*')
-        .eq('user_id', userId)
-        .eq('is_home', true)
-        .single();
-
-      // Caso ocorra um erro ao buscar o workspace ou o workspace não seja encontrado
-      if (error || !homeWorkspace) {
-        console.error('Erro ao buscar workspace:', error?.message || 'Workspace não encontrado.');
-        return NextResponse.redirect(new URL('/login', request.url)); // Redireciona para a página de login ou outra apropriada
-      }
-
-      // Redirecionar o usuário para o workspace de chat após login
-      return NextResponse.redirect(new URL(`/${homeWorkspace.id}/chat`, request.url));
+    // Usuários autenticados acessando a página inicial '/'
+    if (sessionData?.session?.user && pathname === '/') {
+      return NextResponse.redirect(new URL('/account', request.url));
     }
 
-    // Retorna a resposta padrão (caso a sessão não exista ou não haja redirecionamento necessário)
+    // Usuários não autenticados acessando rotas protegidas
+    if (!sessionData?.session?.user && isProtectedRoute(pathname)) {
+      return NextResponse.redirect(new URL('/signin', request.url));
+    }
+
+    // Usuários não autenticados acessando a página inicial '/', redirecionar para '/signin'
+    if (!sessionData?.session?.user && pathname === '/') {
+      return NextResponse.redirect(new URL('/signin', request.url));
+    }
+
+    // Retorna a resposta padrão
     return response;
   } catch (e) {
     console.error('Erro no middleware:', e);
-    // Retornar a requisição padrão no caso de falha (passando adiante)
-    return NextResponse.next({
-      request: {
-        headers: request.headers,
-      },
-    });
+    return NextResponse.next();
   }
 }
 
-// Configuração do middleware para corresponder a certas rotas
+// Função auxiliar para determinar se uma rota é protegida
+function isProtectedRoute(pathname: string): boolean {
+  const protectedRoutes = [
+    '/dashboard',
+    '/account',
+    '/settings',
+    '/[locale]',
+    '/[locale]/',
+    '/[locale]/chat',
+    // Adicione outras rotas protegidas conforme necessário
+  ];
+
+  return protectedRoutes.some((route) => pathname.startsWith(route));
+}
+
 export const config = {
   matcher: [
     /*

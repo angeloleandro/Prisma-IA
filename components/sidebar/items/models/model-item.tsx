@@ -13,11 +13,11 @@ interface ModelItemProps {
 
 export const ModelItem: FC<ModelItemProps> = ({ model }) => {
   const { t } = useTranslation()
-  const [isTyping, setIsTyping] = useState(false)
+  const [isTyping] = useState(false)
 
   const [apiKey, setApiKey] = useState(model.api_key)
   const [baseUrl, setBaseUrl] = useState(model.base_url)
-  const [description, setDescription] = useState(model.description)
+  const [description] = useState(model.description)
   const [modelId, setModelId] = useState(model.model_id)
   const [name, setName] = useState(model.name)
   const [contextLength, setContextLength] = useState(model.context_length)

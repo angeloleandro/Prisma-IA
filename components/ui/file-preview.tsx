@@ -63,6 +63,9 @@ export const FilePreview: FC<FilePreviewProps> = ({
                 <IconFileFilled />
               </div>
             )
+          } else {
+            // Retorno padrão se nenhum dos tipos corresponder
+            return <div>{t("unsupportedFileType")}</div>
           }
         })()}
       </DialogContent>

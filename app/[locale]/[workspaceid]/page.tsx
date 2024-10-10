@@ -1,3 +1,5 @@
+// app/[locale]/[workspaceid]/page.tsx
+
 "use client"
 
 import { ChatbotUIContext } from "@/context/context"

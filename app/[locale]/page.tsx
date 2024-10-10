@@ -1,3 +1,5 @@
+// app/[locale]/page.tsx
+
 "use client"
 
 import { useEffect } from "react"
@@ -9,7 +11,9 @@ export default function HomePage() {
 
   useEffect(() => {
     const checkSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
+      const {
+        data: { session }
+      } = await supabase.auth.getSession()
 
       if (session) {
         // Usuário autenticado, redirecionar para a página principal do app

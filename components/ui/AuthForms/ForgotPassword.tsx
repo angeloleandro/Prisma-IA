@@ -1,17 +1,19 @@
-'use client';
+// components/ui/AuthForms/ForgotPassword.tsx
 
-import Button from '@/components/ui/Button/Button';
-import Link from 'next/link';
-import { requestPasswordUpdate } from '@/utils/auth-helpers/server';
-import { handleRequest } from '@/utils/auth-helpers/client';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+"use client"
 
-// Define prop type with allowEmail boolean
+import Button from "@/components/ui/Button/Button"
+import Link from "next/link"
+import { requestPasswordUpdate } from "@/utils/auth-helpers/server"
+import { handleRequest } from "@/utils/auth-helpers/client"
+import { useRouter } from "next/navigation"
+import { useState } from "react"
+
+// Define prop type com allowEmail boolean
 interface ForgotPasswordProps {
-  allowEmail: boolean;
-  redirectMethod: string;
-  disableButton?: boolean;
+  allowEmail: boolean
+  redirectMethod: string
+  disableButton?: boolean
 }
 
 export default function ForgotPassword({
@@ -19,23 +21,25 @@ export default function ForgotPassword({
   redirectMethod,
   disableButton
 }: ForgotPasswordProps) {
-  const router = redirectMethod === 'client' ? useRouter() : null;
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter() // Hook chamado incondicionalmente
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    await handleRequest(e, requestPasswordUpdate, router);
-    setIsSubmitting(false);
-  };
+    e.preventDefault()
+    setIsSubmitting(true)
+    try {
+      const redirect = redirectMethod === "client" ? router : null
+      await handleRequest(e, requestPasswordUpdate, redirect)
+    } catch (err: any) {
+      setError(err.message)
+    }
+    setIsSubmitting(false)
+  }
 
   return (
     <div className="my-8">
-      <form
-        noValidate={true}
-        className="mb-4"
-        onSubmit={(e) => handleSubmit(e)}
-      >
+      <form noValidate className="mb-4" onSubmit={handleSubmit}>
         <div className="grid gap-2">
           <div className="grid gap-1">
             <label htmlFor="email">Email</label>
@@ -48,6 +52,7 @@ export default function ForgotPassword({
               autoComplete="email"
               autoCorrect="off"
               className="w-full rounded-md bg-zinc-800 p-3"
+              required
             />
           </div>
           <Button
@@ -61,6 +66,7 @@ export default function ForgotPassword({
           </Button>
         </div>
       </form>
+      {error && <p className="text-red-500">{error}</p>}
       <p>
         <Link href="/signin/password_signin" className="text-sm font-light">
           Sign in with email and password
@@ -75,9 +81,9 @@ export default function ForgotPassword({
       )}
       <p>
         <Link href="/signin/signup" className="text-sm font-light">
-          Don't have an account? Sign up
+          Don&apos;t have an account? Sign up
         </Link>
       </p>
     </div>
-  );
+  )
 }

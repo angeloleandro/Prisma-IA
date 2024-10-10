@@ -1,3 +1,5 @@
+// components/sidebar/items/assistants/assistant-item.tsx
+
 import { ChatSettingsForm } from "@/components/ui/chat-settings-form"
 import ImagePicker from "@/components/ui/image-picker"
 import { Input } from "@/components/ui/input"
@@ -22,7 +24,6 @@ export const AssistantItem: FC<AssistantItemProps> = ({ assistant }) => {
   const { selectedWorkspace, assistantImages } = useContext(ChatbotUIContext)
 
   const [name, setName] = useState(assistant.name)
-  const [isTyping, setIsTyping] = useState(false)
   const [description, setDescription] = useState(assistant.description)
   const [assistantChatSettings, setAssistantChatSettings] = useState({
     model: assistant.model,
@@ -107,7 +108,7 @@ export const AssistantItem: FC<AssistantItemProps> = ({ assistant }) => {
     <SidebarItem
       item={assistant}
       contentType="assistants"
-      isTyping={isTyping}
+      isTyping={false} // Removido o state isTyping
       icon={
         imageLink ? (
           <Image

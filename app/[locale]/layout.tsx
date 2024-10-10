@@ -89,7 +89,7 @@ export default async function RootLayout({
   )
   const session = (await supabase.auth.getSession()).data.session
 
-  const { t, resources } = await initTranslations(locale, i18nNamespaces)
+  const { resources } = await initTranslations(locale, i18nNamespaces)
 
   return (
     <html lang={locale} suppressHydrationWarning>

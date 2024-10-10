@@ -1,3 +1,5 @@
+// components/messages/message.tsx
+
 import { useChatHandler } from "@/components/chat/chat-hooks/use-chat-handler"
 import { ChatbotUIContext } from "@/context/context"
 import { LLM_LIST } from "@/lib/models/llm/llm-list"
@@ -214,7 +216,19 @@ export const Message: FC<MessageProps> = ({
           ) : (
             <div className="flex items-center space-x-3">
               {message.role === "assistant" ? (
-                messageAssistantImage ? (
+                selectedAssistantImage ? (
+                  <Image
+                    style={{
+                      width: `${ICON_SIZE}px`,
+                      height: `${ICON_SIZE}px`
+                    }}
+                    className="rounded"
+                    src={selectedAssistantImage}
+                    alt="selected assistant image"
+                    height={ICON_SIZE}
+                    width={ICON_SIZE}
+                  />
+                ) : messageAssistantImage ? (
                   <Image
                     style={{
                       width: `${ICON_SIZE}px`,

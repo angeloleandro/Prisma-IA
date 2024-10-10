@@ -1,5 +1,11 @@
 import { ChatbotUIContext } from "@/context/context"
-import { IconCheck, IconCopy, IconEdit, IconRepeat } from "@tabler/icons-react"
+import {
+  IconCheck,
+  IconCopy,
+  IconEdit,
+  IconRepeat,
+  IconGitFork
+} from "@tabler/icons-react"
 import { FC, useContext, useEffect, useState } from "react"
 import { WithTooltip } from "../ui/with-tooltip"
 
@@ -33,7 +39,10 @@ export const MessageActions: FC<MessageActionsProps> = ({
     setShowCheckmark(true)
   }
 
-  const handleForkChat = async () => {}
+  const handleForkChat = async (): Promise<void> => {
+    console.log("Forking chat...")
+    // Lógica para clonar a conversa
+  }
 
   useEffect(() => {
     if (showCheckmark) {
@@ -43,11 +52,15 @@ export const MessageActions: FC<MessageActionsProps> = ({
 
       return () => clearTimeout(timer)
     }
+
+    // Retorna undefined quando não há temporizador
+    return undefined
   }, [showCheckmark])
 
   return (isLast && isGenerating) || isEditing ? null : (
     <div className="flex items-center space-x-2 text-muted-foreground">
-      {/* {((isAssistant && isHovering) || isLast) && (
+      {/* Botão de Fork Chat */}
+      {((isAssistant && isHovering) || isLast) && (
         <WithTooltip
           delayDuration={1000}
           side="bottom"
@@ -60,8 +73,9 @@ export const MessageActions: FC<MessageActionsProps> = ({
             />
           }
         />
-      )} */}
+      )}
 
+      {/* Botão de Editar */}
       {!isAssistant && isHovering && (
         <WithTooltip
           delayDuration={1000}
@@ -77,6 +91,7 @@ export const MessageActions: FC<MessageActionsProps> = ({
         />
       )}
 
+      {/* Botão de Copiar */}
       {(isHovering || isLast) && (
         <WithTooltip
           delayDuration={1000}
@@ -96,6 +111,7 @@ export const MessageActions: FC<MessageActionsProps> = ({
         />
       )}
 
+      {/* Botão de Regenerar */}
       {isLast && (
         <WithTooltip
           delayDuration={1000}
@@ -110,8 +126,6 @@ export const MessageActions: FC<MessageActionsProps> = ({
           }
         />
       )}
-
-      {/* {1 > 0 && isAssistant && <MessageReplies />} */}
     </div>
   )
 }

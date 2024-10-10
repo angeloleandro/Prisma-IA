@@ -52,5 +52,6 @@ export const getWorkspaceImageFromStorage = async (filePath: string) => {
     return data.signedUrl
   } catch (error) {
     console.error(error)
+    return null // Garante que um valor sempre será retornado
   }
 }

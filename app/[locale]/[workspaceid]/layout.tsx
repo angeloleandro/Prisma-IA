@@ -1,3 +1,5 @@
+// app/[locale]/[workspaceid]/layout.tsx
+
 "use client"
 
 import React, { ReactNode, useContext, useEffect, useState } from "react"
@@ -45,7 +47,7 @@ export default function WorkspaceLayout({ children }: WorkspaceLayoutProps) {
     setPrompts,
     setTools,
     setModels,
-    selectedWorkspace,
+    // selectedWorkspace, // Removido porque não está sendo usado
     setSelectedWorkspace,
     setSelectedChat,
     setChatMessages,

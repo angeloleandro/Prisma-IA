@@ -16,11 +16,11 @@ export const CreateModel: FC<CreateModelProps> = ({ isOpen, onOpenChange }) => {
   const { t } = useTranslation()
   const { profile, selectedWorkspace } = useContext(ChatbotUIContext)
 
-  const [isTyping, setIsTyping] = useState(false)
+  const [isTyping] = useState(false)
 
   const [apiKey, setApiKey] = useState("")
   const [baseUrl, setBaseUrl] = useState("")
-  const [description, setDescription] = useState("")
+  const [description] = useState("")
   const [modelId, setModelId] = useState("")
   const [name, setName] = useState("")
   const [contextLength, setContextLength] = useState(4096)

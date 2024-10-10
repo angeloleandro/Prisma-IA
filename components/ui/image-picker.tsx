@@ -15,15 +15,12 @@ interface ImagePickerProps {
 
 const ImagePicker: FC<ImagePickerProps> = ({
   src,
-  image,
   onSrcChange,
   onImageChange,
-  width = 200,
-  height = 200
+  width = 200
 }) => {
   const { t } = useTranslation()
   const [previewSrc, setPreviewSrc] = useState<string>(src)
-  const [previewImage, setPreviewImage] = useState<File | null>(image)
 
   const handleImageSelect = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -67,7 +64,6 @@ const ImagePicker: FC<ImagePickerProps> = ({
         const squareUrl = canvas.toDataURL()
 
         setPreviewSrc(squareUrl)
-        setPreviewImage(file)
         onSrcChange(squareUrl)
         onImageChange(file)
       }

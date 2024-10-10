@@ -1,29 +1,29 @@
 // Importações necessárias
-import CustomerPortalForm from '@/components/ui/AccountForms/CustomerPortalForm';
-import EmailForm from '@/components/ui/AccountForms/EmailForm';
-import NameForm from '@/components/ui/AccountForms/NameForm';
-import { redirect } from 'next/navigation'; // Certificando que o redirect está corretamente importado
-import { cookies } from 'next/headers'; // Importa os cookies do Next.js
-import { createClient } from '@/utils/supabase/server'; // Certifique-se de que esse caminho está correto
+import CustomerPortalForm from "@/components/ui/AccountForms/CustomerPortalForm"
+import EmailForm from "@/components/ui/AccountForms/EmailForm"
+import NameForm from "@/components/ui/AccountForms/NameForm"
+import { redirect } from "next/navigation" // Certificando que o redirect está corretamente importado
+import { cookies } from "next/headers" // Importa os cookies do Next.js
+import { createClient } from "@/utils/supabase/server" // Certifique-se de que esse caminho está correto
 import {
   getUserDetails,
   getSubscription,
   getUser
-} from '@/utils/supabase/queries'; // Certifique-se de que o caminho está correto
+} from "@/utils/supabase/queries" // Certifique-se de que o caminho está correto
 
 export default async function Account() {
-  const cookieStore = cookies(); // Obtendo os cookies do Next.js
-  const supabase = createClient(cookieStore); // Passando os cookies ao cliente Supabase
+  const cookieStore = cookies() // Obtendo os cookies do Next.js
+  const supabase = createClient(cookieStore) // Passando os cookies ao cliente Supabase
 
   const [user, userDetails, subscription] = await Promise.all([
     getUser(supabase), // Função para obter o usuário
     getUserDetails(supabase), // Função para obter os detalhes do usuário
     getSubscription(supabase) // Função para obter a assinatura
-  ]);
+  ])
 
   // Verificando se o usuário não está autenticado
   if (!user) {
-    return redirect('/signin');
+    return redirect("/signin")
   }
 
   return (
@@ -42,10 +42,10 @@ export default async function Account() {
         {/* Componente para o portal do cliente */}
         <CustomerPortalForm subscription={subscription} />
         {/* Componente para o formulário de nome */}
-        <NameForm userName={userDetails?.full_name ?? ''} />
+        <NameForm userName={userDetails?.full_name ?? ""} />
         {/* Componente para o formulário de email */}
         <EmailForm userEmail={user.email} />
       </div>
     </section>
-  );
+  )
 }

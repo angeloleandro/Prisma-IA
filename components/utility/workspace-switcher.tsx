@@ -1,6 +1,5 @@
 "use client"
 
-import { useChatHandler } from "@/components/chat/chat-hooks/use-chat-handler"
 import {
   Popover,
   PopoverContent,
@@ -37,8 +36,6 @@ export const WorkspaceSwitcher: FC<WorkspaceSwitcherProps> = ({}) => {
     setWorkspaces
   } = useContext(ChatbotUIContext)
 
-  const { handleNewChat } = useChatHandler()
-
   const router = useRouter()
 
   const [open, setOpen] = useState(false)
@@ -54,26 +51,27 @@ export const WorkspaceSwitcher: FC<WorkspaceSwitcherProps> = ({}) => {
     if (!selectedWorkspace) return
 
     const createdWorkspace = await createWorkspace({
-      user_id: selectedWorkspace.user_id,
-      default_context_length: selectedWorkspace.default_context_length,
-      default_model: selectedWorkspace.default_model,
-      default_prompt: selectedWorkspace.default_prompt,
-      default_temperature: selectedWorkspace.default_temperature,
+      user_id: selectedWorkspace!.user_id, // Certificando de que selectedWorkspace não é null
+      default_context_length: selectedWorkspace!.default_context_length,
+      default_model: selectedWorkspace!.default_model,
+      default_prompt: selectedWorkspace!.default_prompt,
+      default_temperature: selectedWorkspace!.default_temperature,
       description: "",
       embeddings_provider: "openai",
-      include_profile_context: selectedWorkspace.include_profile_context,
+      include_profile_context: selectedWorkspace!.include_profile_context,
       include_workspace_instructions:
-        selectedWorkspace.include_workspace_instructions,
-      instructions: selectedWorkspace.instructions,
+        selectedWorkspace!.include_workspace_instructions,
+      instructions: selectedWorkspace!.instructions,
       is_home: false,
       name: t("newWorkspace")
     })
 
-    setWorkspaces([...workspaces, createdWorkspace])
-    setSelectedWorkspace(createdWorkspace)
-    setOpen(false)
-
-    return router.push(`/${createdWorkspace.id}/chat`)
+    if (createdWorkspace) {
+      setWorkspaces([...workspaces, createdWorkspace])
+      setSelectedWorkspace(createdWorkspace)
+      setOpen(false)
+      return router.push(`/${createdWorkspace.id}/chat`)
+    }
   }
 
   const getWorkspaceName = (workspaceId: string) => {
@@ -106,10 +104,7 @@ export const WorkspaceSwitcher: FC<WorkspaceSwitcherProps> = ({}) => {
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger
-        className="flex h-[36px] w-full
-        cursor-pointer items-center justify-between rounded-md border border-input px-2 py-1 hover:opacity-50"
-      >
+      <PopoverTrigger className="flex h-[36px] w-full cursor-pointer items-center justify-between rounded-md border border-input px-2 py-1 hover:opacity-50">
         <div className="flex items-center truncate">
           {selectedWorkspace && (
             <div className="flex items-center">

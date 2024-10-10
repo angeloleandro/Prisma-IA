@@ -1,3 +1,5 @@
+// utils/supabase/admin.ts
+
 import { toDateTime } from '@/utils/helpers';
 import { stripe } from '@/utils/stripe/config';
 import { createClient } from '@supabase/supabase-js';
@@ -9,13 +11,13 @@ type Price = Tables<'prices'>;
 
 const TRIAL_PERIOD_DAYS = 0;
 
-const supabaseAdmin = createClient<Database>(
+export const supabaseAdmin = createClient<Database>(
   process.env.NEXT_PUBLIC_SUPABASE_URL || '',
   process.env.SUPABASE_SERVICE_ROLE_KEY || ''
 );
 
 // Função para criar ou recuperar um cliente no Stripe
-const createOrRetrieveCustomer = async ({
+export const createOrRetrieveCustomer = async ({
   uuid,
   email
 }: {
@@ -58,10 +60,9 @@ const createOrRetrieveCustomer = async ({
 };
 
 // Função para gerenciar mudanças de status da assinatura
-const manageSubscriptionStatusChange = async (
+export const manageSubscriptionStatusChange = async (
   subscriptionId: string,
-  customerId: string,
-  createAction = false
+  customerId: string
 ) => {
   const { data: customerData, error: noCustomerError } = await supabaseAdmin
     .from('customers')
@@ -117,7 +118,7 @@ const manageSubscriptionStatusChange = async (
 };
 
 // Função para deletar um produto
-const deleteProductRecord = async (product: Stripe.Product) => {
+export const deleteProductRecord = async (product: Stripe.Product) => {
   const { error: deletionError } = await supabaseAdmin
     .from('products')
     .delete()
@@ -128,7 +129,7 @@ const deleteProductRecord = async (product: Stripe.Product) => {
 };
 
 // Função para deletar um preço
-const deletePriceRecord = async (price: Stripe.Price) => {
+export const deletePriceRecord = async (price: Stripe.Price) => {
   const { error: deletionError } = await supabaseAdmin
     .from('prices')
     .delete()
@@ -138,7 +139,7 @@ const deletePriceRecord = async (price: Stripe.Price) => {
     throw new Error(`Price deletion failed: ${deletionError.message}`);
 };
 
-const upsertProductRecord = async (product: Stripe.Product) => {
+export const upsertProductRecord = async (product: Stripe.Product) => {
   const productData: Product = {
     id: product.id,
     active: product.active,
@@ -157,7 +158,7 @@ const upsertProductRecord = async (product: Stripe.Product) => {
   }
 };
 
-const upsertPriceRecord = async (price: Stripe.Price) => {
+export const upsertPriceRecord = async (price: Stripe.Price) => {
   const priceData: Price = {
     id: price.id,
     product_id: typeof price.product === 'string' ? price.product : '',
@@ -181,15 +182,4 @@ const upsertPriceRecord = async (price: Stripe.Price) => {
   } else if (upsertError) {
     throw new Error(`Price insert/update failed: ${upsertError.message}`);
   }
-};
-
-// Exportações corrigidas
-export {
-  supabaseAdmin,
-  createOrRetrieveCustomer,
-  manageSubscriptionStatusChange,
-  deleteProductRecord,
-  deletePriceRecord,
-  upsertProductRecord,
-  upsertPriceRecord,
 };

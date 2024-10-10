@@ -52,5 +52,6 @@ export const getAssistantImageFromStorage = async (filePath: string) => {
     return data.signedUrl
   } catch (error) {
     console.error(error)
+    return null // Retorna null em caso de erro
   }
 }

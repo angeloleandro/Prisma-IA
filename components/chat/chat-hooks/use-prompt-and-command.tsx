@@ -1,4 +1,3 @@
-import { useTranslation } from "react-i18next"
 import { ChatbotUIContext } from "@/context/context"
 import { getAssistantCollectionsByAssistantId } from "@/db/assistant-collections"
 import { getAssistantFilesByAssistantId } from "@/db/assistant-files"
@@ -9,8 +8,6 @@ import { LLMID } from "@/types"
 import { useContext } from "react"
 
 export const usePromptAndCommand = () => {
-  const { t } = useTranslation()
-
   const {
     chatFiles,
     setNewMessageFiles,

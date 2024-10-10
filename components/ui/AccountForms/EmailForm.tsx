@@ -1,31 +1,31 @@
-'use client';
+"use client"
 
-import Button from '@/components/ui/Button/Button';
-import Card from '@/components/ui/Card/Card';
-import { updateEmail } from '@/utils/auth-helpers/server';
-import { handleRequest } from '@/utils/auth-helpers/client';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import Button from "@/components/ui/Button/Button"
+import Card from "@/components/ui/Card/Card"
+import { updateEmail } from "@/utils/auth-helpers/server"
+import { handleRequest } from "@/utils/auth-helpers/client"
+import { useRouter } from "next/navigation"
+import { useState } from "react"
 
 export default function EmailForm({
   userEmail
 }: {
-  userEmail: string | undefined;
+  userEmail: string | undefined
 }) {
-  const router = useRouter();
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter()
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    setIsSubmitting(true);
+    setIsSubmitting(true)
     // Check if the new email is the same as the old email
     if (e.currentTarget.newEmail.value === userEmail) {
-      e.preventDefault();
-      setIsSubmitting(false);
-      return;
+      e.preventDefault()
+      setIsSubmitting(false)
+      return
     }
-    handleRequest(e, updateEmail, router);
-    setIsSubmitting(false);
-  };
+    handleRequest(e, updateEmail, router)
+    setIsSubmitting(false)
+  }
 
   return (
     <Card
@@ -48,17 +48,17 @@ export default function EmailForm({
       }
     >
       <div className="mb-4 mt-8 text-xl font-semibold">
-        <form id="emailForm" onSubmit={(e) => handleSubmit(e)}>
+        <form id="emailForm" onSubmit={e => handleSubmit(e)}>
           <input
             type="text"
             name="newEmail"
             className="w-1/2 rounded-md bg-zinc-800 p-3"
-            defaultValue={userEmail ?? ''}
+            defaultValue={userEmail ?? ""}
             placeholder="Your email"
             maxLength={64}
           />
         </form>
       </div>
     </Card>
-  );
+  )
 }

@@ -27,7 +27,7 @@ export const UpdateFolder: FC<UpdateFolderProps> = ({ folder }) => {
   const [showFolderDialog, setShowFolderDialog] = useState(false)
   const [name, setName] = useState(folder.name)
 
-  const handleUpdateFolder = async (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleUpdateFolder = async () => {
     const updatedFolder = await updateFolder(folder.id, {
       name
     })

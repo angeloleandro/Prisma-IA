@@ -1,7 +1,7 @@
 "use client"
 
 import { ChatbotUIContext } from "@/context/context"
-import { getProfileByUserId, createProfileIfNotExists } from "@/db/profile"
+import { getProfileByUserId } from "@/db/profile"
 import { getWorkspaceImageFromStorage } from "@/db/storage/workspace-images"
 import { getWorkspacesByUserId } from "@/db/workspaces"
 import { convertBlobToBase64 } from "@/lib/blob-to-b64"
@@ -24,7 +24,7 @@ import {
 import { AssistantImage } from "@/types/images/assistant-image"
 import { VALID_ENV_KEYS } from "@/types/valid-keys"
 import { useRouter } from "next/navigation"
-import { FC, useEffect, useState, useCallback } from "react"
+import { FC, useEffect, useState } from "react"
 
 interface GlobalStateProps {
   children: React.ReactNode
@@ -32,8 +32,6 @@ interface GlobalStateProps {
 
 export const GlobalState: FC<GlobalStateProps> = ({ children }) => {
   const router = useRouter()
-
-  const [isPro, setIsPro] = useState<boolean>(false)
 
   // PROFILE STORE
   const [profile, setProfile] = useState<Tables<"profiles"> | null>(null)
@@ -123,38 +121,8 @@ export const GlobalState: FC<GlobalStateProps> = ({ children }) => {
   const [selectedTools, setSelectedTools] = useState<Tables<"tools">[]>([])
   const [toolInUse, setToolInUse] = useState<string>("none")
 
-  const checkProStatus = useCallback(async () => {
-    const {
-      data: { user }
-    } = await supabase.auth.getUser()
-    if (user) {
-      const profile = await getProfileByUserId(user.id)
-      if (profile) {
-        setIsPro(profile.is_pro || false)
-      }
-    }
-  }, [])
-
-  const updateProStatus = useCallback(async (newProStatus: boolean) => {
-    const {
-      data: { user }
-    } = await supabase.auth.getUser()
-    if (user) {
-      await supabase
-        .from("profiles")
-        .update({ is_pro: newProStatus })
-        .eq("user_id", user.id)
-
-      setIsPro(newProStatus)
-    }
-  }, [])
-
-  const refreshProStatus = useCallback(async () => {
-    await checkProStatus()
-  }, [checkProStatus])
-
   useEffect(() => {
-    const fetchData = async () => {
+    ;(async () => {
       const profile = await fetchStartingData()
 
       if (profile) {
@@ -179,12 +147,8 @@ export const GlobalState: FC<GlobalStateProps> = ({ children }) => {
         if (!localModels) return
         setAvailableLocalModels(localModels)
       }
-
-      await checkProStatus()
-    }
-
-    fetchData()
-  }, [checkProStatus])
+    })()
+  }, [])
 
   const fetchStartingData = async () => {
     const session = (await supabase.auth.getSession()).data.session
@@ -192,52 +156,43 @@ export const GlobalState: FC<GlobalStateProps> = ({ children }) => {
     if (session) {
       const user = session.user
 
-      let profile = await getProfileByUserId(user.id)
+      const profile = await getProfileByUserId(user.id)
+      setProfile(profile)
 
-      if (!profile) {
-        profile = await createProfileIfNotExists(user.id)
+      if (!profile || !profile.has_onboarded) {
+        return router.push("/setup")
       }
 
-      if (profile) {
-        setProfile(profile)
+      const workspaces = await getWorkspacesByUserId(user.id)
+      setWorkspaces(workspaces || [])
 
-        if (!profile.has_onboarded) {
-          router.push("/setup")
-          return null
+      for (const workspace of workspaces || []) {
+        let workspaceImageUrl = ""
+
+        if (workspace.image_path) {
+          workspaceImageUrl =
+            (await getWorkspaceImageFromStorage(workspace.image_path)) || ""
         }
 
-        const workspaces = await getWorkspacesByUserId(user.id)
-        setWorkspaces(workspaces)
+        if (workspaceImageUrl) {
+          const response = await fetch(workspaceImageUrl)
+          const blob = await response.blob()
+          const base64 = await convertBlobToBase64(blob)
 
-        for (const workspace of workspaces) {
-          let workspaceImageUrl = ""
-
-          if (workspace.image_path) {
-            workspaceImageUrl =
-              (await getWorkspaceImageFromStorage(workspace.image_path)) || ""
-          }
-
-          if (workspaceImageUrl) {
-            const response = await fetch(workspaceImageUrl)
-            const blob = await response.blob()
-            const base64 = await convertBlobToBase64(blob)
-
-            setWorkspaceImages(prev => [
-              ...prev,
-              {
-                workspaceId: workspace.id,
-                path: workspace.image_path,
-                base64: base64,
-                url: workspaceImageUrl
-              }
-            ])
-          }
+          setWorkspaceImages(prev => [
+            ...prev,
+            {
+              workspaceId: workspace.id,
+              path: workspace.image_path,
+              base64: base64,
+              url: workspaceImageUrl
+            }
+          ])
         }
-
-        return profile
       }
+
+      return profile
     }
-    return null
   }
 
   return (
@@ -246,13 +201,6 @@ export const GlobalState: FC<GlobalStateProps> = ({ children }) => {
         // PROFILE STORE
         profile,
         setProfile,
-
-        // PRO STATUS
-        isPro,
-        setIsPro,
-        checkProStatus,
-        updateProStatus,
-        refreshProStatus,
 
         // ITEMS STORE
         assistants,

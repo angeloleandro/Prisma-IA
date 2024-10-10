@@ -1,25 +1,35 @@
-'use client';
+// components/ui/AuthForms/UpdatePassword.tsx
 
-import Button from '@/components/ui/Button/Button';
-import { updatePassword } from '@/utils/auth-helpers/server';
-import { handleRequest } from '@/utils/auth-helpers/client';
-import { useRouter } from 'next/navigation';
-import React, { useState } from 'react';
+"use client"
+
+import Button from "@/components/ui/Button/Button"
+import { updatePassword } from "@/utils/auth-helpers/server"
+import { handleRequest } from "@/utils/auth-helpers/client"
+import { useRouter } from "next/navigation"
+import React, { useState } from "react"
 
 interface UpdatePasswordProps {
-  redirectMethod: string;
+  redirectMethod: string
 }
 
-export default function UpdatePassword({ redirectMethod }: UpdatePasswordProps) {
-  const router = redirectMethod === 'client' ? useRouter() : null;
-  const [isSubmitting, setIsSubmitting] = useState(false);
+export default function UpdatePassword({
+  redirectMethod
+}: UpdatePasswordProps) {
+  const router = useRouter() // Hook chamado incondicionalmente
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    await handleRequest(e, updatePassword, router);
-    setIsSubmitting(false);
-  };
+    e.preventDefault()
+    setIsSubmitting(true)
+    try {
+      const redirect = redirectMethod === "client" ? router : null
+      await handleRequest(e, updatePassword, redirect)
+    } catch (err: any) {
+      setError(err.message)
+    }
+    setIsSubmitting(false)
+  }
 
   return (
     <div className="my-8">
@@ -32,24 +42,32 @@ export default function UpdatePassword({ redirectMethod }: UpdatePasswordProps) 
               placeholder="Password"
               type="password"
               name="password"
-              autoComplete="current-password"
+              autoComplete="new-password"
               className="w-full rounded-md bg-zinc-800 p-3"
+              required
             />
             <label htmlFor="passwordConfirm">Confirm New Password</label>
             <input
               id="passwordConfirm"
-              placeholder="Password"
+              placeholder="Confirm Password"
               type="password"
               name="passwordConfirm"
-              autoComplete="current-password"
+              autoComplete="new-password"
               className="w-full rounded-md bg-zinc-800 p-3"
+              required
             />
           </div>
-          <Button variant="slim" type="submit" className="mt-1" loading={isSubmitting}>
+          <Button
+            variant="slim"
+            type="submit"
+            className="mt-1"
+            loading={isSubmitting}
+          >
             Update Password
           </Button>
         </div>
       </form>
+      {error && <p className="text-red-500">{error}</p>}
     </div>
-  );
+  )
 }

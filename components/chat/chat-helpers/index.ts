@@ -1,8 +1,9 @@
+// components/chat/chat-helpers/index.ts
+
 // Only used in use-chat-handler.tsx to keep it clean
 
 import { createChatFiles } from "@/db/chat-files"
 import { createChat } from "@/db/chats"
-import { createMessageFileItems } from "@/db/message-file-items"
 import { createMessages, updateMessage } from "@/db/messages"
 import { uploadMessageImage } from "@/db/storage/message-images"
 import {
@@ -194,7 +195,6 @@ export const handleHostedChat = async (
   tempAssistantChatMessage: ChatMessage,
   isRegeneration: boolean,
   newAbortController: AbortController,
-  newMessageImages: MessageImage[],
   chatImages: MessageImage[],
   setIsGenerating: React.Dispatch<React.SetStateAction<boolean>>,
   setFirstTokenReceived: React.Dispatch<React.SetStateAction<boolean>>,
@@ -478,16 +478,6 @@ export const handleCreateMessages = async (
       ...createdMessages[0],
       image_paths: paths
     })
-
-    const createdMessageFileItems = await createMessageFileItems(
-      retrievedFileItems.map(fileItem => {
-        return {
-          user_id: profile.user_id,
-          message_id: createdMessages[1].id,
-          file_item_id: fileItem.id
-        }
-      })
-    )
 
     finalChatMessages = [
       ...chatMessages,

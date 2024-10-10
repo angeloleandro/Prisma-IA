@@ -1,43 +1,43 @@
-'use client';
+"use client"
 
-import Button from '@/components/ui/Button/Button';
-import { signInWithOAuth } from '@/utils/auth-helpers/client';
-import { type Provider } from '@supabase/supabase-js';
-import { Github } from 'lucide-react';
-import { useState } from 'react';
+import Button from "@/components/ui/Button/Button"
+import { signInWithOAuth } from "@/utils/auth-helpers/client"
+import { type Provider } from "@supabase/supabase-js"
+import { Github } from "lucide-react"
+import { useState } from "react"
 
 type OAuthProviders = {
-  name: Provider;
-  displayName: string;
-  icon: JSX.Element;
-};
+  name: Provider
+  displayName: string
+  icon: JSX.Element
+}
 
 export default function OauthSignIn() {
   const oAuthProviders: OAuthProviders[] = [
     {
-      name: 'github',
-      displayName: 'GitHub',
+      name: "github",
+      displayName: "GitHub",
       icon: <Github className="size-5" />
     }
     // Adicione outros provedores de OAuth aqui, se necessário
-  ];
+  ]
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setIsSubmitting(true); // Desativa o botão enquanto a requisição é tratada
-    await signInWithOAuth(e);
-    setIsSubmitting(false);
-  };
+    e.preventDefault()
+    setIsSubmitting(true) // Desativa o botão enquanto a requisição é tratada
+    await signInWithOAuth(e)
+    setIsSubmitting(false)
+  }
 
   return (
     <div className="mt-8">
-      {oAuthProviders.map((provider) => (
+      {oAuthProviders.map(provider => (
         <form
           key={provider.name}
           className="pb-2"
-          onSubmit={(e) => handleSubmit(e)}
+          onSubmit={e => handleSubmit(e)}
         >
           <input type="hidden" name="provider" value={provider.name} />
           <Button
@@ -52,5 +52,5 @@ export default function OauthSignIn() {
         </form>
       ))}
     </div>
-  );
+  )
 }
