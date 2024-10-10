@@ -1,8 +1,6 @@
-// app/[locale]/[workspaceid]/layout.tsx
-
 "use client"
 
-import React, { ReactNode, useContext, useEffect, useState } from "react"
+import React, { ReactNode, useContext, useEffect, useState, useCallback } from "react"
 import { useTranslation } from "react-i18next"
 import { useParams, useRouter, useSearchParams } from "next/navigation"
 import { Dashboard } from "@/components/ui/dashboard"
@@ -47,7 +45,6 @@ export default function WorkspaceLayout({ children }: WorkspaceLayoutProps) {
     setPrompts,
     setTools,
     setModels,
-    // selectedWorkspace, // Removido porque não está sendo usado
     setSelectedWorkspace,
     setSelectedChat,
     setChatMessages,
@@ -63,36 +60,7 @@ export default function WorkspaceLayout({ children }: WorkspaceLayoutProps) {
 
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    ;(async () => {
-      const session = (await supabase.auth.getSession()).data.session
-
-      if (!session) {
-        return router.push("/login")
-      } else {
-        await fetchWorkspaceData(workspaceId)
-      }
-    })()
-  }, [])
-
-  useEffect(() => {
-    ;(async () => await fetchWorkspaceData(workspaceId))()
-
-    setUserInput("")
-    setChatMessages([])
-    setSelectedChat(null)
-
-    setIsGenerating(false)
-    setFirstTokenReceived(false)
-
-    setChatFiles([])
-    setChatImages([])
-    setNewMessageFiles([])
-    setNewMessageImages([])
-    setShowFilesDisplay(false)
-  }, [workspaceId])
-
-  const fetchWorkspaceData = async (workspaceId: string) => {
+  const fetchWorkspaceData = useCallback(async (workspaceId: string) => {
     setLoading(true)
 
     const workspace = await getWorkspaceById(workspaceId)
@@ -181,7 +149,49 @@ export default function WorkspaceLayout({ children }: WorkspaceLayoutProps) {
     })
 
     setLoading(false)
-  }
+  }, [setAssistantImages, setAssistants, setChats, setChatSettings, setCollections, setFiles, setFolders, setModels, setPresets, setPrompts, setSelectedWorkspace, setTools, searchParams, t])
+
+  useEffect(() => {
+    ;(async () => {
+      const session = (await supabase.auth.getSession()).data.session
+
+      if (!session) {
+        return router.push("/login")
+      } else {
+        await fetchWorkspaceData(workspaceId)
+      }
+    })()
+  }, [router, fetchWorkspaceData, workspaceId])
+
+  useEffect(() => {
+    ;(async () => await fetchWorkspaceData(workspaceId))()
+
+    setUserInput("")
+    setChatMessages([])
+    setSelectedChat(null)
+
+    setIsGenerating(false)
+    setFirstTokenReceived(false)
+
+    setChatFiles([])
+    setChatImages([])
+    setNewMessageFiles([])
+    setNewMessageImages([])
+    setShowFilesDisplay(false)
+  }, [
+    workspaceId,
+    fetchWorkspaceData,
+    setUserInput,
+    setChatMessages,
+    setSelectedChat,
+    setIsGenerating,
+    setFirstTokenReceived,
+    setChatFiles,
+    setChatImages,
+    setNewMessageFiles,
+    setNewMessageImages,
+    setShowFilesDisplay
+  ])
 
   if (loading) {
     return <Loading />

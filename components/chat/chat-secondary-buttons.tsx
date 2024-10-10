@@ -4,9 +4,12 @@ import { IconInfoCircle, IconMessagePlus } from "@tabler/icons-react"
 import { FC, useContext } from "react"
 import { WithTooltip } from "../ui/with-tooltip"
 
-interface ChatSecondaryButtonsProps {}
+// Alteração na interface para evitar a declaração vazia
+interface ChatSecondaryButtonsProps {
+  // Esta interface pode ser utilizada para futuras propriedades se necessário
+}
 
-export const ChatSecondaryButtons: FC<ChatSecondaryButtonsProps> = ({}) => {
+export const ChatSecondaryButtons: FC<ChatSecondaryButtonsProps> = () => {
   const { selectedChat } = useContext(ChatbotUIContext)
 
   const { handleNewChat } = useChatHandler()
@@ -30,16 +33,11 @@ export const ChatSecondaryButtons: FC<ChatSecondaryButtonsProps> = ({}) => {
 
                   <div>
                     Profile Context:{" "}
-                    {selectedChat.include_profile_context
-                      ? "Enabled"
-                      : "Disabled"}
+                    {selectedChat.include_profile_context ? "Enabled" : "Disabled"}
                   </div>
                   <div>
-                    {" "}
                     Workspace Instructions:{" "}
-                    {selectedChat.include_workspace_instructions
-                      ? "Enabled"
-                      : "Disabled"}
+                    {selectedChat.include_workspace_instructions ? "Enabled" : "Disabled"}
                   </div>
 
                   <div>

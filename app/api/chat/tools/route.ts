@@ -4,7 +4,6 @@ import { Tables } from "@/supabase/types"
 import { ChatSettings } from "@/types"
 import { OpenAIStream, StreamingTextResponse } from "ai"
 import OpenAI from "openai"
-import { ChatCompletionCreateParamsBase } from "openai/resources/chat/completions.mjs"
 
 export async function POST(request: Request) {
   const json = await request.json()
@@ -26,7 +25,7 @@ export async function POST(request: Request) {
 
     let allTools: OpenAI.Chat.Completions.ChatCompletionTool[] = []
     let allRouteMaps = {}
-    let schemaDetails = []
+    const schemaDetails = [] // Alterado para const
 
     for (const selectedTool of selectedTools) {
       try {
@@ -60,7 +59,7 @@ export async function POST(request: Request) {
     }
 
     const firstResponse = await openai.chat.completions.create({
-      model: chatSettings.model as ChatCompletionCreateParamsBase["model"],
+      model: chatSettings.model as any, // Substituído por 'any'
       messages,
       tools: allTools.length > 0 ? allTools : undefined
     })
@@ -84,7 +83,6 @@ export async function POST(request: Request) {
         const argumentsString = toolCall.function.arguments.trim()
         const parsedArgs = JSON.parse(argumentsString)
 
-        // Find the schema detail that contains the function name
         const schemaDetail = schemaDetails.find(detail =>
           Object.values(detail.routeMap).includes(functionName)
         )
@@ -115,24 +113,20 @@ export async function POST(request: Request) {
           throw new Error(`Path for function ${functionName} not found`)
         }
 
-        // Determine if the request should be in the body or as a query
         const isRequestInBody = schemaDetail.requestInBody
         let data = {}
 
         if (isRequestInBody) {
-          // If the type is set to body
           let headers = {
             "Content-Type": "application/json"
           }
 
-          // Check if custom headers are set
-          const customHeaders = schemaDetail.headers // Moved this line up to the loop
-          // Check if custom headers are set and are of type string
+          const customHeaders = schemaDetail.headers
           if (customHeaders && typeof customHeaders === "string") {
-            let parsedCustomHeaders = JSON.parse(customHeaders) as Record<
+            const parsedCustomHeaders = JSON.parse(customHeaders) as Record<
               string,
               string
-            >
+            > // Alterado para const
 
             headers = {
               ...headers,
@@ -141,13 +135,12 @@ export async function POST(request: Request) {
           }
 
           const fullUrl = schemaDetail.url + path
-
           const bodyContent = parsedArgs.requestBody || parsedArgs
 
           const requestInit = {
             method: "POST",
             headers,
-            body: JSON.stringify(bodyContent) // Use the extracted requestBody or the entire parsedArgs
+            body: JSON.stringify(bodyContent)
           }
 
           const response = await fetch(fullUrl, requestInit)
@@ -160,7 +153,6 @@ export async function POST(request: Request) {
             data = await response.json()
           }
         } else {
-          // If the type is set to query
           const queryParams = new URLSearchParams(
             parsedArgs.parameters
           ).toString()
@@ -169,7 +161,6 @@ export async function POST(request: Request) {
 
           let headers = {}
 
-          // Check if custom headers are set
           const customHeaders = schemaDetail.headers
           if (customHeaders && typeof customHeaders === "string") {
             headers = JSON.parse(customHeaders)
@@ -199,7 +190,7 @@ export async function POST(request: Request) {
     }
 
     const secondResponse = await openai.chat.completions.create({
-      model: chatSettings.model as ChatCompletionCreateParamsBase["model"],
+      model: chatSettings.model as any, // Substituído por 'any'
       messages,
       stream: true
     })

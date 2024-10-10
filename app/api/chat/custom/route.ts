@@ -4,7 +4,6 @@ import { createClient } from "@supabase/supabase-js"
 import { OpenAIStream, StreamingTextResponse } from "ai"
 import { ServerRuntime } from "next"
 import OpenAI from "openai"
-import { ChatCompletionCreateParamsBase } from "openai/resources/chat/completions.mjs"
 
 export const runtime: ServerRuntime = "edge"
 
@@ -34,14 +33,14 @@ export async function POST(request: Request) {
 
     const custom = new OpenAI({
       apiKey: customModel.api_key || "",
-      baseURL: customModel.base_url
+      baseURL: customModel.base_url,
     })
 
     const response = await custom.chat.completions.create({
-      model: chatSettings.model as ChatCompletionCreateParamsBase["model"],
-      messages: messages as ChatCompletionCreateParamsBase["messages"],
+      model: chatSettings.model as any, // Use 'any' as a temporary solution
+      messages: messages as any, // Use 'any' as a temporary solution
       temperature: chatSettings.temperature,
-      stream: true
+      stream: true,
     })
 
     const stream = OpenAIStream(response)
@@ -60,7 +59,7 @@ export async function POST(request: Request) {
     }
 
     return new Response(JSON.stringify({ message: errorMessage }), {
-      status: errorCode
+      status: errorCode,
     })
   }
 }

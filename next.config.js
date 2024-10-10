@@ -1,10 +1,10 @@
 const withBundleAnalyzer = require("@next/bundle-analyzer")({
   enabled: process.env.ANALYZE === "true"
-})
+});
 
 const withPWA = require("next-pwa")({
   dest: "public"
-})
+});
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -26,8 +26,11 @@ const nextConfig = {
     ]
   },
   experimental: {
-    appDir: true,
-    serverComponentsExternalPackages: ['@xenova/transformers', 'onnxruntime-node', '@stripe/stripe-js']
+    serverComponentsExternalPackages: [
+      '@xenova/transformers',
+      'onnxruntime-node',
+      '@stripe/stripe-js'
+    ]
   },
   webpack: (config, { isServer }) => {
     if (!isServer) {
@@ -35,17 +38,17 @@ const nextConfig = {
         ...config.resolve.fallback,
         fs: false,
         path: false,
-        crypto: false,
+        crypto: false
       };
     }
 
     config.module.rules.push({
       test: /\.node$/,
-      use: 'node-loader',
+      use: 'node-loader'
     });
 
     return config;
-  },
-}
+  }
+};
 
-module.exports = withBundleAnalyzer(withPWA(nextConfig))
+module.exports = withBundleAnalyzer(withPWA(nextConfig));

@@ -40,9 +40,7 @@ import { TextareaAutosize } from "../ui/textarea-autosize"
 import { WithTooltip } from "../ui/with-tooltip"
 import { ThemeSwitcher } from "./theme-switcher"
 
-interface ProfileSettingsProps {}
-
-export const ProfileSettings: FC<ProfileSettingsProps> = ({}) => {
+export const ProfileSettings: FC = () => {
   const router = useRouter()
   const { t } = useTranslation()
   const { profile, setProfile } = useContext(ChatbotUIContext)

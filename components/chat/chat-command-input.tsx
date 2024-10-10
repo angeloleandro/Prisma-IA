@@ -6,17 +6,15 @@ import { FilePicker } from "./file-picker"
 import { PromptPicker } from "./prompt-picker"
 import { ToolPicker } from "./tool-picker"
 
-interface ChatCommandInputProps {}
+// Removed the empty interface
 
-export const ChatCommandInput: FC<ChatCommandInputProps> = ({}) => {
+export const ChatCommandInput: FC = () => {
   const {
     newMessageFiles,
     chatFiles,
-    // Removido slashCommand
     isFilePickerOpen,
     setIsFilePickerOpen,
     hashtagCommand,
-    // Removido focusPrompt
     focusFile
   } = useContext(ChatbotUIContext)
 

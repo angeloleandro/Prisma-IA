@@ -4,14 +4,17 @@ import { Tables } from "@/supabase/types"
 import { FC, useContext, useState } from "react"
 import { Message } from "../messages/message"
 
-interface ChatMessagesProps {}
+// Interface atualizada para evitar a declaração vazia
+interface ChatMessagesProps {
+  // Pode ser usado para futuras propriedades, se necessário
+}
 
-export const ChatMessages: FC<ChatMessagesProps> = ({}) => {
+export const ChatMessages: FC<ChatMessagesProps> = () => {
   const { chatMessages, chatFileItems } = useContext(ChatbotUIContext)
 
   const { handleSendEdit } = useChatHandler()
 
-  const [editingMessage, setEditingMessage] = useState<Tables<"messages">>()
+  const [editingMessage, setEditingMessage] = useState<Tables<"messages"> | undefined>()
 
   return chatMessages
     .sort((a, b) => a.message.sequence_number - b.message.sequence_number)

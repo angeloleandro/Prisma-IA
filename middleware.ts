@@ -10,17 +10,18 @@ export async function middleware(request: NextRequest) {
 
   // Excluir rotas de autenticação, pagamento e API do roteamento i18n
   if (
+    pathname !== '/' &&
     !pathname.startsWith('/signin') &&
     !pathname.startsWith('/auth') &&
     !pathname.startsWith('/api') &&
-    !pathname.startsWith('/payment') // Adicione outras rotas a serem excluídas conforme necessário
+    !pathname.startsWith('/payment')
   ) {
     // Internacionalização (i18n)
     const i18nResult = i18nRouter(request, i18nConfig);
     if (i18nResult) return i18nResult;
   }
 
-  // Atualizar a sessão (Vercel Payment)
+  // Atualizar a sessão
   const sessionUpdateResponse = await updateSession(request);
   if (sessionUpdateResponse) return sessionUpdateResponse;
 
@@ -39,7 +40,7 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL('/signin', request.url));
     }
 
-    // Usuários não autenticados acessando a página inicial '/', redirecionar para '/signin'
+    // Usuários não autenticados acessando a página inicial '/'
     if (!sessionData?.session?.user && pathname === '/') {
       return NextResponse.redirect(new URL('/signin', request.url));
     }
@@ -69,13 +70,6 @@ function isProtectedRoute(pathname: string): boolean {
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except:
-     * - _next/static (arquivos estáticos)
-     * - _next/image (otimização de imagem)
-     * - favicon.ico (ícone da página)
-     * - imagens (svg, png, jpg, jpeg, gif, webp)
-     */
     '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 };

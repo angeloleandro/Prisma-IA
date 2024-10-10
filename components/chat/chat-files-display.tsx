@@ -23,9 +23,8 @@ import { FilePreview } from "../ui/file-preview"
 import { WithTooltip } from "../ui/with-tooltip"
 import { ChatRetrievalSettings } from "./chat-retrieval-settings"
 
-interface ChatFilesDisplayProps {}
-
-export const ChatFilesDisplay: FC<ChatFilesDisplayProps> = ({}) => {
+// Removed the empty interface
+export const ChatFilesDisplay: FC = () => {
   const { t } = useTranslation()
   useHotkey("f", () => setShowFilesDisplay(prev => !prev))
   useHotkey("e", () => setUseRetrieval(prev => !prev))
@@ -181,7 +180,7 @@ export const ChatFilesDisplay: FC<ChatFilesDisplayProps> = ({}) => {
                 >
                   <div className="rounded bg-blue-500 p-2">
                     {(() => {
-                      let fileExtension = file.type.includes("/")
+                      const fileExtension = file.type.includes("/")
                         ? file.type.split("/")[1]
                         : file.type
 
@@ -247,7 +246,8 @@ export const ChatFilesDisplay: FC<ChatFilesDisplayProps> = ({}) => {
     )
   )
 }
-const RetrievalToggle = ({}) => {
+
+const RetrievalToggle = () => {
   const { t } = useTranslation()
   const { useRetrieval, setUseRetrieval } = useContext(ChatbotUIContext)
 

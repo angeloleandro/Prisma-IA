@@ -1,13 +1,15 @@
-import { createServerClient, type CookieOptions } from "@supabase/ssr";
-import { NextResponse, type NextRequest } from "next/server";
+// utils/supabase/middleware.ts
+
+import { createServerClient, type CookieOptions } from '@supabase/ssr';
+import { NextResponse, type NextRequest } from 'next/server';
 
 // Função para criar o cliente Supabase e gerenciar cookies
 export const createClient = (request: NextRequest) => {
   // Cria uma resposta inicial não modificada
   let response = NextResponse.next({
     request: {
-      headers: request.headers
-    }
+      headers: request.headers,
+    },
   });
 
   // Criação do cliente Supabase
@@ -25,38 +27,38 @@ export const createClient = (request: NextRequest) => {
           request.cookies.set({
             name,
             value,
-            ...options
+            ...options,
           });
           response = NextResponse.next({
             request: {
-              headers: request.headers
-            }
+              headers: request.headers,
+            },
           });
           response.cookies.set({
             name,
             value,
-            ...options
+            ...options,
           });
         },
         // Remove um cookie e atualiza a resposta
         remove(name: string, options: CookieOptions) {
           request.cookies.set({
             name,
-            value: "",
-            ...options
+            value: '',
+            ...options,
           });
           response = NextResponse.next({
             request: {
-              headers: request.headers
-            }
+              headers: request.headers,
+            },
           });
           response.cookies.set({
             name,
-            value: "",
-            ...options
+            value: '',
+            ...options,
           });
-        }
-      }
+        },
+      },
     }
   );
 
@@ -70,16 +72,15 @@ export const updateSession = async (request: NextRequest) => {
     const { supabase, response } = createClient(request);
 
     // Atualiza a sessão se expirada (necessário para Server Components)
-    // Mais detalhes: https://supabase.com/docs/guides/auth/server-side/nextjs
     await supabase.auth.getUser();
 
     return response;
   } catch (e) {
-    // Se a criação do cliente Supabase falhar (provavelmente devido à falta de variáveis de ambiente)
+    // Se a criação do cliente Supabase falhar
     return NextResponse.next({
       request: {
-        headers: request.headers
-      }
+        headers: request.headers,
+      },
     });
   }
 };

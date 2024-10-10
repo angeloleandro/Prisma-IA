@@ -29,9 +29,7 @@ import { TextareaAutosize } from "../ui/textarea-autosize"
 import { WithTooltip } from "../ui/with-tooltip"
 import { DeleteWorkspace } from "./delete-workspace"
 
-interface WorkspaceSettingsProps {}
-
-export const WorkspaceSettings: FC<WorkspaceSettingsProps> = ({}) => {
+export const WorkspaceSettings: FC<object> = ({}) => {
   const { t } = useTranslation()
 
   const {
@@ -74,7 +72,7 @@ export const WorkspaceSettings: FC<WorkspaceSettingsProps> = ({}) => {
       )?.base64 || ""
 
     setImageLink(workspaceImage)
-  }, [workspaceImages])
+  }, [workspaceImages, selectedWorkspace?.image_path])
 
   const handleSave = async () => {
     if (!selectedWorkspace) return
@@ -148,13 +146,12 @@ export const WorkspaceSettings: FC<WorkspaceSettingsProps> = ({}) => {
     setWorkspaces(workspaces => {
       return workspaces
         .map(workspace => {
-          // Verificação se o workspace selecionado não é nulo
           if (selectedWorkspace && workspace.id === selectedWorkspace.id) {
             return updatedWorkspace
           }
           return workspace
         })
-        .filter(workspace => workspace !== null) // Remove quaisquer valores 'null'
+        .filter(workspace => workspace !== null)
     })
 
     toast.success(t("workspaceUpdated"))

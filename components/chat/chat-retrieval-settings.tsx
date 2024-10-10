@@ -13,9 +13,12 @@ import { Label } from "../ui/label"
 import { Slider } from "../ui/slider"
 import { WithTooltip } from "../ui/with-tooltip"
 
-interface ChatRetrievalSettingsProps {}
+// Alteração na interface para evitar a declaração vazia
+interface ChatRetrievalSettingsProps {
+  // Pode ser utilizado para futuras propriedades se necessário
+}
 
-export const ChatRetrievalSettings: FC<ChatRetrievalSettingsProps> = ({}) => {
+export const ChatRetrievalSettings: FC<ChatRetrievalSettingsProps> = () => {
   const { t } = useTranslation()
   const { sourceCount, setSourceCount } = useContext(ChatbotUIContext)
 
@@ -41,7 +44,6 @@ export const ChatRetrievalSettings: FC<ChatRetrievalSettingsProps> = ({}) => {
         <div className="space-y-3">
           <Label className="flex items-center space-x-1">
             <div>{t("sourceCount")}:</div>
-
             <div>{sourceCount}</div>
           </Label>
 

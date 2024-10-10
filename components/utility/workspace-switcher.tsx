@@ -22,9 +22,7 @@ import { useTranslation } from "react-i18next"
 import { Button } from "../ui/button"
 import { Input } from "../ui/input"
 
-interface WorkspaceSwitcherProps {}
-
-export const WorkspaceSwitcher: FC<WorkspaceSwitcherProps> = ({}) => {
+export const WorkspaceSwitcher: FC = () => {
   const { t } = useTranslation()
   useHotkey(";", () => setOpen(prevState => !prevState))
 

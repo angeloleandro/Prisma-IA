@@ -2,7 +2,6 @@ import { checkApiKey, getServerProfile } from "@/lib/server/server-chat-helpers"
 import { ChatAPIPayload } from "@/types"
 import { OpenAIStream, StreamingTextResponse } from "ai"
 import OpenAI from "openai"
-import { ChatCompletionCreateParamsBase } from "openai/resources/chat/completions.mjs"
 
 export const runtime = "edge"
 
@@ -31,7 +30,7 @@ export async function POST(request: Request) {
         break
       default:
         return new Response(JSON.stringify({ message: "Model not found" }), {
-          status: 400
+          status: 400,
         })
     }
 
@@ -39,7 +38,7 @@ export async function POST(request: Request) {
       return new Response(
         JSON.stringify({ message: "Azure resources not found" }),
         {
-          status: 400
+          status: 400,
         }
       )
     }
@@ -48,15 +47,15 @@ export async function POST(request: Request) {
       apiKey: KEY,
       baseURL: `${ENDPOINT}/openai/deployments/${DEPLOYMENT_ID}`,
       defaultQuery: { "api-version": "2023-12-01-preview" },
-      defaultHeaders: { "api-key": KEY }
+      defaultHeaders: { "api-key": KEY },
     })
 
     const response = await azureOpenai.chat.completions.create({
-      model: DEPLOYMENT_ID as ChatCompletionCreateParamsBase["model"],
-      messages: messages as ChatCompletionCreateParamsBase["messages"],
+      model: DEPLOYMENT_ID,
+      messages: messages as any, // Use 'any' as a temporary solution
       temperature: chatSettings.temperature,
-      max_tokens: chatSettings.model === "gpt-4-vision-preview" ? 4096 : null, // TODO: Fix
-      stream: true
+      max_tokens: chatSettings.model === "gpt-4-vision-preview" ? 4096 : null,
+      stream: true,
     })
 
     const stream = OpenAIStream(response)
@@ -66,7 +65,7 @@ export async function POST(request: Request) {
     const errorMessage = error.error?.message || "An unexpected error occurred"
     const errorCode = error.status || 500
     return new Response(JSON.stringify({ message: errorMessage }), {
-      status: errorCode
+      status: errorCode,
     })
   }
 }

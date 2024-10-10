@@ -1,6 +1,6 @@
 // components/chat/chat-helpers/index.ts
 
-// Only used in use-chat-handler.tsx to keep it clean
+// Somente usado em use-chat-handler.tsx para mantê-lo limpo
 
 import { createChatFiles } from "@/db/chat-files"
 import { createChat } from "@/db/chats"
@@ -32,23 +32,23 @@ export const validateChatSettings = (
   messageContent: string
 ) => {
   if (!chatSettings) {
-    throw new Error("Chat settings not found")
+    throw new Error("Configurações de chat não encontradas")
   }
 
   if (!modelData) {
-    throw new Error("Model not found")
+    throw new Error("Modelo não encontrado")
   }
 
   if (!profile) {
-    throw new Error("Profile not found")
+    throw new Error("Perfil não encontrado")
   }
 
   if (!selectedWorkspace) {
-    throw new Error("Workspace not found")
+    throw new Error("Workspace não encontrado")
   }
 
   if (!messageContent) {
-    throw new Error("Message content not found")
+    throw new Error("Conteúdo da mensagem não encontrado")
   }
 }
 
@@ -70,7 +70,7 @@ export const handleRetrieval = async (
   })
 
   if (!response.ok) {
-    console.error("Error retrieving:", response)
+    console.error("Erro ao recuperar:", response)
   }
 
   const { results } = (await response.json()) as {
@@ -89,7 +89,7 @@ export const createTempMessages = (
   setChatMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>,
   selectedAssistant: Tables<"assistants"> | null
 ) => {
-  let tempUserChatMessage: ChatMessage = {
+  const tempUserChatMessage: ChatMessage = {
     message: {
       chat_id: "",
       assistant_id: null,
@@ -106,7 +106,7 @@ export const createTempMessages = (
     fileItems: []
   }
 
-  let tempAssistantChatMessage: ChatMessage = {
+  const tempAssistantChatMessage: ChatMessage = {
     message: {
       chat_id: "",
       assistant_id: selectedAssistant?.id || null,
@@ -159,7 +159,6 @@ export const handleLocalChat = async (
 ) => {
   const formattedMessages = await buildFinalMessages(payload, profile, [])
 
-  // Ollama API: https://github.com/jmorganca/ollama/blob/main/docs/api.md
   const response = await fetchChatResponse(
     process.env.NEXT_PUBLIC_OLLAMA_URL + "/api/chat",
     {
@@ -206,7 +205,7 @@ export const handleHostedChat = async (
       ? "azure"
       : modelData.provider
 
-  let draftMessages = await buildFinalMessages(payload, profile, chatImages)
+  const draftMessages = await buildFinalMessages(payload, profile, chatImages)
 
   let formattedMessages: any[] = []
   if (provider === "google") {
@@ -266,7 +265,7 @@ export const fetchChatResponse = async (
   if (!response.ok) {
     if (response.status === 404 && !isHosted) {
       toast.error(
-        "Model not found. Make sure you have it downloaded via Ollama."
+        "Modelo não encontrado. Certifique-se de que você o baixou via Ollama."
       )
     }
 
@@ -303,11 +302,7 @@ export const processResponse = async (
         try {
           contentToAdd = isHosted
             ? chunk
-            : // Ollama's streaming endpoint returns new-line separated JSON
-              // objects. A chunk may have more than one of these objects, so we
-              // need to split the chunk by new-lines and handle each one
-              // separately.
-              chunk
+            : chunk
                 .trimEnd()
                 .split("\n")
                 .reduce(
@@ -316,7 +311,7 @@ export const processResponse = async (
                 )
           fullText += contentToAdd
         } catch (error) {
-          console.error("Error parsing JSON:", error)
+          console.error("Erro ao analisar JSON:", error)
         }
 
         setChatMessages(prev =>
@@ -342,7 +337,7 @@ export const processResponse = async (
 
     return fullText
   } else {
-    throw new Error("Response body is null")
+    throw new Error("Corpo da resposta é nulo")
   }
 }
 
@@ -447,16 +442,15 @@ export const handleCreateMessages = async (
       finalAssistantMessage
     ])
 
-    // Upload each image (stored in newMessageImages) for the user message to message_images bucket
     const uploadPromises = newMessageImages
       .filter(obj => obj.file !== null)
       .map(obj => {
-        let filePath = `${profile.user_id}/${currentChat.id}/${
+        const filePath = `${profile.user_id}/${currentChat.id}/${
           createdMessages[0].id
         }/${uuidv4()}`
 
         return uploadMessageImage(filePath, obj.file as File).catch(error => {
-          console.error(`Failed to upload image at ${filePath}:`, error)
+          console.error(`Falha ao fazer upload da imagem em ${filePath}:`, error)
           return null
         })
       })

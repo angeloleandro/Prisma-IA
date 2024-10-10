@@ -18,9 +18,8 @@ import {
 } from "../ui/dropdown-menu"
 import { Announcements } from "../utility/announcements"
 
-interface ChatHelpProps {}
-
-export const ChatHelp: FC<ChatHelpProps> = ({}) => {
+// Removed the empty interface
+export const ChatHelp: FC = () => {
   const { t } = useTranslation()
   useHotkey("/", () => setIsOpen(prevState => !prevState))
 

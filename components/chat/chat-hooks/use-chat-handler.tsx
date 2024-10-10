@@ -10,7 +10,7 @@ import { Tables } from "@/supabase/types"
 import { ChatMessage, ChatPayload, LLMID, ModelProvider } from "@/types"
 import { useRouter } from "next/navigation"
 import { useContext, useEffect, useRef } from "react"
-import { LLM_LIST } from "../../../lib/models/llm/llm-list"
+import { LLM_LIST } from "@/lib/models/llm/llm-list"
 import {
   createTempMessages,
   handleCreateChat,
@@ -158,23 +158,6 @@ export const useChatHandler = () => {
           | "openai"
           | "local"
       })
-    } else if (selectedWorkspace) {
-      // setChatSettings({
-      //   model: (selectedWorkspace.default_model ||
-      //     "gpt-4-1106-preview") as LLMID,
-      //   prompt:
-      //     selectedWorkspace.default_prompt ||
-      //     t("You are a friendly, helpful AI assistant."),
-      //   temperature: selectedWorkspace.default_temperature || 0.5,
-      //   contextLength: selectedWorkspace.default_context_length || 4096,
-      //   includeProfileContext:
-      //     selectedWorkspace.include_profile_context || true,
-      //   includeWorkspaceInstructions:
-      //     selectedWorkspace.include_workspace_instructions || true,
-      //   embeddingsProvider:
-      //     (selectedWorkspace.embeddings_provider as "openai" | "local") ||
-      //     "openai"
-      // })
     }
 
     return router.push(`/${selectedWorkspace.id}/chat`)
@@ -261,7 +244,7 @@ export const useChatHandler = () => {
           selectedAssistant
         )
 
-      let payload: ChatPayload = {
+      const payload: ChatPayload = {
         chatSettings: chatSettings!,
         workspaceInstructions: selectedWorkspace!.instructions || "",
         chatMessages: isRegeneration
@@ -330,7 +313,7 @@ export const useChatHandler = () => {
             tempAssistantChatMessage,
             isRegeneration,
             newAbortController,
-            chatImages, // 'newMessageImages' removido
+            chatImages,
             setIsGenerating,
             setFirstTokenReceived,
             setChatMessages,
@@ -383,7 +366,7 @@ export const useChatHandler = () => {
 
       setIsGenerating(false)
       setFirstTokenReceived(false)
-    } catch (error) {
+    } catch {
       setIsGenerating(false)
       setFirstTokenReceived(false)
       setUserInput(startingInput)
@@ -413,7 +396,6 @@ export const useChatHandler = () => {
 
   return {
     chatInputRef,
-    prompt,
     handleNewChat,
     handleSendMessage,
     handleFocusChatInput,

@@ -6,10 +6,12 @@ import { FC, useContext, useEffect, useRef } from "react"
 import { usePromptAndCommand } from "./chat-hooks/use-prompt-and-command"
 import { useTranslation } from "react-i18next"
 
-interface AssistantPickerProps {}
+interface AssistantPickerProps {
+  [key: string]: any;
+}
 
 export const AssistantPicker: FC<AssistantPickerProps> = ({}) => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
   const {
     assistants,
     assistantImages,
@@ -17,61 +19,59 @@ export const AssistantPicker: FC<AssistantPickerProps> = ({}) => {
     atCommand,
     isAssistantPickerOpen,
     setIsAssistantPickerOpen
-  } = useContext(ChatbotUIContext)
+  } = useContext(ChatbotUIContext);
 
-  const { handleSelectAssistant } = usePromptAndCommand()
-
-  const itemsRef = useRef<(HTMLDivElement | null)[]>([])
+  const { handleSelectAssistant } = usePromptAndCommand();
+  const itemsRef = useRef<(HTMLDivElement | null)[]>([]);
 
   useEffect(() => {
     if (focusAssistant && itemsRef.current[0]) {
-      itemsRef.current[0].focus()
+      itemsRef.current[0].focus();
     }
-  }, [focusAssistant])
+  }, [focusAssistant]);
 
   const filteredAssistants = assistants.filter(assistant =>
     assistant.name.toLowerCase().includes(atCommand.toLowerCase())
-  )
+  );
 
   const handleOpenChange = (isOpen: boolean) => {
-    setIsAssistantPickerOpen(isOpen)
-  }
+    setIsAssistantPickerOpen(isOpen);
+  };
 
   const callSelectAssistant = (assistant: Tables<"assistants">) => {
-    handleSelectAssistant(assistant)
-    handleOpenChange(false)
-  }
+    handleSelectAssistant(assistant);
+    handleOpenChange(false);
+  };
 
   const getKeyDownHandler =
     (index: number) => (e: React.KeyboardEvent<HTMLDivElement>) => {
       if (e.key === "Backspace") {
-        e.preventDefault()
-        handleOpenChange(false)
+        e.preventDefault();
+        handleOpenChange(false);
       } else if (e.key === "Enter") {
-        e.preventDefault()
-        callSelectAssistant(filteredAssistants[index])
+        e.preventDefault();
+        callSelectAssistant(filteredAssistants[index]);
       } else if (
         (e.key === "Tab" || e.key === "ArrowDown") &&
         !e.shiftKey &&
         index === filteredAssistants.length - 1
       ) {
-        e.preventDefault()
-        itemsRef.current[0]?.focus()
+        e.preventDefault();
+        itemsRef.current[0]?.focus();
       } else if (e.key === "ArrowUp" && !e.shiftKey && index === 0) {
-        // go to last element if arrow up is pressed on first element
-        e.preventDefault()
-        itemsRef.current[itemsRef.current.length - 1]?.focus()
+        e.preventDefault();
+        itemsRef.current[itemsRef.current.length - 1]?.focus();
       } else if (e.key === "ArrowUp") {
-        e.preventDefault()
+        e.preventDefault();
         const prevIndex =
-          index - 1 >= 0 ? index - 1 : itemsRef.current.length - 1
-        itemsRef.current[prevIndex]?.focus()
+          index - 1 >= 0 ? index - 1 : itemsRef.current.length - 1;
+        itemsRef.current[prevIndex]?.focus();
       } else if (e.key === "ArrowDown") {
-        e.preventDefault()
-        const nextIndex = index + 1 < itemsRef.current.length ? index + 1 : 0
-        itemsRef.current[nextIndex]?.focus()
+        e.preventDefault();
+        const nextIndex = index + 1 < itemsRef.current.length ? index + 1 : 0;
+        itemsRef.current[nextIndex]?.focus();
       }
-    }
+    };
 
   return (
     <>
@@ -87,7 +87,7 @@ export const AssistantPicker: FC<AssistantPickerProps> = ({}) => {
                 <div
                   key={item.id}
                   ref={ref => {
-                    itemsRef.current[index] = ref
+                    itemsRef.current[index] = ref;
                   }}
                   tabIndex={0}
                   className="flex cursor-pointer items-center rounded p-2 hover:bg-accent focus:bg-accent focus:outline-none"
@@ -126,5 +126,5 @@ export const AssistantPicker: FC<AssistantPickerProps> = ({}) => {
         </div>
       )}
     </>
-  )
-}
+  );
+};

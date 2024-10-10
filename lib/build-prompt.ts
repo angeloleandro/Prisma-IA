@@ -56,9 +56,6 @@ export async function buildFinalMessages(
 
   let remainingTokens = CHUNK_SIZE - PROMPT_TOKENS
 
-  let usedTokens = 0
-  usedTokens += PROMPT_TOKENS
-
   const processedChatMessages = chatMessages.map((chatMessage, index) => {
     const nextChatMessage = chatMessages[index + 1]
 
@@ -98,14 +95,13 @@ export async function buildFinalMessages(
 
     if (messageTokens <= remainingTokens) {
       remainingTokens -= messageTokens
-      usedTokens += messageTokens
       finalMessages.unshift(message)
     } else {
       break
     }
   }
 
-  let tempSystemMessage: Tables<"messages"> = {
+  const tempSystemMessage: Tables<"messages"> = {
     chat_id: "",
     assistant_id: null,
     content: BUILT_PROMPT,
@@ -184,7 +180,7 @@ function buildRetrievalText(fileItems: Tables<"file_items">[]) {
 }
 
 function adaptSingleMessageForGoogleGemini(message: any) {
-  let adaptedParts = []
+  const adaptedParts = []
 
   let rawParts = []
   if (!Array.isArray(message.content)) {
@@ -194,7 +190,7 @@ function adaptSingleMessageForGoogleGemini(message: any) {
   }
 
   for (let i = 0; i < rawParts.length; i++) {
-    let rawPart = rawParts[i]
+    const rawPart = rawParts[i]
 
     if (rawPart.type == "text") {
       adaptedParts.push({ text: rawPart.text })
@@ -222,14 +218,11 @@ function adaptSingleMessageForGoogleGemini(message: any) {
 }
 
 function adaptMessagesForGeminiVision(messages: any[]) {
-  // Gemini Pro Vision cannot process multiple messages
-  // Reformat, using all texts and last visual only
-
   const basePrompt = messages[0].parts[0].text
   const baseRole = messages[0].role
   const lastMessage = messages[messages.length - 1]
   const visualMessageParts = lastMessage.parts
-  let visualQueryMessages = [
+  const visualQueryMessages = [
     {
       role: "user",
       parts: [
@@ -247,7 +240,7 @@ export async function adaptMessagesForGoogleGemini(
 ) {
   let geminiMessages = []
   for (let i = 0; i < messages.length; i++) {
-    let adaptedMessage = adaptSingleMessageForGoogleGemini(messages[i])
+    const adaptedMessage = adaptSingleMessageForGoogleGemini(messages[i])
     geminiMessages.push(adaptedMessage)
   }
 

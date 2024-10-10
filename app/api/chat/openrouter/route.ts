@@ -3,7 +3,6 @@ import { ChatSettings } from "@/types"
 import { OpenAIStream, StreamingTextResponse } from "ai"
 import { ServerRuntime } from "next"
 import OpenAI from "openai"
-import { ChatCompletionCreateParamsBase } from "openai/resources/chat/completions.mjs"
 
 export const runtime: ServerRuntime = "edge"
 
@@ -25,8 +24,8 @@ export async function POST(request: Request) {
     })
 
     const response = await openai.chat.completions.create({
-      model: chatSettings.model as ChatCompletionCreateParamsBase["model"],
-      messages: messages as ChatCompletionCreateParamsBase["messages"],
+      model: chatSettings.model as any, // Use 'any' temporariamente
+      messages: messages as any, // Use 'any' temporariamente
       temperature: chatSettings.temperature,
       max_tokens: undefined,
       stream: true
