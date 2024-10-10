@@ -1,25 +1,10 @@
 // middleware.ts
 
 import { createClient, updateSession } from '@/utils/supabase/middleware';
-import { i18nRouter } from 'next-i18n-router';
 import { NextResponse, type NextRequest } from 'next/server';
-import i18nConfig from './i18nConfig';
 
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
-
-  // Excluir rotas de autenticação, pagamento e API do roteamento i18n
-  if (
-    pathname !== '/' &&
-    !pathname.startsWith('/signin') &&
-    !pathname.startsWith('/auth') &&
-    !pathname.startsWith('/api') &&
-    !pathname.startsWith('/payment')
-  ) {
-    // Internacionalização (i18n)
-    const i18nResult = i18nRouter(request, i18nConfig);
-    if (i18nResult) return i18nResult;
-  }
 
   // Atualizar a sessão
   const sessionUpdateResponse = await updateSession(request);
@@ -30,18 +15,13 @@ export async function middleware(request: NextRequest) {
     const { supabase, response } = createClient(request);
     const { data: sessionData } = await supabase.auth.getSession();
 
-    // Usuários autenticados acessando a página inicial '/'
-    if (sessionData?.session?.user && pathname === '/') {
-      return NextResponse.redirect(new URL('/account', request.url));
-    }
+    // Remover o redirecionamento para '/account'
+    // if (sessionData?.session?.user && pathname === '/') {
+    //   return NextResponse.redirect(new URL('/account', request.url));
+    // }
 
     // Usuários não autenticados acessando rotas protegidas
     if (!sessionData?.session?.user && isProtectedRoute(pathname)) {
-      return NextResponse.redirect(new URL('/signin', request.url));
-    }
-
-    // Usuários não autenticados acessando a página inicial '/'
-    if (!sessionData?.session?.user && pathname === '/') {
       return NextResponse.redirect(new URL('/signin', request.url));
     }
 
@@ -59,10 +39,7 @@ function isProtectedRoute(pathname: string): boolean {
     '/dashboard',
     '/account',
     '/settings',
-    '/[locale]',
-    '/[locale]/',
-    '/[locale]/chat',
-    // Adicione outras rotas protegidas conforme necessário
+    '/workspace', // Adicione outras rotas protegidas conforme necessário
   ];
 
   return protectedRoutes.some((route) => pathname.startsWith(route));

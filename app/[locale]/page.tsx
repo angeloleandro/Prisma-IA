@@ -1,31 +1,26 @@
-// app/[locale]/page.tsx
-
 "use client"
 
-import { useEffect } from "react"
-import { useRouter } from "next/navigation"
-import { supabase } from "@/lib/supabase/browser-client"
+import { Brand } from "@/components/ui/brand"
+import { IconArrowRight } from "@tabler/icons-react"
+import { useTheme } from "next-themes"
+import Link from "next/link"
+import { useTranslation } from "react-i18next"
 
 export default function HomePage() {
-  const router = useRouter()
+  const { theme } = useTheme()
+  const { t } = useTranslation()
 
-  useEffect(() => {
-    const checkSession = async () => {
-      const {
-        data: { session }
-      } = await supabase.auth.getSession()
+  return (
+    <div className="flex size-full flex-col items-center justify-center">
+      <Brand theme={theme as "dark" | "light"} />
 
-      if (session) {
-        // Usuário autenticado, redirecionar para a página principal do app
-        router.push("/dashboard")
-      } else {
-        // Usuário não autenticado, redirecionar para a página de login
-        router.push("/login")
-      }
-    }
-
-    checkSession()
-  }, [router])
-
-  return null
+      <Link
+        className="mt-4 flex w-[200px] items-center justify-center rounded-md bg-blue-500 p-2 font-semibold"
+        href="/login"
+      >
+        {t("startChatting")}
+        <IconArrowRight className="ml-1" size={20} />
+      </Link>
+    </div>
+  )
 }
