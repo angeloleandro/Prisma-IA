@@ -4,7 +4,12 @@ import Stripe from 'stripe';
 import { stripe } from '@/utils/stripe/config'; 
 import { supabaseAdmin, createOrRetrieveCustomer } from '@/utils/supabase/admin'; 
 import { getURL, getErrorRedirect, calculateTrialEndUnixTimestamp } from '@/utils/helpers';
-import { Tables } from '@/types/types_db';
+import { Tables } from "@/supabase/types";
+
+// Inicialize o Stripe sem especificar a versão da API
+const stripeInstance = new Stripe(process.env.STRIPE_SECRET_KEY as string);
+
+export { stripeInstance as stripe }; // Exportando stripe inicializado
 
 type Price = Tables<'prices'>;
 

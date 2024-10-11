@@ -1,13 +1,16 @@
-import { Metadata } from "next"
-import Footer from "@/components/ui/Footer"
-import Navbar from "@/components/ui/Navbar"
-import { Toaster } from "@/components/ui/Toasts/toaster"
-import { PropsWithChildren, Suspense } from "react"
-import { getURL } from "@/utils/helpers"
-import "styles/main.css"
+// app/layout.tsx
 
-const title = "Next.js Subscription Starter"
-const description = "Brought to you by Vercel, Stripe, and Supabase."
+import { Metadata } from "next";
+import Footer from "@/components/ui/Footer";
+import Navbar from "@/components/ui/Navbar";
+import { Toaster } from "@/components/ui/Toasts/toaster";
+import { PropsWithChildren } from "react";
+import { getURL } from "@/utils/helpers";
+import { GlobalState } from "@/components/utility/global-state";
+import "styles/main.css";
+
+const title = "Your App Title";
+const description = "Your App Description";
 
 export const metadata: Metadata = {
   metadataBase: new URL(getURL()),
@@ -15,26 +18,26 @@ export const metadata: Metadata = {
   description: description,
   openGraph: {
     title: title,
-    description: description
-  }
-}
+    description: description,
+  },
+};
 
-export default async function RootLayout({ children }: PropsWithChildren) {
+export default function RootLayout({ children }: PropsWithChildren) {
   return (
     <html lang="en">
       <body className="bg-black">
-        <Navbar />
-        <main
-          id="skip"
-          className="md:min-h[calc(100dvh-5rem)] min-h-[calc(100dvh-4rem)]"
-        >
-          {children}
-        </main>
-        <Footer />
-        <Suspense>
+        <GlobalState>
+          <Navbar />
+          <main
+            id="skip"
+            className="md:min-h[calc(100dvh-5rem)] min-h-[calc(100dvh-4rem)]"
+          >
+            {children}
+          </main>
+          <Footer />
           <Toaster />
-        </Suspense>
+        </GlobalState>
       </body>
     </html>
-  )
+  );
 }

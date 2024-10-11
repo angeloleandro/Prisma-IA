@@ -1,52 +1,58 @@
 // middleware.ts
 
-import { createClient, updateSession } from '@/utils/supabase/middleware';
-import { NextResponse, type NextRequest } from 'next/server';
+import { NextResponse, type NextRequest } from "next/server";
+import { createMiddlewareClient } from "@supabase/auth-helpers-nextjs";
+import { Database } from "@/supabase/types"; // Certifique-se que este caminho está correto
 
-export async function middleware(request: NextRequest) {
-  const pathname = request.nextUrl.pathname;
+export async function middleware(req: NextRequest) {
+  const res = NextResponse.next();
 
-  // Atualizar a sessão
-  const sessionUpdateResponse = await updateSession(request);
-  if (sessionUpdateResponse) return sessionUpdateResponse;
+  const supabase = createMiddlewareClient<Database>({ req, res });
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
 
-  try {
-    // Criar o cliente Supabase e obter a sessão
-    const { supabase, response } = createClient(request);
-    const { data: sessionData } = await supabase.auth.getSession();
+  const pathname = req.nextUrl.pathname;
 
-    // Remover o redirecionamento para '/account'
-    // if (sessionData?.session?.user && pathname === '/') {
-    //   return NextResponse.redirect(new URL('/account', request.url));
-    // }
-
-    // Usuários não autenticados acessando rotas protegidas
-    if (!sessionData?.session?.user && isProtectedRoute(pathname)) {
-      return NextResponse.redirect(new URL('/signin', request.url));
-    }
-
-    // Retorna a resposta padrão
-    return response;
-  } catch (e) {
-    console.error('Erro no middleware:', e);
-    return NextResponse.next();
-  }
-}
-
-// Função auxiliar para determinar se uma rota é protegida
-function isProtectedRoute(pathname: string): boolean {
+  // Definir rotas protegidas
   const protectedRoutes = [
-    '/dashboard',
-    '/account',
-    '/settings',
-    '/workspace', // Adicione outras rotas protegidas conforme necessário
+    "/dashboard",
+    "/account",
+    "/settings",
+    "/workspace",
+    "/chat",
+    // Adicione outras rotas protegidas conforme necessário
   ];
 
-  return protectedRoutes.some((route) => pathname.startsWith(route));
+  // Redirecionar usuários não autenticados
+  if (!session && protectedRoutes.some((route) => pathname.startsWith(route))) {
+    return NextResponse.redirect(new URL("/signin", req.url));
+  }
+
+  // Verificar status de assinatura para rotas Pro
+  const proRoutes = ["/pro-feature"]; // Substitua pela rota real
+  if (session && proRoutes.some((route) => pathname.startsWith(route))) {
+    const { data: profile, error } = await supabase
+      .from("profiles")
+      .select("is_pro")
+      .eq("user_id", session.user.id) // Alterado de "id" para "user_id"
+      .single();
+
+    if (error) {
+      console.error("Error fetching profile:", error);
+      return NextResponse.redirect(new URL("/signin", req.url));
+    }
+
+    if (!profile?.is_pro) {
+      return NextResponse.redirect(new URL("/upgrade", req.url));
+    }
+  }
+
+  return res;
 }
 
 export const config = {
   matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };

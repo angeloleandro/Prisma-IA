@@ -2,7 +2,7 @@
 
 import Button from '@/components/ui/Button/Button';
 import LogoCloud from '@/components/ui/LogoCloud';
-import type { Tables } from '@/types/types_db';
+import type { Tables } from "@/supabase/types";
 import { getStripe } from '@/utils/stripe/client';
 import { checkoutWithStripe } from '@/utils/stripe/server';
 import { getErrorRedirect } from '@/utils/helpers';

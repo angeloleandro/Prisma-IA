@@ -1,46 +1,60 @@
 // app/account/page.tsx
 
-import CustomerPortalForm from "@/components/ui/AccountForms/CustomerPortalForm";
-import EmailForm from "@/components/ui/AccountForms/EmailForm";
-import NameForm from "@/components/ui/AccountForms/NameForm";
-import { redirect } from "next/navigation";
-import { cookies } from "next/headers";
-import { createClient } from "@/utils/supabase/server";
-import { getUserDetails, getSubscription, getUser } from "@/utils/supabase/queries";
+"use client";
 
-export default async function Account() {
-  const cookieStore = cookies();
-  const supabase = createClient(cookieStore);
+import { useContext, useState, useEffect } from "react";
+import { ChatbotUIContext } from "@/context/context";
+import { supabase } from "@/lib/supabase/browser-client";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
 
-  const [user, userDetails, subscription] = await Promise.all([
-    getUser(supabase),
-    getUserDetails(supabase),
-    getSubscription(supabase),
-  ]);
+export default function AccountPage() {
+  const { user, setUser } = useContext(ChatbotUIContext);
+  const router = useRouter();
+  const [fullName, setFullName] = useState(user?.user_metadata.full_name || "");
 
-  // Check if user is authenticated
+  useEffect(() => {
+    if (!user) {
+      router.push("/signin");
+    }
+  }, [user, router]);
+
+  const handleUpdateProfile = async () => {
+    const { error } = await supabase.auth.updateUser({
+      data: { full_name: fullName },
+    });
+
+    if (error) {
+      console.error(error);
+      toast.error("Failed to update profile");
+    } else {
+      // Atualizar o contexto do usuário
+      const { data } = await supabase.auth.getUser();
+      setUser(data.user);
+      toast.success("Profile updated");
+    }
+  };
+
   if (!user) {
-    return redirect("/signin");
+    return null; // Ou um indicador de carregamento
   }
 
   return (
-    <section className="mb-32 bg-black">
-      {/* Account page content */}
-      <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:pt-24 lg:px-8">
-        <div className="sm:align-center sm:flex sm:flex-col">
-          <h1 className="text-4xl font-extrabold text-white sm:text-center sm:text-6xl">
-            Account
-          </h1>
-          <p className="m-auto mt-5 max-w-2xl text-xl text-zinc-200 sm:text-center sm:text-2xl">
-            We partnered with Stripe for simplified billing.
-          </p>
+    <div className="p-6">
+      <h1 className="text-2xl mb-4">Account</h1>
+      <div className="space-y-4">
+        <div>
+          <Label>Name</Label>
+          <Input
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
+          />
         </div>
+        <Button onClick={handleUpdateProfile}>Update Profile</Button>
       </div>
-      <div className="p-4">
-        <CustomerPortalForm subscription={subscription} />
-        <NameForm userName={userDetails?.full_name ?? ""} />
-        <EmailForm userEmail={user.email} />
-      </div>
-    </section>
+    </div>
   );
 }

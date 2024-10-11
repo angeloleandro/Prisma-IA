@@ -1,4 +1,4 @@
-import type { Tables } from '@/types/types_db'; // Importando os tipos necessários
+import type { Tables } from "@/supabase/types"; // Importando os tipos necessários
 
 type Price = Tables<'prices'>;
 

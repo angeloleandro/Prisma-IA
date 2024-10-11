@@ -1,15 +1,23 @@
-import { createClient } from "@/utils/supabase/server"
+// components/ui/Navbar/Navbar.tsx
+
+"use client"
+
+import { useState, useEffect } from "react"
+import { supabase } from "@/lib/supabase/browser-client"
 import s from "./Navbar.module.css"
 import Navlinks from "./Navlinks"
-import { cookies } from "next/headers" // Importa o gerenciamento de cookies
 
-export default async function Navbar() {
-  const cookieStore = cookies() // Obtém os cookies do Next.js
-  const supabase = createClient(cookieStore) // Passa o cookieStore ao criar o cliente
+export default function Navbar() {
+  const [user, setUser] = useState<any>(null)
 
-  const {
-    data: { user }
-  } = await supabase.auth.getUser()
+  useEffect(() => {
+    const fetchUser = async () => {
+      const { data } = await supabase.auth.getUser()
+      setUser(data.user)
+    }
+
+    fetchUser()
+  }, [])
 
   return (
     <nav className={s.root}>

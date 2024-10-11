@@ -1,6 +1,6 @@
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { cookies } from "next/headers";
-import { Database } from "@/types/types_db"; // Importa o tipo Database do Vercel
+import { Database } from "@/supabase/types"; // Importa o tipo Database do Vercel
 
 // Função para criar o cliente Supabase para operações no lado do servidor
 export const createClient = (cookieStore: ReturnType<typeof cookies>) => {
